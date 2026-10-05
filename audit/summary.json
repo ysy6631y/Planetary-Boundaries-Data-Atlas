@@ -1,0 +1,19 @@
+{
+  "archives": 7,
+  "csv_files": 115,
+  "csv_rows": 260650,
+  "all_sources_unchanged": true,
+  "boundary_count": 9,
+  "control_count": 13,
+  "statuses": {
+    "verified_numeric": 11,
+    "verified_qualitative": 1,
+    "unresolved_boundary": 1
+  },
+  "multiple_control_boundaries": [
+    "climate-change",
+    "biosphere-integrity",
+    "freshwater-change",
+    "biogeochemical-flows"
+  ]
+}

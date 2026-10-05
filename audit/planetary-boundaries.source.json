@@ -1,0 +1,297 @@
+{
+  "meta": {
+    "title": "Planetary Boundaries chapter opener status charts",
+    "page": {
+      "width_mm": 210,
+      "height_mm": 280
+    },
+    "data_policy": "No placeholder values are rendered. Markers render only for verified_numeric or verified_qualitative data_status values.",
+    "basis_year": "2025",
+    "axis_note": "축 설명 · baseline–PB–high risk 기준으로 정규화한 상대 위험 위치이며, 단위별 절대 수치 축이 아님",
+    "footer_note": "기준연도 2025 · 출처 Planetary Health Check 2025; Richardson et al. 2023; CGDD 2023 table",
+    "sources": [
+      {
+        "id": "phc2025",
+        "label": "Planetary Health Check 2025 boundary pages",
+        "url": "https://www.planetaryhealthcheck.org/"
+      },
+      {
+        "id": "richardson2023",
+        "label": "Richardson et al. 2023, Earth beyond six of nine planetary boundaries",
+        "url": "https://www.science.org/doi/10.1126/sciadv.adh2458"
+      },
+      {
+        "id": "cgdd2023-table",
+        "label": "2023 revision table, French General Commissariat for Sustainable Development, after Richardson et al. 2023",
+        "url": "https://www.statistiques.developpement-durable.gouv.fr/edition-numerique/la-france-face-aux-neuf-limites-planetaires/en/14-2023-revision-of-the-nine"
+      },
+      {
+        "id": "phc2025-exec",
+        "label": "Planetary Health Check 2025 Executive Summary",
+        "url": "https://www.planetaryhealthcheck.org/wp-content/uploads/PlanetaryHealthCheck2025_ExecutiveSummary.pdf"
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "id": "climate-change",
+      "order": 1,
+      "title_ko": "기후변화",
+      "title_en": "Climate Change",
+      "control_note": "대기 중 CO₂ 농도, 인위적 복사강제력",
+      "pb_note": "CO₂ 350 ppm · RF +1.0 W/m²",
+      "variables": [
+        {
+          "id": "co2",
+          "label": "CO₂ 423 ppm",
+          "control_label": "CO₂ concentration",
+          "unit": "ppm",
+          "direction": "higher_is_worse",
+          "baseline": 280,
+          "boundary": 350,
+          "high_risk": 450,
+          "current": 423,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025-exec", "phc2025", "cgdd2023-table"]
+        },
+        {
+          "id": "radiative-forcing",
+          "label": "RF +2.97 W/m²",
+          "control_label": "Radiative forcing",
+          "unit": "W/m²",
+          "direction": "higher_is_worse",
+          "baseline": 0,
+          "boundary": 1,
+          "high_risk": 1.5,
+          "current": 2.97,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025-exec", "phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "biosphere-integrity",
+      "order": 2,
+      "title_ko": "생물권 온전성 변화",
+      "title_en": "Change in Biosphere Integrity",
+      "control_note": "유전적 다양성: 멸종률, 기능적 온전성: HANPP",
+      "pb_note": "멸종률 10 E/MSY · HANPP 10%",
+      "variables": [
+        {
+          "id": "genetic-diversity",
+          "label": "멸종률 >100 E/MSY",
+          "control_label": "Genetic diversity",
+          "unit": "E/MSY",
+          "direction": "higher_is_worse",
+          "baseline": 1,
+          "boundary": 10,
+          "high_risk": 100,
+          "current": null,
+          "qualitative_position": "beyond_high_risk",
+          "data_status": "verified_qualitative",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        },
+        {
+          "id": "hanpp",
+          "label": "HANPP 30%",
+          "control_label": "Functional integrity",
+          "unit": "%",
+          "direction": "higher_is_worse",
+          "baseline": 0,
+          "boundary": 10,
+          "high_risk": 20,
+          "current": 30,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "land-system-change",
+      "order": 3,
+      "title_ko": "토지 시스템 변화",
+      "title_en": "Land-System Change",
+      "control_note": "원래 산림면적 대비 남아 있는 산림 비율",
+      "pb_note": "전 지구 산림 75%",
+      "variables": [
+        {
+          "id": "forest-cover",
+          "label": "산림 59%",
+          "control_label": "Forest cover",
+          "unit": "%",
+          "direction": "lower_is_worse",
+          "baseline": 100,
+          "boundary": 75,
+          "high_risk": 54,
+          "current": 59,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "freshwater-change",
+      "order": 4,
+      "title_ko": "담수 변화",
+      "title_en": "Freshwater Change",
+      "control_note": "Blue water 흐름 교란, Green water 토양수분 교란",
+      "pb_note": "Blue 12.9% · Green 12.4%",
+      "variables": [
+        {
+          "id": "blue-water",
+          "label": "Blue 18.2%",
+          "control_label": "Blue water",
+          "unit": "%",
+          "direction": "higher_is_worse",
+          "baseline": 10.3,
+          "boundary": 12.9,
+          "high_risk": 50,
+          "current": 18.2,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        },
+        {
+          "id": "green-water",
+          "label": "Green 15.8%",
+          "control_label": "Green water",
+          "unit": "%",
+          "direction": "higher_is_worse",
+          "baseline": 9.8,
+          "boundary": 12.4,
+          "high_risk": 50,
+          "current": 15.8,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "biogeochemical-flows",
+      "order": 5,
+      "title_ko": "생지화학적 흐름 변화",
+      "title_en": "Modification of Biogeochemical Flows",
+      "control_note": "인 사용량, 인위적 질소 고정량",
+      "pb_note": "P 6.2 Tg P/yr · N 62 Tg N/yr",
+      "variables": [
+        {
+          "id": "phosphorus",
+          "label": "P 18.2 Tg/yr",
+          "control_label": "Phosphorus flow",
+          "unit": "Tg P/yr",
+          "direction": "higher_is_worse",
+          "baseline": 0,
+          "boundary": 6.2,
+          "high_risk": 11.2,
+          "current": 18.2,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        },
+        {
+          "id": "nitrogen",
+          "label": "N 190 Tg/yr",
+          "control_label": "Nitrogen fixation",
+          "unit": "Tg N/yr",
+          "direction": "higher_is_worse",
+          "baseline": 0,
+          "boundary": 62,
+          "high_risk": 82,
+          "current": 190,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "ocean-acidification",
+      "order": 6,
+      "title_ko": "해양 산성화",
+      "title_en": "Ocean Acidification",
+      "control_note": "전 지구 표층해양 아라고나이트 포화도",
+      "pb_note": "Ωarag 2.86",
+      "variables": [
+        {
+          "id": "aragonite-saturation",
+          "label": "Ωarag 2.84",
+          "control_label": "Aragonite saturation state",
+          "unit": "Ωarag",
+          "direction": "lower_is_worse",
+          "baseline": 3.57,
+          "boundary": 2.86,
+          "high_risk": 2.5,
+          "current": 2.84,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "atmospheric-aerosol-loading",
+      "order": 7,
+      "title_ko": "대기 에어로졸 부하 증가",
+      "title_en": "Increase in Atmospheric Aerosol Loading",
+      "control_note": "남북반구 에어로졸 광학두께 차이",
+      "pb_note": "AOD 차이 0.1",
+      "variables": [
+        {
+          "id": "aod-difference",
+          "label": "AOD Δ 0.063",
+          "control_label": "Interhemispheric AOD difference",
+          "unit": "AOD",
+          "direction": "higher_is_worse",
+          "baseline": 0.04,
+          "boundary": 0.1,
+          "high_risk": 0.25,
+          "current": 0.063,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "stratospheric-ozone-depletion",
+      "order": 8,
+      "title_ko": "성층권 오존 고갈",
+      "title_en": "Stratospheric Ozone Depletion",
+      "control_note": "전 지구 평균 성층권 오존 농도",
+      "pb_note": "O₃ 277.4 DU",
+      "variables": [
+        {
+          "id": "ozone",
+          "label": "O₃ 285.7 DU",
+          "control_label": "Stratospheric ozone",
+          "unit": "DU",
+          "direction": "lower_is_worse",
+          "baseline": 292,
+          "boundary": 277.4,
+          "high_risk": 261,
+          "current": 285.7,
+          "data_status": "verified_numeric",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    },
+    {
+      "id": "novel-entities",
+      "order": 9,
+      "title_ko": "신규 물질 도입",
+      "title_en": "Introduction of Novel Entities",
+      "control_note": "충분한 안전성 평가 없이 방출되는 합성화학물질 비율",
+      "pb_note": "0% 원칙 · 고위험 정량 경계 미정",
+      "variables": [
+        {
+          "id": "untested-chemicals",
+          "label": "정량 경계 미확정",
+          "control_label": "Untested synthetic chemicals",
+          "unit": "%",
+          "direction": "higher_is_worse",
+          "baseline": 0,
+          "boundary": 0,
+          "high_risk": null,
+          "current": null,
+          "data_status": "unresolved_boundary",
+          "source_ids": ["phc2025", "cgdd2023-table"]
+        }
+      ]
+    }
+  ]
+}

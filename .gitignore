@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Primary source archives stay local and immutable; audited JSON snapshots are tracked.
+*.zip
+checkpoints/
+
+# Generated validation captures/reports are reproducible and can be large.
+validation/*.png
+validation/*.json

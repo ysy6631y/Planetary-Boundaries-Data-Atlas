@@ -1,0 +1,370 @@
+{
+  "source_archive": "단위 통합 거리화.zip",
+  "normalization_executed": false,
+  "aggregation_executed": false,
+  "controls": [
+    {
+      "chapter_id": "climate-change",
+      "chapter_order": 1,
+      "chapter_title_ko": "기후변화",
+      "source_variable": {
+        "id": "co2",
+        "label": "CO₂ 423 ppm",
+        "control_label": "CO₂ concentration",
+        "unit": "ppm",
+        "direction": "higher_is_worse",
+        "baseline": 280,
+        "boundary": 350,
+        "high_risk": 450,
+        "current": 423,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025-exec",
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "CO₂ 423 ppm",
+        "score_text": "1.7300",
+        "ui_x_text": "122.28"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "climate-change",
+      "chapter_order": 1,
+      "chapter_title_ko": "기후변화",
+      "source_variable": {
+        "id": "radiative-forcing",
+        "label": "RF +2.97 W/m²",
+        "control_label": "Radiative forcing",
+        "unit": "W/m²",
+        "direction": "higher_is_worse",
+        "baseline": 0,
+        "boundary": 1,
+        "high_risk": 1.5,
+        "current": 2.97,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025-exec",
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "RF +2.97 W/m²",
+        "score_text": "4.9400",
+        "ui_x_text": "176.00"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "biosphere-integrity",
+      "chapter_order": 2,
+      "chapter_title_ko": "생물권 온전성 변화",
+      "source_variable": {
+        "id": "genetic-diversity",
+        "label": "멸종률 >100 E/MSY",
+        "control_label": "Genetic diversity",
+        "unit": "E/MSY",
+        "direction": "higher_is_worse",
+        "baseline": 1,
+        "boundary": 10,
+        "high_risk": 100,
+        "current": null,
+        "qualitative_position": "beyond_high_risk",
+        "data_status": "verified_qualitative",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "멸종률 >100 E/MSY",
+        "score_text": "3.0000",
+        "ui_x_text": "176.00"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": false
+    },
+    {
+      "chapter_id": "biosphere-integrity",
+      "chapter_order": 2,
+      "chapter_title_ko": "생물권 온전성 변화",
+      "source_variable": {
+        "id": "hanpp",
+        "label": "HANPP 30%",
+        "control_label": "Functional integrity",
+        "unit": "%",
+        "direction": "higher_is_worse",
+        "baseline": 0,
+        "boundary": 10,
+        "high_risk": 20,
+        "current": 30,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "HANPP 30%",
+        "score_text": "3.0000",
+        "ui_x_text": "176.00"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "land-system-change",
+      "chapter_order": 3,
+      "chapter_title_ko": "토지 시스템 변화",
+      "source_variable": {
+        "id": "forest-cover",
+        "label": "산림 59%",
+        "control_label": "Forest cover",
+        "unit": "%",
+        "direction": "lower_is_worse",
+        "baseline": 100,
+        "boundary": 75,
+        "high_risk": 54,
+        "current": 59,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "산림 59%",
+        "score_text": "1.7619",
+        "ui_x_text": "123.43"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "freshwater-change",
+      "chapter_order": 4,
+      "chapter_title_ko": "담수 변화",
+      "source_variable": {
+        "id": "blue-water",
+        "label": "Blue 18.2%",
+        "control_label": "Blue water",
+        "unit": "%",
+        "direction": "higher_is_worse",
+        "baseline": 10.3,
+        "boundary": 12.9,
+        "high_risk": 50,
+        "current": 18.2,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "Blue 18.2%",
+        "score_text": "1.1429",
+        "ui_x_text": "101.14"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "freshwater-change",
+      "chapter_order": 4,
+      "chapter_title_ko": "담수 변화",
+      "source_variable": {
+        "id": "green-water",
+        "label": "Green 15.8%",
+        "control_label": "Green water",
+        "unit": "%",
+        "direction": "higher_is_worse",
+        "baseline": 9.8,
+        "boundary": 12.4,
+        "high_risk": 50,
+        "current": 15.8,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "Green 15.8%",
+        "score_text": "1.0904",
+        "ui_x_text": "99.26"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "biogeochemical-flows",
+      "chapter_order": 5,
+      "chapter_title_ko": "생지화학적 흐름 변화",
+      "source_variable": {
+        "id": "phosphorus",
+        "label": "P 18.2 Tg/yr",
+        "control_label": "Phosphorus flow",
+        "unit": "Tg P/yr",
+        "direction": "higher_is_worse",
+        "baseline": 0,
+        "boundary": 6.2,
+        "high_risk": 11.2,
+        "current": 18.2,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "P 18.2 Tg/yr",
+        "score_text": "3.4000",
+        "ui_x_text": "143.41"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "biogeochemical-flows",
+      "chapter_order": 5,
+      "chapter_title_ko": "생지화학적 흐름 변화",
+      "source_variable": {
+        "id": "nitrogen",
+        "label": "N 190 Tg/yr",
+        "control_label": "Nitrogen fixation",
+        "unit": "Tg N/yr",
+        "direction": "higher_is_worse",
+        "baseline": 0,
+        "boundary": 62,
+        "high_risk": 82,
+        "current": 190,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "N 190 Tg/yr",
+        "score_text": "7.4000",
+        "ui_x_text": "176.00"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "ocean-acidification",
+      "chapter_order": 6,
+      "chapter_title_ko": "해양 산성화",
+      "source_variable": {
+        "id": "aragonite-saturation",
+        "label": "Ωarag 2.84",
+        "control_label": "Aragonite saturation state",
+        "unit": "Ωarag",
+        "direction": "lower_is_worse",
+        "baseline": 3.57,
+        "boundary": 2.86,
+        "high_risk": 2.5,
+        "current": 2.84,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "Ωarag 2.84",
+        "score_text": "1.0556",
+        "ui_x_text": "98.00"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "atmospheric-aerosol-loading",
+      "chapter_order": 7,
+      "chapter_title_ko": "대기 에어로졸 부하 증가",
+      "source_variable": {
+        "id": "aod-difference",
+        "label": "AOD Δ 0.063",
+        "control_label": "Interhemispheric AOD difference",
+        "unit": "AOD",
+        "direction": "higher_is_worse",
+        "baseline": 0.04,
+        "boundary": 0.1,
+        "high_risk": 0.25,
+        "current": 0.063,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "AOD Δ 0.063",
+        "score_text": "0.3833",
+        "ui_x_text": "60.23"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "stratospheric-ozone-depletion",
+      "chapter_order": 8,
+      "chapter_title_ko": "성층권 오존 고갈",
+      "source_variable": {
+        "id": "ozone",
+        "label": "O₃ 285.7 DU",
+        "control_label": "Stratospheric ozone",
+        "unit": "DU",
+        "direction": "lower_is_worse",
+        "baseline": 292,
+        "boundary": 277.4,
+        "high_risk": 261,
+        "current": 285.7,
+        "data_status": "verified_numeric",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": {
+        "label": "O₃ 285.7 DU",
+        "score_text": "0.4315",
+        "ui_x_text": "63.03"
+      },
+      "score_provenance": "existing SVG data-score; rounded to 4 decimal places",
+      "numeric_observation": true
+    },
+    {
+      "chapter_id": "novel-entities",
+      "chapter_order": 9,
+      "chapter_title_ko": "신규 물질 도입",
+      "source_variable": {
+        "id": "untested-chemicals",
+        "label": "정량 경계 미확정",
+        "control_label": "Untested synthetic chemicals",
+        "unit": "%",
+        "direction": "higher_is_worse",
+        "baseline": 0,
+        "boundary": 0,
+        "high_risk": null,
+        "current": null,
+        "data_status": "unresolved_boundary",
+        "source_ids": [
+          "phc2025",
+          "cgdd2023-table"
+        ]
+      },
+      "existing_svg_marker": null,
+      "score_provenance": null,
+      "numeric_observation": false
+    }
+  ]
+}
