@@ -151,6 +151,31 @@ for (const control of quantitative) {
   trajectories.set(control.id, path);
 }
 
+// One constant-radius angular guide per boundary. Radius and arc length are
+// layout constants; only the central direction comes from the group layout.
+const boundaryGuidesRoot = new THREE.Group();
+scene.add(boundaryGuidesRoot);
+const boundaryGuides = new Map();
+const BOUNDARY_GUIDE_RADIUS = 5.25;
+const BOUNDARY_GUIDE_HALF_ARC = THREE.MathUtils.degToRad(34);
+for (const group of groups) {
+  const direction = new THREE.Vector3(...group.direction).normalize();
+  const referenceAxis = Math.abs(direction.y) > 0.88 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  const tangent = new THREE.Vector3().crossVectors(referenceAxis, direction).normalize();
+  const points = Array.from({ length: 65 }, (_, index) => {
+    const angle = THREE.MathUtils.lerp(-BOUNDARY_GUIDE_HALF_ARC, BOUNDARY_GUIDE_HALF_ARC, index / 64);
+    return direction.clone().multiplyScalar(Math.cos(angle)).addScaledVector(tangent, Math.sin(angle)).multiplyScalar(BOUNDARY_GUIDE_RADIUS);
+  });
+  const guide = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(points),
+    new THREE.LineBasicMaterial({ color: 0x5f5953, transparent: true, opacity: 0.2 }),
+  );
+  guide.userData.groupId = group.id;
+  guide.renderOrder = 1;
+  boundaryGuidesRoot.add(guide);
+  boundaryGuides.set(group.id, guide);
+}
+
 // These are navigation references only. They carry no environmental values.
 const referencePlane = new THREE.GridHelper(7, 14, 0x5a514b, 0x272321);
 referencePlane.position.set(0, -1.05, 0);
@@ -271,7 +296,8 @@ function inspect() {
       ['GROUP PHI (rad)', fmt(selectedGroup.phi)], ['DIRECTION X', fmt(selectedGroup.direction[0])],
       ['DIRECTION Y', fmt(selectedGroup.direction[1])], ['DIRECTION Z', fmt(selectedGroup.direction[2])],
       ['DIRECTION LENGTH', fmt(Math.hypot(...selectedGroup.direction))], ['ANGLE MEANING', 'SPATIAL LAYOUT ONLY'],
-    ])}<div class="note">No boundary aggregate. Labels are layout anchors, not observations.</div>`;
+      ['BOUNDARY GUIDE', `r=${BOUNDARY_GUIDE_RADIUS} / LAYOUT ONLY`],
+    ])}<div class="note">No boundary aggregate. Labels and orbit guides are layout anchors, not observations.</div>`;
     return;
   }
   const raw = selected.raw;
@@ -284,6 +310,7 @@ function inspect() {
     ['UNIFIED DISTANCE', fmt(selected.r)], ['R', fmt(selected.r)], ['THETA (rad)', fmt(selected.theta)],
     ['PHI (rad)', fmt(selected.phi)], ['X', fmt(selected.position?.[0])], ['Y', fmt(selected.position?.[1])], ['Z', fmt(selected.position?.[2])],
     ['ANGLE MEANING', 'SPATIAL LAYOUT ONLY'], ['OFFSET (degrees)', (selected.offset * 180 / Math.PI).toFixed(1)],
+    ['BOUNDARY GUIDE', `r=${BOUNDARY_GUIDE_RADIUS} / LAYOUT ONLY`],
     ['DATA STATUS', raw.data_status],
   ])}<div id="point-check" class="check ${quantitativeState ? '' : 'nq'} ${row?.status === 'FAIL' ? 'fail' : ''}">${quantitativeState ? `WORLD |position| = ${fmt(row.length)}<br>ERROR = ${row.error.toExponential(3)}<br>${row.status} / CPU + GPU endpoint` : 'NOT QUANTIFIED<br>R / XYZ / measurement line: absent'}</div>${!quantitativeState ? `<div class="note">${raw.qualitative_position ? 'Beyond high risk is qualitative. The legacy category marker 3 is not used as a radius.' : 'Current and high-risk threshold are unresolved. No numerical position is assigned.'}</div>` : ''}<div class="sources">${raw.source_ids.map((id) => {
     const item = source.meta.sources.find((s) => s.id === id);
@@ -306,6 +333,11 @@ function select(control, group) {
     const risk = controlsData.find((item) => item.id === id).r;
     path.material.color.setHex(active ? 0xef4037 : risk > 2 ? 0x9b302c : 0x77716b);
     path.material.opacity = active ? 0.82 : (risk > 2 ? 0.3 : 0.14);
+  }
+  for (const [id, guide] of boundaryGuides) {
+    const active = id === group.id;
+    guide.material.color.setHex(active ? 0xef4037 : 0x5f5953);
+    guide.material.opacity = active ? 0.72 : 0.2;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -385,7 +417,11 @@ $('align-group').addEventListener('click', () => {
 });
 $('pb-toggle').addEventListener('change', (e) => { pbShell.visible = e.target.checked; });
 $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.checked; });
-$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; trajectoriesRoot.visible = e.target.checked; });
+$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; });
+$('guides-toggle').addEventListener('change', (e) => {
+  trajectoriesRoot.visible = e.target.checked;
+  boundaryGuidesRoot.visible = e.target.checked;
+});
 $('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
 $('export').addEventListener('click', () => {
   const report = { createdAt: new Date().toISOString(), normalization: 'Original numeric riskScore, full precision; SVG rounding parity checked', layout: 'Fixed Fibonacci group directions; paired controls +/-3 degrees', ...liveValidation(), observer: observationReport() };
@@ -534,7 +570,7 @@ window.__PB_DEBUG__ = {
   snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
     camera: { position: camera.position.toArray(), target: orbit.target.toArray(), fov: camera.fov, minDistance: orbit.minDistance, maxDistance: orbit.maxDistance },
     groupDirections: groups.map((g) => ({ id: g.id, direction: g.direction })),
-    meshCount: meshes.size, measurementLineCount: lines.size,
+    meshCount: meshes.size, measurementLineCount: lines.size, boundaryGuideCount: boundaryGuides.size,
   }),
   referenceCheck: () => referenceGeometry.map(({ radius, geometry }) => {
     const a = geometry.getAttribute('position'); let maxError = 0;
