@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { createIcons, Maximize, Scan, Crosshair, Download, Compass } from 'lucide';
+import { createIcons, Maximize, Scan, Crosshair, Download, Compass, X } from 'lucide';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
 import source from '../audit/planetary-boundaries.source.json';
 import existingAudit from '../audit/controls.json';
 import { parseData } from './data.js';
@@ -51,7 +53,7 @@ orbit.zoomToCursor = false;
 orbit.minDistance = MIN_OBSERVATION_DISTANCE;
 orbit.maxDistance = MAX_OBSERVATION_DISTANCE;
 orbit.zoomSpeed = 1;
-orbit.mouseButtons.LEFT = null;
+orbit.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
 orbit.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
 orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
@@ -71,7 +73,7 @@ const meshes = new Map();
 const lines = new Map();
 const colorFor = () => 0xf4f0e9;
 const lineColorFor = () => 0x77716b;
-const lightOpacityFor = (r) => r > 2 ? 0.34 : r > 1 ? 0.22 : 0.07;
+const lightOpacityFor = (r) => r > 2 ? 0.46 : r > 1 ? 0.32 : 0.13;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
 
 function rasterSignalTexture({ core, middle, outer }) {
@@ -125,7 +127,7 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.14 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.22 }));
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -146,7 +148,7 @@ for (const control of quantitative) {
   });
   const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0x65615d, transparent: true, opacity: 0.1 }),
+    new THREE.LineBasicMaterial({ color: 0x817b75, transparent: true, opacity: 0.17 }),
   );
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
@@ -161,7 +163,7 @@ const referencePlane = new THREE.GridHelper(7, 14, 0x5a514b, 0x272321);
 referencePlane.position.set(0, -1.05, 0);
 referencePlane.rotation.set(-0.34, 0.18, 0.12);
 referencePlane.material.transparent = true;
-referencePlane.material.opacity = 0.22;
+referencePlane.material.opacity = 0.3;
 referencePlane.renderOrder = 1;
 scene.add(referencePlane);
 
@@ -179,18 +181,18 @@ for (let i = 0; i < 420; i++) {
   const angle = random() * Math.PI * 2;
   const spread = Math.sqrt(1 - z * z);
   starPositions.push(radius * spread * Math.cos(angle), radius * z, radius * spread * Math.sin(angle));
-  const brightness = 0.28 + random() * 0.55;
+  const brightness = 0.38 + random() * 0.58;
   const warm = random() > 0.84;
   starColors.push(brightness, warm ? brightness * 0.78 : brightness, warm ? brightness * 0.68 : brightness * 0.96);
 }
 starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
 starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
 const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({
-  size: 0.026,
+  size: 0.034,
   sizeAttenuation: true,
   vertexColors: true,
   transparent: true,
-  opacity: 0.62,
+  opacity: 0.76,
   depthWrite: false,
 }));
 starField.renderOrder = -1;
@@ -202,7 +204,7 @@ scene.add(origin);
 const referenceGeometry = [];
 function shell(radius, color) {
   const root = new THREE.Group();
-  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.38 });
+  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.48 });
   function addCircle(points) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     root.add(new THREE.LineLoop(geometry, material));
@@ -277,6 +279,7 @@ function updateInstrument() {
   $('read-status').classList.remove('reading');
   if (!selected || selected.r === null) {
     const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
+    $('panel-reference').textContent = `REFERENCE / ${code}`;
     $('reference-content').innerHTML = `<div class="reference-code">${escape(code)}</div><div class="reference-name">${escape(selected?.raw.control_label ?? selectedGroup.name)}</div><div class="reference-vector">X / UNDEFINED<br>Y / UNDEFINED<br>Z / UNDEFINED<br>R / ${selected ? 'NOT QUANTIFIED' : 'NO GROUP AGGREGATE'}</div>`;
     $('distance-list').innerHTML = '<div class="distance-row"><span class="distance-code">NO NUMERIC REFERENCE</span><span class="distance-value">--</span></div>';
     $('distance-count').textContent = '0 DISTANCES / REFERENCE HAS NO XYZ';
@@ -286,6 +289,7 @@ function updateInstrument() {
   }
 
   const [x, y, z] = selected.position;
+  $('panel-reference').textContent = `REFERENCE / ${codeFor(selected)}`;
   $('reference-content').innerHTML = `<div class="reference-code">${escape(codeFor(selected))}</div><div class="reference-name">${escape(selected.raw.control_label)} / ${escape(selectedGroup.name)}</div><div class="reference-vector">X / ${instrumentNumber(x)}<br>Y / ${instrumentNumber(y)}<br>Z / ${instrumentNumber(z)}<br>R / ${instrumentNumber(selected.r)}</div>`;
   const distances = quantitative
     .filter((control) => control.id !== selected.id)
@@ -340,20 +344,21 @@ function inspect() {
   }).join('')}</div>`;
 }
 
-function select(control, group) {
+function select(control, group, { openPanel = true } = {}) {
   selected = control; selectedGroup = group;
+  if (openPanel) $('inspector').hidden = false;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
     line.material.color.setHex(active ? 0xdf3d35 : lineColorFor());
-    line.material.opacity = active ? 0.58 : 0.14;
+    line.material.opacity = active ? 0.72 : 0.22;
   }
   for (const [id, orbitLine] of riskOrbits) {
     const active = id === control?.id;
     const groupActive = orbitLine.userData.groupId === group.id;
-    orbitLine.material.color.setHex(active ? 0xdf3d35 : groupActive ? 0x99938c : 0x65615d);
-    orbitLine.material.opacity = active ? 0.58 : groupActive ? 0.2 : 0.1;
+    orbitLine.material.color.setHex(active ? 0xdf3d35 : groupActive ? 0xb5afa8 : 0x817b75);
+    orbitLine.material.opacity = active ? 0.72 : groupActive ? 0.32 : 0.17;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -505,8 +510,21 @@ function resize() {
   renderer.setSize(width, height); camera.aspect = width / height; camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe($('viewport'));
-resize(); fit(); select(selected, selectedGroup);
-createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass } });
+function showReadoutTab(id) {
+  document.querySelectorAll('[data-readout-tab]').forEach((button) => {
+    button.setAttribute('aria-selected', String(button.dataset.readoutTab === id));
+  });
+  for (const view of ['reference', 'distance', 'data']) $(`${view}-readout`).hidden = view !== id;
+}
+document.querySelectorAll('[data-readout-tab]').forEach((button) => {
+  button.addEventListener('click', () => showReadoutTab(button.dataset.readoutTab));
+});
+$('close-inspector').addEventListener('click', () => { $('inspector').hidden = true; });
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') $('inspector').hidden = true;
+});
+resize(); fit(); select(selected, selectedGroup, { openPanel: false });
+createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, X } });
 
 function observationReport() {
   const axisId = selectedGroup.id;

@@ -37,12 +37,16 @@
       <div id="hover-label" class="hover-label" hidden></div>
       <div id="webgl-error" role="alert" hidden></div>
     </section>
-    <aside id="inspector" aria-label="Selection readout">
-      <div id="read-status" class="read-status">SYSTEM / ACTIVE</div>
-      <section class="instrument-section"><h2>REFERENCE</h2><div id="reference-content"></div></section>
-      <section class="instrument-section"><h2>DISTANCE <span>NORMALIZED XYZ</span></h2><div id="distance-list" class="distance-list"></div><div id="distance-count" class="section-count"></div></section>
-      <section class="instrument-section"><h2>RELATIONS</h2><div id="relation-content"></div></section>
-      <section class="instrument-section data-readout"><h2>DATA / VALIDATION</h2><div id="inspect-content"></div></section>
+    <aside id="inspector" aria-label="Selection readout" hidden>
+      <div class="panel-head"><div><div id="read-status" class="read-status">SYSTEM / ACTIVE</div><div id="panel-reference">REFERENCE / --</div></div><button id="close-inspector" aria-label="Close readout" title="Close readout"><i data-lucide="x"></i></button></div>
+      <div class="instrument-tabs" role="tablist" aria-label="Selection data views">
+        <button data-readout-tab="reference" role="tab" aria-selected="true">REFERENCE</button>
+        <button data-readout-tab="distance" role="tab" aria-selected="false">DISTANCE</button>
+        <button data-readout-tab="data" role="tab" aria-selected="false">DATA</button>
+      </div>
+      <section id="reference-readout" class="instrument-view" role="tabpanel"><h2>REFERENCE</h2><div id="reference-content"></div><h2 class="secondary-heading">RELATIONS</h2><div id="relation-content"></div></section>
+      <section id="distance-readout" class="instrument-view" role="tabpanel" hidden><h2>DISTANCE <span>NORMALIZED XYZ</span></h2><div id="distance-list" class="distance-list"></div><div id="distance-count" class="section-count"></div></section>
+      <section id="data-readout" class="instrument-view data-readout" role="tabpanel" hidden><h2>DATA / VALIDATION</h2><div id="inspect-content"></div></section>
     </aside>
   </main>
   <footer><span id="runtime-status">READ / SOURCE DATA</span><span>COMPUTE / XYZ</span><span>PROJECT / PERSPECTIVE</span><span>OUTPUT / ACTIVE</span></footer>

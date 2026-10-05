@@ -4,7 +4,11 @@
 
 - The WebGL data field is the primary interface.
 - The boundary index is plain text over the field, not a separate navigation panel.
-- The right readout is fixed and changes only when the selected reference changes.
+- The selection readout is hidden in the system overview and opens as a compact
+  lower-right module only after a boundary or node is selected. It can be closed
+  without clearing the selection.
+- The module separates `REFERENCE`, `DISTANCE` and `DATA` into explicit tabs so
+  the field is not permanently reduced by a dashboard column.
 - `REFERENCE` reports the selected real control variable and its fixed XYZ/R values.
 - `DISTANCE` is Euclidean distance in normalized XYZ data space from the selected
   quantitative node to each other quantitative node. It is not camera distance,
@@ -19,7 +23,8 @@
   for 200 ms, then update the fixed right readout.
 - Double left click or the focus command: perform a short 420 ms camera/target
   transition to the selected quantitative node.
-- Right drag: orbit the observer frame.
+- Left or right drag: orbit the observer frame. Click selection is suppressed
+  after pointer movement, so orbiting does not change the reference.
 - Wheel: dolly only.
 
 ## Signal hierarchy

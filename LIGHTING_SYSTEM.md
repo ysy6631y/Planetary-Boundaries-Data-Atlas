@@ -9,9 +9,9 @@ position zero.
 
 | Node state | Core / halo | Opacity |
 | --- | --- | ---: |
-| ordinary (`r <= 1`) | white core, pale gray middle, transparent dark outer band | 7% |
-| important (`1 < r <= 2`) | white core, pale gray middle, transparent dark outer band | 22% |
-| high risk (`r > 2`) | white core, pale gray middle, transparent dark outer band | 34% |
+| ordinary (`r <= 1`) | white core, pale gray middle, transparent dark outer band | 13% |
+| important (`1 < r <= 2`) | white core, pale gray middle, transparent dark outer band | 32% |
+| high risk (`r > 2`) | white core, pale gray middle, transparent dark outer band | 46% |
 | selected | near-white/red core, saturated red middle, dark red outer band | 68% |
 
 The texture is a 17x17 canvas raster with nearest-neighbor sampling, stepped
