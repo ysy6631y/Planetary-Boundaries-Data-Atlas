@@ -60,17 +60,62 @@ const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
 const meshes = new Map();
 const lines = new Map();
-const colorFor = (r) => r <= 1 ? 0x7fdcba : r <= 2 ? 0xe2d2a3 : 0xef917f;
+const colorFor = (r) => r > 2 ? 0xf0443a : 0xf4f0e9;
+const lineColorFor = (r) => r > 2 ? 0xb83731 : r > 1 ? 0x9c948b : 0x77716b;
+const lightOpacityFor = (r) => r > 2 ? 0.62 : r > 1 ? 0.28 : 0.07;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
+
+function rasterSignalTexture({ core, middle, outer }) {
+  const size = 17;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const context = canvas.getContext('2d');
+  const toRgb = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+  const colors = [toRgb(core), toRgb(middle), toRgb(outer)];
+  const image = context.createImageData(size, size);
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const radius = Math.hypot(x - 8, y - 8);
+    const band = radius < 2.15 ? 0 : radius < 4.2 ? 1 : 2;
+    const uneven = ((x * 3 + y * 5) % 4) === 0 ? 0.72 : 1;
+    const alpha = radius < 2.15 ? 255 : radius < 4.2 ? 160 : radius < 6.7 ? Math.round(55 * uneven) : 0;
+    const offset = (y * size + x) * 4;
+    image.data[offset] = colors[band][0];
+    image.data[offset + 1] = colors[band][1];
+    image.data[offset + 2] = colors[band][2];
+    image.data[offset + 3] = alpha;
+  }
+  context.putImageData(image, 0, 0);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  return texture;
+}
+const whiteSignal = rasterSignalTexture({ core: '#ffffff', middle: '#c9c4bc', outer: '#5b504a' });
+const redSignal = rasterSignalTexture({ core: '#fff3ec', middle: '#ed4138', outer: '#681815' });
 
 for (const control of quantitative) {
   const point = new THREE.Mesh(glyph, new THREE.MeshBasicMaterial({ color: colorFor(control.r) }));
   point.position.fromArray(control.position);
   point.userData.controlId = control.id;
+  point.userData.baseColor = colorFor(control.r);
+  const signal = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: control.r > 2 ? redSignal : whiteSignal,
+    transparent: true,
+    opacity: lightOpacityFor(control.r),
+    depthTest: false,
+    depthWrite: false,
+  }));
+  signal.userData.controlId = control.id;
+  signal.userData.baseMap = control.r > 2 ? redSignal : whiteSignal;
+  signal.userData.baseOpacity = lightOpacityFor(control.r);
+  signal.renderOrder = 4;
+  point.userData.signal = signal;
+  point.add(signal);
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: colorFor(control.r), transparent: true, opacity: 0.38 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.52 : 0.30 }));
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -102,8 +147,8 @@ function shell(radius, color) {
   scene.add(root);
   return root;
 }
-const pbShell = shell(1, 0x6dd3b0);
-const hrShell = shell(2, 0xd194ef);
+const pbShell = shell(1, 0x756e67);
+const hrShell = shell(2, 0x7f2925);
 const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.078, 0.087, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: false }));
 selectionRing.renderOrder = 10;
 scene.add(selectionRing);
@@ -178,7 +223,19 @@ function select(control, group) {
   selected = control; selectedGroup = group;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
-  for (const [id, line] of lines) line.material.opacity = id === control?.id ? 0.95 : 0.38;
+  for (const [id, line] of lines) {
+    const active = id === control?.id;
+    line.material.opacity = active ? 0.92 : (meshes.get(id).userData.baseColor === 0xf0443a ? 0.52 : 0.30);
+    line.material.color.setHex(active ? 0xf0443a : lineColorFor(controlsData.find((item) => item.id === id).r));
+  }
+  for (const [id, point] of meshes) {
+    const active = id === control?.id;
+    point.material.color.setHex(active ? 0xf0443a : point.userData.baseColor);
+    const signal = point.userData.signal;
+    signal.material.map = active ? redSignal : signal.userData.baseMap;
+    signal.material.opacity = active ? 0.68 : signal.userData.baseOpacity;
+    signal.material.needsUpdate = true;
+  }
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !control || control.r === null;
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
@@ -379,6 +436,19 @@ function positionLabels() {
   }
 }
 
+function positionSignalLights() {
+  const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+  const pixelsPerUnitAtDepth = height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+  for (const [id, point] of meshes) {
+    const signal = point.userData.signal;
+    const distance = Math.max(0.01, point.getWorldPosition(new THREE.Vector3()).distanceTo(cameraPosition));
+    const active = id === selected?.id;
+    const targetPixels = active ? 16 : point.userData.baseColor === 0xf0443a ? 14 : point.userData.baseColor === 0xf4f0e9 && point.userData.signal.userData.baseOpacity > .1 ? 11 : 9;
+    const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
+    signal.scale.set(worldSize, worldSize, 1);
+  }
+}
+
 window.__PB_DEBUG__ = {
   observation: observationReport,
   snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
@@ -401,7 +471,7 @@ window.__PB_DEBUG__ = {
 let lastValidation = -Infinity;
 let lastObservation = -Infinity;
 renderer.setAnimationLoop((now) => {
-  orbit.update(); renderer.render(scene, camera); positionLabels();
+  orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
   if (now - lastObservation > 100) { inspectObserver(); lastObservation = now; }
   if (now - lastValidation > 500) {
