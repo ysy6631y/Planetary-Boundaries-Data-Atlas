@@ -1,4 +1,6 @@
 COMPLETED
+- Applied the Planetary Data Atlas / System Date 1996 visual output system without changing data/parser/spatial logic; details in ATLAS_1996_SYSTEM.md.
+- Created Git baseline commit `79c3d4c` and annotated tag `pre-atlas-1996` before visual changes, so the validated observer prototype can be restored exactly.
 - Preserved pre-observer working source, tests, audit, lockfile and dist in checkpoints/phase1-before-observer-20261005/ before edits.
 - Reread the entire supplied astronomy text and all 30 unique static images; inspected temporal samples of the four embedded animations.
 - Saved OBSERVATION_SYSTEM.md: 12 requested sections, A/B/C classification, three alternatives, selected B (dual-frame observation instrument).

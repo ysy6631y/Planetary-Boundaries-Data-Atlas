@@ -3,42 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Planetary Boundaries / Spatial Audit</title>
+  <title>Planetary Data Atlas / System 1996</title>
   <link rel="icon" href="data:," />
 </head>
 <body>
   <header>
-    <div><h1>Planetary Boundaries</h1><span class="muted">Spatial audit / Phase 01</span></div>
-    <div class="counts"><span>9 groups</span><span>11 points</span><span class="nq">2 not quantified</span></div>
-    <output id="validation-status">VALIDATING</output>
+    <div class="system-title"><span class="system-code">SYSTEM / 03</span><h1>PLANETARY DATA ATLAS</h1><span class="muted">EARTH-SYSTEM SPATIAL OUTPUT</span></div>
+    <div class="process-strip" aria-label="Processing pipeline"><span>READ</span><span>NORMALIZE</span><span>COMPUTE</span><span>PROJECT</span><span>OUTPUT</span></div>
+    <div class="system-status"><span>SYSTEM DATE / 1996</span><output id="validation-status">VALIDATING</output></div>
   </header>
   <main>
-    <nav id="boundaries" aria-label="Boundary groups"><h2>BOUNDARIES <span>2025</span></h2><div id="group-list"></div></nav>
+    <nav id="boundaries" aria-label="Boundary groups"><h2>OBSERVATION SET <span>SOURCE / 2025</span></h2><div id="group-list"></div></nav>
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
-      <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span><div class="tools">
-        <button id="fit" title="Fit all data" aria-label="Fit all data"><i data-lucide="maximize"></i></button>
-        <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i></button>
-        <button id="focus" title="Focus selected quantitative point" aria-label="Focus selected quantitative point"><i data-lucide="crosshair"></i></button>
-        <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i></button>
-        <button id="export" title="Download validation JSON" aria-label="Download validation JSON"><i data-lucide="download"></i></button>
+      <div class="scene-top"><div><span class="scene-kicker">SPATIAL OUTPUT / XYZ</span><span id="scene-selection">EARTH-SYSTEM FIELD</span></div><div class="tools">
+        <button id="fit" title="Fit all data" aria-label="Fit all data">SYSTEM</button>
+        <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells">REFERENCE</button>
+        <button id="focus" title="Focus selected quantitative point" aria-label="Focus selected quantitative point">READ POINT</button>
+        <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction">ALIGN AXIS</button>
+        <button id="export" title="Download validation JSON" aria-label="Download validation JSON">OUTPUT</button>
       </div></div>
-      <div class="legend">
+      <div class="legend" aria-label="Distance reference geometry">
         <span><b class="origin-key"></b>BASELINE <strong>r=0</strong></span>
-        <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>PLANETARY BOUNDARY <strong>r=1</strong></label>
-        <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH RISK <strong>r=2</strong></label>
+        <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>BOUNDARY <strong>r=1</strong></label>
+        <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH PRESSURE <strong>r=2</strong></label>
       </div>
-      <div class="scene-bottom"><div>OBSERVATION DISTANCE <output id="camera-distance">-</output><small>camera to target / scene units</small></div><div class="toggles">
-        <label><input id="lines-toggle" type="checkbox" checked>Measurement lines</label>
-        <label><input id="labels-toggle" type="checkbox" checked>Group labels</label>
-        <label><input id="damping-toggle" type="checkbox" checked>Damping</label>
+      <div class="scene-bottom"><div><span class="readout-label">OBSERVER DISTANCE</span><output id="camera-distance">-</output><small>CAMERA / TARGET / SCENE UNITS</small></div><div class="toggles">
+        <label><input id="lines-toggle" type="checkbox" checked>MEASUREMENT LINES</label>
+        <label><input id="labels-toggle" type="checkbox" checked>FIELD LABELS</label>
+        <label><input id="damping-toggle" type="checkbox" checked>MECHANICAL DAMPING</label>
       </div></div>
       <div id="webgl-error" role="alert" hidden></div>
     </section>
     <aside id="inspector" aria-label="Debug inspector">
       <div class="inspector-tabs" role="tablist" aria-label="Inspector layer">
-        <button id="state-tab" role="tab" aria-selected="true" aria-controls="state-panel">State</button>
-        <button id="observer-tab" role="tab" aria-selected="false" aria-controls="observer-panel" tabindex="-1">Observer</button>
+        <button id="state-tab" role="tab" aria-selected="true" aria-controls="state-panel">DATA STATE</button>
+        <button id="observer-tab" role="tab" aria-selected="false" aria-controls="observer-panel" tabindex="-1">OBSERVER FRAME</button>
       </div>
       <section id="state-panel" role="tabpanel" aria-labelledby="state-tab"><h2>DATA INSPECTOR</h2><div id="inspect-content"></div></section>
       <section id="observer-panel" role="tabpanel" aria-labelledby="observer-tab" hidden>
@@ -48,7 +48,7 @@
       </section>
     </aside>
   </main>
-  <footer><span id="runtime-status">Loading source data</span><span>Angles: layout only / no aggregation</span></footer>
+  <footer><span id="runtime-status">READING SOURCE DATA</span><span>ANGLES = LAYOUT PARAMETERS / NO AGGREGATION</span><span>PRINT OUTPUT + SPATIAL OUTPUT</span></footer>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
