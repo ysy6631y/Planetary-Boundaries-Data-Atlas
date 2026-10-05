@@ -29,11 +29,13 @@ paths, not analytical edges, and have no additive material, bloom, postprocessin
 volumetric lighting or lens flare. Red line color indicates a red signal or
 current selection; line opacity changes selection emphasis but does not add glow.
 
-Each boundary also has one constant-radius partial orbit guide centered on its
-stable group direction. All nine guides use the same radius and angular span;
-neither value encodes risk. The selected group's guide turns red, while the actual
-unified risk distance remains exclusively encoded by the control point's origin
-distance and its direct measurement line.
+Each quantitative control also has one origin-centered orbit circle. Its radius is
+the control's actual unified risk distance `r`, and the circle's plane is oriented
+so the corresponding node lies exactly on its circumference. A circle is red only
+when that control has `r > 1`; selection changes opacity, not the threshold status.
+Boundaries with two quantitative controls therefore have two circles. Qualitative
+and not-quantified controls have no circle because they have no valid numerical
+radius.
 
 ## Data meaning
 

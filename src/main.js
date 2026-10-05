@@ -61,7 +61,7 @@ dataRoot.add(linesRoot);
 const meshes = new Map();
 const lines = new Map();
 const colorFor = (r) => r > 2 ? 0xf0443a : 0xf4f0e9;
-const lineColorFor = (r) => r > 2 ? 0xb83731 : r > 1 ? 0x9c948b : 0x77716b;
+const lineColorFor = (r) => r > 1 ? 0xb83731 : 0x77716b;
 const lightOpacityFor = (r) => r > 2 ? 0.62 : r > 1 ? 0.28 : 0.07;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
 
@@ -116,7 +116,7 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.48 : 0.28 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 1 ? 0.48 : 0.28 }));
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -138,9 +138,9 @@ for (const control of quantitative) {
   const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), handle, endpoint);
   const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(36));
   const path = new THREE.Line(geometry, new THREE.LineDashedMaterial({
-    color: control.r > 2 ? 0x9b302c : 0x77716b,
+    color: control.r > 1 ? 0x9b302c : 0x77716b,
     transparent: true,
-    opacity: control.r > 2 ? 0.3 : 0.14,
+    opacity: control.r > 1 ? 0.3 : 0.14,
     dashSize: 0.045,
     gapSize: 0.035,
     depthTest: false,
@@ -151,29 +151,32 @@ for (const control of quantitative) {
   trajectories.set(control.id, path);
 }
 
-// One constant-radius angular guide per boundary. Radius and arc length are
-// layout constants; only the central direction comes from the group layout.
-const boundaryGuidesRoot = new THREE.Group();
-scene.add(boundaryGuidesRoot);
-const boundaryGuides = new Map();
-const BOUNDARY_GUIDE_RADIUS = 5.25;
-const BOUNDARY_GUIDE_HALF_ARC = THREE.MathUtils.degToRad(34);
-for (const group of groups) {
-  const direction = new THREE.Vector3(...group.direction).normalize();
+// Each quantitative control gets an origin-centered circle whose radius is its
+// actual unified distance. Angle zero is the node itself, so the circle passes
+// exactly through the rendered data position.
+const riskOrbitsRoot = new THREE.Group();
+scene.add(riskOrbitsRoot);
+const riskOrbits = new Map();
+for (const control of quantitative) {
+  const direction = new THREE.Vector3(...control.position).normalize();
   const referenceAxis = Math.abs(direction.y) > 0.88 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
   const tangent = new THREE.Vector3().crossVectors(referenceAxis, direction).normalize();
-  const points = Array.from({ length: 65 }, (_, index) => {
-    const angle = THREE.MathUtils.lerp(-BOUNDARY_GUIDE_HALF_ARC, BOUNDARY_GUIDE_HALF_ARC, index / 64);
-    return direction.clone().multiplyScalar(Math.cos(angle)).addScaledVector(tangent, Math.sin(angle)).multiplyScalar(BOUNDARY_GUIDE_RADIUS);
+  const points = Array.from({ length: 128 }, (_, index) => {
+    const angle = index / 128 * Math.PI * 2;
+    return direction.clone().multiplyScalar(Math.cos(angle)).addScaledVector(tangent, Math.sin(angle)).multiplyScalar(control.r);
   });
-  const guide = new THREE.Line(
+  const exceeded = control.r > 1;
+  const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0x5f5953, transparent: true, opacity: 0.2 }),
+    new THREE.LineBasicMaterial({ color: exceeded ? 0x8f2d29 : 0x5f5953, transparent: true, opacity: exceeded ? 0.32 : 0.24 }),
   );
-  guide.userData.groupId = group.id;
-  guide.renderOrder = 1;
-  boundaryGuidesRoot.add(guide);
-  boundaryGuides.set(group.id, guide);
+  orbitLine.userData.controlId = control.id;
+  orbitLine.userData.groupId = control.groupId;
+  orbitLine.userData.r = control.r;
+  orbitLine.userData.exceeded = exceeded;
+  orbitLine.renderOrder = 1;
+  riskOrbitsRoot.add(orbitLine);
+  riskOrbits.set(control.id, orbitLine);
 }
 
 // These are navigation references only. They carry no environmental values.
@@ -296,8 +299,8 @@ function inspect() {
       ['GROUP PHI (rad)', fmt(selectedGroup.phi)], ['DIRECTION X', fmt(selectedGroup.direction[0])],
       ['DIRECTION Y', fmt(selectedGroup.direction[1])], ['DIRECTION Z', fmt(selectedGroup.direction[2])],
       ['DIRECTION LENGTH', fmt(Math.hypot(...selectedGroup.direction))], ['ANGLE MEANING', 'SPATIAL LAYOUT ONLY'],
-      ['BOUNDARY GUIDE', `r=${BOUNDARY_GUIDE_RADIUS} / LAYOUT ONLY`],
-    ])}<div class="note">No boundary aggregate. Labels and orbit guides are layout anchors, not observations.</div>`;
+      ['R ORBITS', 'ONE PER QUANTIFIED CONTROL'],
+    ])}<div class="note">No boundary aggregate. Every orbit radius comes from its control variable; not-quantified controls have no orbit.</div>`;
     return;
   }
   const raw = selected.raw;
@@ -310,9 +313,9 @@ function inspect() {
     ['UNIFIED DISTANCE', fmt(selected.r)], ['R', fmt(selected.r)], ['THETA (rad)', fmt(selected.theta)],
     ['PHI (rad)', fmt(selected.phi)], ['X', fmt(selected.position?.[0])], ['Y', fmt(selected.position?.[1])], ['Z', fmt(selected.position?.[2])],
     ['ANGLE MEANING', 'SPATIAL LAYOUT ONLY'], ['OFFSET (degrees)', (selected.offset * 180 / Math.PI).toFixed(1)],
-    ['BOUNDARY GUIDE', `r=${BOUNDARY_GUIDE_RADIUS} / LAYOUT ONLY`],
+    ['R ORBIT RADIUS', quantitativeState ? fmt(selected.r) : 'NOT QUANTIFIED / ABSENT'],
     ['DATA STATUS', raw.data_status],
-  ])}<div id="point-check" class="check ${quantitativeState ? '' : 'nq'} ${row?.status === 'FAIL' ? 'fail' : ''}">${quantitativeState ? `WORLD |position| = ${fmt(row.length)}<br>ERROR = ${row.error.toExponential(3)}<br>${row.status} / CPU + GPU endpoint` : 'NOT QUANTIFIED<br>R / XYZ / measurement line: absent'}</div>${!quantitativeState ? `<div class="note">${raw.qualitative_position ? 'Beyond high risk is qualitative. The legacy category marker 3 is not used as a radius.' : 'Current and high-risk threshold are unresolved. No numerical position is assigned.'}</div>` : ''}<div class="sources">${raw.source_ids.map((id) => {
+  ])}<div id="point-check" class="check ${quantitativeState ? '' : 'nq'} ${row?.status === 'FAIL' ? 'fail' : ''}">${quantitativeState ? `WORLD |position| = ${fmt(row.length)}<br>POINT ERROR = ${row.error.toExponential(3)}<br>ORBIT RADIUS ERROR = ${row.orbitRadiusError.toExponential(3)}<br>ORBIT/NODE ERROR = ${row.orbitNodeError.toExponential(3)}<br>${row.status} / POINT + LINE + ORBIT` : 'NOT QUANTIFIED<br>R / XYZ / measurement line / orbit: absent'}</div>${!quantitativeState ? `<div class="note">${raw.qualitative_position ? 'Beyond high risk is qualitative. The legacy category marker 3 is not used as a radius.' : 'Current and high-risk threshold are unresolved. No numerical position is assigned.'}</div>` : ''}<div class="sources">${raw.source_ids.map((id) => {
     const item = source.meta.sources.find((s) => s.id === id);
     return `<a href="${escape(item.url)}" target="_blank" rel="noreferrer">${escape(id)}</a>`;
   }).join('')}</div>`;
@@ -325,19 +328,20 @@ function select(control, group) {
   for (const [id, line] of lines) {
     const active = id === control?.id;
     const risk = controlsData.find((item) => item.id === id).r;
-    line.material.color.setHex(active ? 0xf0443a : lineColorFor(risk));
-    line.material.opacity = active ? 0.62 : (risk > 2 ? 0.48 : 0.28);
+    line.material.color.setHex(active && risk <= 1 ? 0xd8d2ca : lineColorFor(risk));
+    line.material.opacity = active ? 0.62 : (risk > 1 ? 0.48 : 0.28);
   }
   for (const [id, path] of trajectories) {
     const active = id === control?.id;
     const risk = controlsData.find((item) => item.id === id).r;
-    path.material.color.setHex(active ? 0xef4037 : risk > 2 ? 0x9b302c : 0x77716b);
-    path.material.opacity = active ? 0.82 : (risk > 2 ? 0.3 : 0.14);
+    path.material.color.setHex(active && risk <= 1 ? 0xd8d2ca : risk > 1 ? 0xef4037 : 0x77716b);
+    path.material.opacity = active ? 0.82 : (risk > 1 ? 0.3 : 0.14);
   }
-  for (const [id, guide] of boundaryGuides) {
-    const active = id === group.id;
-    guide.material.color.setHex(active ? 0xef4037 : 0x5f5953);
-    guide.material.opacity = active ? 0.72 : 0.2;
+  for (const [id, orbitLine] of riskOrbits) {
+    const active = id === control?.id;
+    const groupActive = orbitLine.userData.groupId === group.id;
+    orbitLine.material.color.setHex(orbitLine.userData.exceeded ? (active ? 0xef4037 : 0x8f2d29) : (active || groupActive ? 0xd8d2ca : 0x5f5953));
+    orbitLine.material.opacity = active ? 0.78 : groupActive ? 0.52 : orbitLine.userData.exceeded ? 0.32 : 0.24;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -367,9 +371,18 @@ function liveValidation() {
     const endpoint = new THREE.Vector3().fromBufferAttribute(attribute, 1).applyMatrix4(line.matrixWorld).sub(originPosition);
     const gpu = validatePosition(endpoint.toArray(), control.r, GPU_TOLERANCE);
     const endpointError = endpoint.distanceTo(world);
+    const orbitLine = riskOrbits.get(control.id);
+    const orbitAttribute = orbitLine.geometry.getAttribute('position');
+    let orbitRadiusError = 0;
+    let orbitNodeError = Infinity;
+    for (let i = 0; i < orbitAttribute.count; i++) {
+      const orbitPoint = new THREE.Vector3().fromBufferAttribute(orbitAttribute, i).applyMatrix4(orbitLine.matrixWorld).sub(originPosition);
+      orbitRadiusError = Math.max(orbitRadiusError, Math.abs(orbitPoint.length() - control.r));
+      if (i === 0) orbitNodeError = orbitPoint.distanceTo(world);
+    }
     return { id: control.id, groupId: control.groupId, r: control.r, theta: control.theta, phi: control.phi, position: world.toArray(), ...cpu,
-      gpuError: gpu.error, endpointError, fixedCoordinateError, gpuTolerance: gpu.tolerance,
-      status: cpu.status === 'PASS' && gpu.status === 'PASS' && fixedCoordinateError < 1e-10 && start.length() < 1e-10 && endpointError <= gpu.tolerance ? 'PASS' : 'FAIL' };
+      gpuError: gpu.error, endpointError, fixedCoordinateError, orbitRadiusError, orbitNodeError, gpuTolerance: gpu.tolerance,
+      status: cpu.status === 'PASS' && gpu.status === 'PASS' && fixedCoordinateError < 1e-10 && start.length() < 1e-10 && endpointError <= gpu.tolerance && orbitRadiusError <= gpu.tolerance && orbitNodeError <= gpu.tolerance ? 'PASS' : 'FAIL' };
   });
   return { groups: groups.length, quantitativePoints: quantitative.length, notQuantified: controlsData.length - quantitative.length,
     passed: points.filter((p) => p.status === 'PASS').length,
@@ -420,7 +433,7 @@ $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.ch
 $('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; });
 $('guides-toggle').addEventListener('change', (e) => {
   trajectoriesRoot.visible = e.target.checked;
-  boundaryGuidesRoot.visible = e.target.checked;
+  riskOrbitsRoot.visible = e.target.checked;
 });
 $('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
 $('export').addEventListener('click', () => {
@@ -570,7 +583,7 @@ window.__PB_DEBUG__ = {
   snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
     camera: { position: camera.position.toArray(), target: orbit.target.toArray(), fov: camera.fov, minDistance: orbit.minDistance, maxDistance: orbit.maxDistance },
     groupDirections: groups.map((g) => ({ id: g.id, direction: g.direction })),
-    meshCount: meshes.size, measurementLineCount: lines.size, boundaryGuideCount: boundaryGuides.size,
+    meshCount: meshes.size, measurementLineCount: lines.size, riskOrbitCount: riskOrbits.size,
   }),
   referenceCheck: () => referenceGeometry.map(({ radius, geometry }) => {
     const a = geometry.getAttribute('position'); let maxError = 0;
