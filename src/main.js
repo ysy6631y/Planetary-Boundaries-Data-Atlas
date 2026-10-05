@@ -128,10 +128,9 @@ for (const control of quantitative) {
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
   const line = new THREE.Line(geometry, new THREE.LineDashedMaterial({
-    color: lineColorFor(control.r), transparent: true, opacity: 0, dashSize: 0.12, gapSize: 0.08,
+    color: control.r > 1 ? 0x6f2824 : lineColorFor(control.r), transparent: true, opacity: control.r > 1 ? 0.25 : 0.2, dashSize: 0.12, gapSize: 0.08,
   }));
   line.computeLineDistances();
-  line.visible = false;
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -152,13 +151,12 @@ for (const control of quantitative) {
   });
   const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0xdf3d35, transparent: true, opacity: 0 }),
+    new THREE.LineBasicMaterial({ color: control.r > 1 ? 0x6f2824 : 0x817b75, transparent: true, opacity: control.r > 1 ? 0.22 : 0.18 }),
   );
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
   orbitLine.userData.r = control.r;
   orbitLine.renderOrder = 1;
-  orbitLine.visible = false;
   riskOrbitsRoot.add(orbitLine);
   riskOrbits.set(control.id, orbitLine);
 }
@@ -363,16 +361,17 @@ function select(control, group, { openPanel = true, focus = false, reveal = true
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
-    line.material.color.setHex(active && control.r > 1 ? 0xa83530 : 0xc9c7c1);
-    line.material.opacity = 0;
-    line.visible = false;
+    const lineControl = quantitative.find((item) => item.id === id);
+    line.material.color.setHex(active && control.r > 1 ? 0xa83530 : lineControl.r > 1 ? 0x6f2824 : 0x77716b);
+    line.material.opacity = active ? 0.46 : lineControl.r > 1 ? 0.25 : 0.2;
+    line.visible = true;
   }
   for (const [id, orbitLine] of riskOrbits) {
     const active = id === control?.id;
     orbitLine.material.color.setHex(active && control.r > 1 ? 0xa83530 : 0xc9c7c1);
-    orbitLine.material.opacity = 0;
-    orbitLine.geometry.setDrawRange(0, 0);
-    orbitLine.visible = false;
+    orbitLine.material.opacity = active ? 0.44 : orbitLine.userData.r > 1 ? 0.22 : 0.18;
+    orbitLine.geometry.setDrawRange(0, Infinity);
+    orbitLine.visible = true;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -443,7 +442,7 @@ function fit(radius = maxRadius) {
       return p.dot(overviewDirection) + Math.max(Math.abs(p.dot(right)) / (tanH * 0.78), Math.abs(p.dot(up)) / (tanV * 0.66)) + 0.8;
     }));
   }
-  if (radius === maxRadius) distance = 48;
+  if (radius === maxRadius) distance = 32;
   camera.position.copy(overviewDirection).multiplyScalar(Math.min(120, distance));
   orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
 }
@@ -659,31 +658,23 @@ function updateObservationLOD(now) {
   $('view-stage').textContent = `VIEW / ${stage}`;
   document.body.dataset.viewStage = stage.toLowerCase();
 
-  const showReference = activeReveal && distance <= 10;
-  pbShell.visible = showReference && $('pb-toggle').checked;
-  hrShell.visible = showReference && $('hr-toggle').checked;
+  pbShell.visible = $('pb-toggle').checked;
+  hrShell.visible = $('hr-toggle').checked;
   referencePlane.material.opacity = stage === 'SYSTEM' ? 0.1 : stage === 'APPROACH' ? 0.15 : 0.2;
 
   for (const [id, line] of lines) {
-    const active = activeReveal && id === selected?.id && distance <= 18 && $('lines-toggle').checked;
-    line.visible = active;
-    line.material.opacity = active ? (selected.r > 1 ? 0.46 : 0.42) : 0;
+    const control = quantitative.find((item) => item.id === id);
+    const active = activeReveal && id === selected?.id;
+    line.visible = $('lines-toggle').checked;
+    line.material.color.setHex(active ? (selected.r > 1 ? 0xa83530 : 0xd4d1ca) : control.r > 1 ? 0x6f2824 : 0x77716b);
+    line.material.opacity = active ? (selected.r > 1 ? 0.46 : 0.42) : control.r > 1 ? 0.25 : 0.2;
   }
   for (const [id, orbitLine] of riskOrbits) {
-    const orbitGate = Math.max(14, (selected?.r ?? 0) * 3.5);
-    const active = activeReveal && id === selected?.id && distance <= orbitGate && $('guides-toggle').checked;
-    orbitLine.visible = active;
-    if (!active) {
-      orbitLine.material.opacity = 0;
-      orbitLine.geometry.setDrawRange(0, 0);
-      continue;
-    }
-    if (orbitRevealStartedAt === null) orbitRevealStartedAt = now;
-    const progress = Math.min(1, (now - orbitRevealStartedAt) / 520);
-    const stepped = Math.floor(progress * 8) / 8;
-    const count = orbitLine.geometry.getAttribute('position').count;
-    orbitLine.geometry.setDrawRange(0, Math.max(2, Math.ceil(count * stepped)));
-    orbitLine.material.opacity = selected.r > 1 ? 0.44 : 0.48;
+    const active = activeReveal && id === selected?.id;
+    orbitLine.visible = $('guides-toggle').checked;
+    orbitLine.geometry.setDrawRange(0, Infinity);
+    orbitLine.material.color.setHex(active ? (selected.r > 1 ? 0xa83530 : 0xd4d1ca) : orbitLine.userData.r > 1 ? 0x6f2824 : 0x817b75);
+    orbitLine.material.opacity = active ? (selected.r > 1 ? 0.44 : 0.48) : orbitLine.userData.r > 1 ? 0.22 : 0.18;
   }
 }
 renderer.setAnimationLoop((now) => {

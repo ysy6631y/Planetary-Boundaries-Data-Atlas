@@ -2,7 +2,7 @@ COMPLETED
 - Saved git checkpoint `0401a75` before the observation-depth redesign.
 - Removed the full-width header and moved the instrument identity/validation to sparse edge UI.
 - Added deterministic far/mid/near reference-star layers and a larger layout-only reference plane; data XYZ and unified risk radii remain unchanged.
-- Added observation-distance LOD: system view hides measurement geometry, selection reveals only the selected origin-to-point edge and its true-r circle, and r=1/r=2 shells appear only at close range.
+- Preserved all origin-to-point measurement lines, true-r control circles and r=1/r=2 references in the default system view; selection changes emphasis rather than existence.
 - Changed point selection to a stepped measurement-framing transition that keeps the selected node and its complete origin-centered r circle visible, including r=7.4.
 - Made the boundary index request-driven rather than permanently visible; the inspector remains contextual.
 - Preserved pre-observer working source, tests, audit, lockfile and dist in checkpoints/phase1-before-observer-20261005/ before edits.
