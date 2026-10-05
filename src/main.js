@@ -28,7 +28,7 @@ for (const control of quantitative) {
   if (control.r.toFixed(4) !== recorded?.existing_svg_marker?.score_text) throw new Error(`${control.id}: source score mismatch`);
 }
 
-let selected = null;
+let selected = quantitative[0];
 let selectedGroup = groups[0];
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
@@ -73,7 +73,7 @@ const meshes = new Map();
 const lines = new Map();
 const colorFor = () => 0xf4f0e9;
 const lineColorFor = () => 0x77716b;
-const lightOpacityFor = (r) => r > 2 ? 0.56 : r > 1 ? 0.42 : 0.26;
+const lightOpacityFor = (r) => r > 2 ? 0.46 : r > 1 ? 0.32 : 0.13;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
 
 function rasterSignalTexture({ core, middle, outer }) {
@@ -127,11 +127,7 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineDashedMaterial({
-    color: lineColorFor(control.r), transparent: true, opacity: 0, dashSize: 0.12, gapSize: 0.08,
-  }));
-  line.computeLineDistances();
-  line.visible = false;
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.22 }));
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -152,59 +148,55 @@ for (const control of quantitative) {
   });
   const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0xdf3d35, transparent: true, opacity: 0 }),
+    new THREE.LineBasicMaterial({ color: 0x817b75, transparent: true, opacity: 0.17 }),
   );
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
   orbitLine.userData.r = control.r;
   orbitLine.renderOrder = 1;
-  orbitLine.visible = false;
   riskOrbitsRoot.add(orbitLine);
   riskOrbits.set(control.id, orbitLine);
 }
 
 // These are navigation references only. They carry no environmental values.
-const referencePlane = new THREE.GridHelper(60, 60, 0x484744, 0x1d1d1c);
-referencePlane.position.set(0, -3.5, 0);
+const referencePlane = new THREE.GridHelper(7, 14, 0x5a514b, 0x272321);
+referencePlane.position.set(0, -1.05, 0);
 referencePlane.rotation.set(-0.34, 0.18, 0.12);
 referencePlane.material.transparent = true;
-referencePlane.material.opacity = 0.17;
+referencePlane.material.opacity = 0.3;
 referencePlane.renderOrder = 1;
 scene.add(referencePlane);
 
+const starGeometry = new THREE.BufferGeometry();
+const starPositions = [];
+const starColors = [];
 let starSeed = 0x1a96;
 const random = () => {
   starSeed = (starSeed * 1664525 + 1013904223) >>> 0;
   return starSeed / 0x100000000;
 };
-function starLayer({ count, inner, outer, size, opacity, warmChance }) {
-  const geometry = new THREE.BufferGeometry();
-  const positions = [];
-  const colors = [];
-  for (let i = 0; i < count; i++) {
-    const radius = inner + random() * (outer - inner);
-    const z = random() * 2 - 1;
-    const angle = random() * Math.PI * 2;
-    const spread = Math.sqrt(1 - z * z);
-    positions.push(radius * spread * Math.cos(angle), radius * z, radius * spread * Math.sin(angle));
-    const brightness = 0.55 + random() * 0.45;
-    const warm = random() < warmChance;
-    colors.push(brightness, warm ? brightness * 0.78 : brightness, warm ? brightness * 0.66 : brightness * 0.96);
-  }
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  const points = new THREE.Points(geometry, new THREE.PointsMaterial({
-    size, sizeAttenuation: true, vertexColors: true, transparent: true, opacity, depthWrite: false,
-  }));
-  points.renderOrder = -1;
-  scene.add(points);
-  return points;
+for (let i = 0; i < 420; i++) {
+  const radius = 11 + random() * 44;
+  const z = random() * 2 - 1;
+  const angle = random() * Math.PI * 2;
+  const spread = Math.sqrt(1 - z * z);
+  starPositions.push(radius * spread * Math.cos(angle), radius * z, radius * spread * Math.sin(angle));
+  const brightness = 0.38 + random() * 0.58;
+  const warm = random() > 0.84;
+  starColors.push(brightness, warm ? brightness * 0.78 : brightness, warm ? brightness * 0.68 : brightness * 0.96);
 }
-const starFields = [
-  starLayer({ count: 960, inner: 130, outer: 460, size: 0.18, opacity: 0.72, warmChance: 0.08 }),
-  starLayer({ count: 520, inner: 40, outer: 150, size: 0.085, opacity: 0.84, warmChance: 0.12 }),
-  starLayer({ count: 190, inner: 10, outer: 55, size: 0.038, opacity: 0.94, warmChance: 0.16 }),
-];
+starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({
+  size: 0.034,
+  sizeAttenuation: true,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.76,
+  depthWrite: false,
+}));
+starField.renderOrder = -1;
+scene.add(starField);
 
 // The origin remains a mathematical anchor for validation, never a visible node.
 const origin = new THREE.Object3D();
@@ -212,18 +204,25 @@ scene.add(origin);
 const referenceGeometry = [];
 function shell(radius, color) {
   const root = new THREE.Group();
-  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.26 });
+  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.48 });
   function addCircle(points) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     root.add(new THREE.LineLoop(geometry, material));
     referenceGeometry.push({ radius, geometry });
   }
-  // A single great-circle section communicates the threshold without turning
-  // the origin into a decorative wire sphere.
-  addCircle(Array.from({ length: 160 }, (_, i) => {
-    const a = i / 160 * Math.PI * 2;
-    return new THREE.Vector3(radius * Math.sin(a), 0, radius * Math.cos(a));
-  }));
+  for (let meridian = 0; meridian < 6; meridian++) {
+    const azimuth = meridian * Math.PI / 6;
+    addCircle(Array.from({ length: 160 }, (_, i) => {
+      const a = i / 160 * Math.PI * 2;
+      return new THREE.Vector3(radius * Math.sin(a) * Math.sin(azimuth), radius * Math.cos(a), radius * Math.sin(a) * Math.cos(azimuth));
+    }));
+  }
+  for (const latitude of [-Math.PI / 3, -Math.PI / 6, 0, Math.PI / 6, Math.PI / 3]) {
+    addCircle(Array.from({ length: 160 }, (_, i) => {
+      const a = i / 160 * Math.PI * 2;
+      return new THREE.Vector3(radius * Math.cos(latitude) * Math.sin(a), radius * Math.sin(latitude), radius * Math.cos(latitude) * Math.cos(a));
+    }));
+  }
   scene.add(root);
   return root;
 }
@@ -248,7 +247,7 @@ for (const [index, group] of groups.entries()) {
     button.className = `control ${control.r === null ? 'nq' : ''}`;
     button.dataset.control = control.id;
     button.innerHTML = `<span class="name">${escape(control.raw.control_label)}</span><span class="value">${control.r === null ? 'NQ' : control.r.toFixed(4)}</span>`;
-    button.addEventListener('click', () => select(control, group, { focus: control.r !== null }));
+    button.addEventListener('click', () => select(control, group));
     wrapper.append(button);
   }
   $('group-list').append(wrapper);
@@ -277,7 +276,6 @@ const instrumentNumber = (value) => {
 
 function updateInstrument() {
   $('read-status').textContent = 'SYSTEM / ACTIVE';
-  $('read-status-top').textContent = 'SYSTEM / ACTIVE';
   $('read-status').classList.remove('reading');
   if (!selected || selected.r === null) {
     const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
@@ -308,7 +306,6 @@ let readTimer = null;
 function scheduleInstrumentRead() {
   clearTimeout(readTimer);
   $('read-status').textContent = 'READING DATA...';
-  $('read-status-top').textContent = 'READING DATA...';
   $('read-status').classList.remove('reading');
   void $('read-status').offsetWidth;
   $('read-status').classList.add('reading');
@@ -347,46 +344,34 @@ function inspect() {
   }).join('')}</div>`;
 }
 
-let activeReveal = false;
-let orbitRevealStartedAt = null;
-function select(control, group, { openPanel = true, focus = false, reveal = true } = {}) {
+function select(control, group, { openPanel = true } = {}) {
   selected = control; selectedGroup = group;
-  activeReveal = Boolean(control?.r !== null && reveal);
-  orbitRevealStartedAt = null;
   if (openPanel) $('inspector').hidden = false;
-  if (openPanel && control) {
-    $('boundaries').hidden = true;
-    $('index-toggle').setAttribute('aria-expanded', 'false');
-    $('index-toggle').textContent = 'INDEX / 09';
-  }
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
-    line.material.color.setHex(active && control.r > 1 ? 0xa83530 : 0xc9c7c1);
-    line.material.opacity = 0;
-    line.visible = false;
+    line.material.color.setHex(active ? 0xdf3d35 : lineColorFor());
+    line.material.opacity = active ? 0.72 : 0.22;
   }
   for (const [id, orbitLine] of riskOrbits) {
     const active = id === control?.id;
-    orbitLine.material.color.setHex(active && control.r > 1 ? 0xa83530 : 0xc9c7c1);
-    orbitLine.material.opacity = 0;
-    orbitLine.geometry.setDrawRange(0, 0);
-    orbitLine.visible = false;
+    const groupActive = orbitLine.userData.groupId === group.id;
+    orbitLine.material.color.setHex(active ? 0xdf3d35 : groupActive ? 0xb5afa8 : 0x817b75);
+    orbitLine.material.opacity = active ? 0.72 : groupActive ? 0.32 : 0.17;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
     point.material.color.setHex(active ? 0xf0443a : point.userData.baseColor);
     const signal = point.userData.signal;
     signal.material.map = active ? redSignal : signal.userData.baseMap;
-    signal.material.opacity = active ? 0.78 : signal.userData.baseOpacity;
+    signal.material.opacity = active ? 0.68 : signal.userData.baseOpacity;
     signal.material.needsUpdate = true;
   }
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !control || control.r === null;
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
   scheduleInstrumentRead();
-  if (focus && control?.r !== null) focusSelected();
 }
 
 function liveValidation() {
@@ -443,8 +428,7 @@ function fit(radius = maxRadius) {
       return p.dot(overviewDirection) + Math.max(Math.abs(p.dot(right)) / (tanH * 0.78), Math.abs(p.dot(up)) / (tanV * 0.66)) + 0.8;
     }));
   }
-  if (radius === maxRadius) distance = 48;
-  camera.position.copy(overviewDirection).multiplyScalar(Math.min(120, distance));
+  camera.position.copy(overviewDirection).multiplyScalar(Math.min(85, distance));
   orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
 }
 $('fit').addEventListener('click', () => fit());
@@ -452,15 +436,13 @@ $('reference-view').addEventListener('click', () => fit(2.7));
 function focusSelected() {
   if (!selected || selected.r === null) return;
   const direction = camera.position.clone().sub(orbit.target).normalize();
-  const point = new THREE.Vector3(...selected.position);
-  const target = point.clone().multiplyScalar(0.32);
-  const framingDistance = Math.max(7.2, selected.r * 3.05);
+  const target = new THREE.Vector3(...selected.position);
   focusTransition = {
     startedAt: performance.now(),
-    duration: 760,
+    duration: 420,
     fromPosition: camera.position.clone(),
     fromTarget: orbit.target.clone(),
-    toPosition: target.clone().addScaledVector(direction, framingDistance),
+    toPosition: target.clone().addScaledVector(direction, 2.5),
     toTarget: target,
   };
   orbit.enabled = false;
@@ -490,9 +472,8 @@ let down = null;
 function controlAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   raycaster.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, -(event.clientY - bounds.top) / bounds.height * 2 + 1), camera);
-  const hit = raycaster.intersectObjects([...meshes.values()], true)[0];
-  const id = hit?.object.userData.controlId ?? hit?.object.parent?.userData.controlId;
-  return id ? controlsData.find((control) => control.id === id) : null;
+  const hit = raycaster.intersectObjects([...meshes.values()])[0];
+  return hit ? controlsData.find((control) => control.id === hit.object.userData.controlId) : null;
 }
 renderer.domElement.addEventListener('pointerdown', (event) => { down = { x: event.clientX, y: event.clientY, button: event.button }; });
 renderer.domElement.addEventListener('pointerup', (event) => {
@@ -501,7 +482,7 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   if (!press || press.button !== 0 || event.button !== 0 || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5) return;
   const control = controlAtPointer(event);
   if (control) {
-    select(control, groups.find((g) => g.id === control.groupId), { focus: true });
+    select(control, groups.find((g) => g.id === control.groupId));
   }
 });
 renderer.domElement.addEventListener('pointermove', (event) => {
@@ -519,7 +500,8 @@ renderer.domElement.addEventListener('dblclick', (event) => {
   if (event.button !== 0) return;
   const control = controlAtPointer(event);
   if (!control) return;
-  select(control, groups.find((group) => group.id === control.groupId), { focus: true });
+  select(control, groups.find((group) => group.id === control.groupId));
+  focusSelected();
 });
 
 let width = 1, height = 1;
@@ -538,17 +520,10 @@ document.querySelectorAll('[data-readout-tab]').forEach((button) => {
   button.addEventListener('click', () => showReadoutTab(button.dataset.readoutTab));
 });
 $('close-inspector').addEventListener('click', () => { $('inspector').hidden = true; });
-$('index-toggle').addEventListener('click', () => {
-  const open = $('boundaries').hidden;
-  $('boundaries').hidden = !open;
-  $('index-toggle').setAttribute('aria-expanded', String(open));
-  $('index-toggle').textContent = open ? 'CLOSE / INDEX' : 'INDEX / 09';
-});
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') $('inspector').hidden = true;
 });
-resize(); fit(); select(null, selectedGroup, { openPanel: false, reveal: false });
-$('scene-selection').textContent = 'EARTH-SYSTEM FIELD';
+resize(); fit(); select(selected, selectedGroup, { openPanel: false });
 createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, X } });
 
 function observationReport() {
@@ -574,11 +549,9 @@ function positionLabels() {
       occupied.push({ x, y: y + 18, w: pointLabel.offsetWidth, h: pointLabel.offsetHeight + 12 });
     }
   }
-  const observationDistance = orbit.getDistance();
   for (const group of [selectedGroup, ...groups.filter((g) => g.id !== selectedGroup.id)]) {
     const label = groupLabels.get(group.id);
-    const selectedLabel = group.id === selectedGroup.id;
-    label.hidden = !$('labels-toggle').checked || observationDistance > 26 || (observationDistance > 13 && !selectedLabel);
+    label.hidden = !$('labels-toggle').checked;
     if (label.hidden) continue;
     const v = new THREE.Vector3(...group.direction).multiplyScalar(3.25).project(camera);
     if (v.z < -1 || v.z > 1) { label.hidden = true; continue; }
@@ -609,7 +582,7 @@ function positionSignalLights() {
     const distance = Math.max(0.01, point.getWorldPosition(new THREE.Vector3()).distanceTo(cameraPosition));
     const active = id === selected?.id;
     const baseOpacity = signal.userData.baseOpacity;
-    const targetPixels = active ? 15 : baseOpacity >= 0.5 ? 11 : baseOpacity >= 0.35 ? 9 : 7;
+    const targetPixels = active ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9;
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
     signal.scale.set(worldSize, worldSize, 1);
   }
@@ -621,10 +594,6 @@ window.__PB_DEBUG__ = {
     camera: { position: camera.position.toArray(), target: orbit.target.toArray(), fov: camera.fov, minDistance: orbit.minDistance, maxDistance: orbit.maxDistance },
     groupDirections: groups.map((g) => ({ id: g.id, direction: g.direction })),
     meshCount: meshes.size, measurementLineCount: lines.size, riskOrbitCount: riskOrbits.size,
-    visibleMeasurementLines: [...lines.values()].filter((line) => line.visible).length,
-    visibleRiskOrbits: [...riskOrbits.values()].filter((line) => line.visible).length,
-    referenceShellsVisible: { planetaryBoundary: pbShell.visible, highRisk: hrShell.visible },
-    viewStage: document.body.dataset.viewStage,
   }),
   referenceCheck: () => referenceGeometry.map(({ radius, geometry }) => {
     const a = geometry.getAttribute('position'); let maxError = 0;
@@ -642,8 +611,7 @@ let lastValidation = -Infinity;
 function updateFocusTransition(now) {
   if (!focusTransition) return;
   const t = Math.min(1, (now - focusTransition.startedAt) / focusTransition.duration);
-  const eased = t * t * (3 - 2 * t);
-  const step = t === 1 ? 1 : Math.floor(eased * 24) / 24;
+  const step = t * t * (3 - 2 * t);
   camera.position.lerpVectors(focusTransition.fromPosition, focusTransition.toPosition, step);
   orbit.target.lerpVectors(focusTransition.fromTarget, focusTransition.toTarget, step);
   if (t === 1) {
@@ -652,42 +620,8 @@ function updateFocusTransition(now) {
     orbit.enableDamping = $('damping-toggle').checked;
   }
 }
-function updateObservationLOD(now) {
-  const distance = orbit.getDistance();
-  const boundaryGate = activeReveal ? Math.max(10, selected.r * 3.2) : 10;
-  const stage = distance > 26 ? 'SYSTEM' : distance > boundaryGate ? 'APPROACH' : distance > 3.2 ? 'BOUNDARY' : 'CONTROL';
-  $('view-stage').textContent = `VIEW / ${stage}`;
-  document.body.dataset.viewStage = stage.toLowerCase();
-
-  const showReference = activeReveal && distance <= 10;
-  pbShell.visible = showReference && $('pb-toggle').checked;
-  hrShell.visible = showReference && $('hr-toggle').checked;
-  referencePlane.material.opacity = stage === 'SYSTEM' ? 0.1 : stage === 'APPROACH' ? 0.15 : 0.2;
-
-  for (const [id, line] of lines) {
-    const active = activeReveal && id === selected?.id && distance <= 18 && $('lines-toggle').checked;
-    line.visible = active;
-    line.material.opacity = active ? (selected.r > 1 ? 0.46 : 0.42) : 0;
-  }
-  for (const [id, orbitLine] of riskOrbits) {
-    const orbitGate = Math.max(14, (selected?.r ?? 0) * 3.5);
-    const active = activeReveal && id === selected?.id && distance <= orbitGate && $('guides-toggle').checked;
-    orbitLine.visible = active;
-    if (!active) {
-      orbitLine.material.opacity = 0;
-      orbitLine.geometry.setDrawRange(0, 0);
-      continue;
-    }
-    if (orbitRevealStartedAt === null) orbitRevealStartedAt = now;
-    const progress = Math.min(1, (now - orbitRevealStartedAt) / 520);
-    const stepped = Math.floor(progress * 8) / 8;
-    const count = orbitLine.geometry.getAttribute('position').count;
-    orbitLine.geometry.setDrawRange(0, Math.max(2, Math.ceil(count * stepped)));
-    orbitLine.material.opacity = selected.r > 1 ? 0.44 : 0.48;
-  }
-}
 renderer.setAnimationLoop((now) => {
-  updateFocusTransition(now); orbit.update(); updateObservationLOD(now); positionSignalLights(); positionLabels(); renderer.render(scene, camera);
+  updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
   if (now - lastValidation > 500) {
     const report = liveValidation();

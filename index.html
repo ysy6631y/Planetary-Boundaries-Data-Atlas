@@ -7,24 +7,27 @@
   <link rel="icon" href="data:," />
 </head>
 <body>
+  <header>
+    <div class="system-title"><h1>PLANETARY DATA ATLAS</h1><span>SYSTEM / ACTIVE</span></div>
+    <div class="counts"><span>GROUPS / 09</span><span>OBSERVATIONS / 11</span><span>NQ / 02</span></div>
+    <output id="validation-status">VALIDATING</output>
+  </header>
   <main>
-    <nav id="boundaries" aria-label="Boundary groups" hidden><h2>INDEX / BOUNDARIES <span>2025</span></h2><div id="group-list"></div></nav>
+    <nav id="boundaries" aria-label="Boundary groups"><h2>INDEX / BOUNDARIES <span>2025</span></h2><div id="group-list"></div></nav>
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
-      <div class="scene-top"><div class="instrument-mark"><strong>PLANETARY DATA ATLAS</strong><span id="read-status-top">SYSTEM / ACTIVE</span><span id="validation-status">VALIDATING</span></div><div class="tools" aria-label="View commands">
-        <button id="index-toggle" class="index-toggle" title="Open boundary index" aria-label="Open boundary index" aria-expanded="false">INDEX / 09</button>
+      <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span><div class="tools" aria-label="View commands">
         <button id="fit" title="Fit all data" aria-label="Fit all data"><i data-lucide="maximize"></i></button>
         <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i></button>
         <button id="focus" title="Focus selected quantitative point" aria-label="Focus selected quantitative point"><i data-lucide="crosshair"></i></button>
         <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i></button>
         <button id="export" title="Download validation JSON" aria-label="Download validation JSON"><i data-lucide="download"></i></button>
       </div></div>
-      <div class="legend" aria-label="Reference geometry">
+      <div class="legend">
         <span><b class="origin-key"></b>BASELINE <strong>R=0</strong></span>
         <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>BOUNDARY <strong>R=1</strong></label>
         <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH RISK <strong>R=2</strong></label>
       </div>
-      <div class="scene-caption"><span id="view-stage">VIEW / SYSTEM</span><strong id="scene-selection">EARTH-SYSTEM FIELD</strong><small>PROJECTION / XYZ PERSPECTIVE</small></div>
       <div class="scene-bottom"><div>OBSERVATION DISTANCE <output id="camera-distance">-</output><small>CAMERA TO TARGET / OBSERVER STATE</small></div><div class="toggles">
         <label><input id="lines-toggle" type="checkbox" checked>MEASUREMENT</label>
         <label><input id="guides-toggle" type="checkbox" checked>R ORBITS</label>
