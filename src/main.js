@@ -12,6 +12,11 @@ const $ = (id) => document.getElementById(id);
 const fmt = (n) => n === null || n === undefined ? 'NOT QUANTIFIED' : String(Number(Number(n).toPrecision(10)));
 const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const shortNames = ['CLIMATE', 'BIOSPHERE', 'LAND SYSTEM', 'FRESHWATER', 'BIOGEOCHEMICAL', 'OCEAN', 'AEROSOLS', 'OZONE', 'NOVEL ENTITIES'];
+const controlCodes = {
+  co2: 'CO2', 'radiative-forcing': 'RF', hanpp: 'HANPP', 'forest-cover': 'FOREST',
+  'blue-water': 'BLUE H2O', 'green-water': 'GREEN H2O', phosphorus: 'P', nitrogen: 'N',
+  'aragonite-saturation': 'ARAG', 'aod-difference': 'AOD', ozone: 'O3',
+};
 const groups = deepFreeze(spatialize(parseData(source)));
 const fixedState = JSON.stringify(groups);
 const controlsData = groups.flatMap((group) => group.controls);
@@ -46,6 +51,10 @@ orbit.zoomToCursor = false;
 orbit.minDistance = MIN_OBSERVATION_DISTANCE;
 orbit.maxDistance = MAX_OBSERVATION_DISTANCE;
 orbit.zoomSpeed = 1;
+orbit.mouseButtons.LEFT = null;
+orbit.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
+orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefault());
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
@@ -60,9 +69,9 @@ const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
 const meshes = new Map();
 const lines = new Map();
-const colorFor = (r) => r > 2 ? 0xf0443a : 0xf4f0e9;
-const lineColorFor = (r) => r > 1 ? 0xb83731 : 0x77716b;
-const lightOpacityFor = (r) => r > 2 ? 0.62 : r > 1 ? 0.28 : 0.07;
+const colorFor = () => 0xf4f0e9;
+const lineColorFor = () => 0x77716b;
+const lightOpacityFor = (r) => r > 2 ? 0.34 : r > 1 ? 0.22 : 0.07;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
 
 function rasterSignalTexture({ core, middle, outer }) {
@@ -101,14 +110,14 @@ for (const control of quantitative) {
   point.userData.controlId = control.id;
   point.userData.baseColor = colorFor(control.r);
   const signal = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: control.r > 2 ? redSignal : whiteSignal,
+    map: whiteSignal,
     transparent: true,
     opacity: lightOpacityFor(control.r),
     depthTest: false,
     depthWrite: false,
   }));
   signal.userData.controlId = control.id;
-  signal.userData.baseMap = control.r > 2 ? redSignal : whiteSignal;
+  signal.userData.baseMap = whiteSignal;
   signal.userData.baseOpacity = lightOpacityFor(control.r);
   signal.renderOrder = 4;
   point.userData.signal = signal;
@@ -116,39 +125,9 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 1 ? 0.48 : 0.28 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.14 }));
   linesRoot.add(line);
   lines.set(control.id, line);
-}
-
-// Hail Mary-style navigation traces: each trace ends at a real control point.
-// They are view paths, not analytical relations or extra data edges.
-const trajectoriesRoot = new THREE.Group();
-scene.add(trajectoriesRoot);
-const trajectories = new Map();
-for (const control of quantitative) {
-  const endpoint = new THREE.Vector3(...control.position);
-  const group = groups.find((item) => item.id === control.groupId);
-  const normal = new THREE.Vector3(...group.direction);
-  let tangent = new THREE.Vector3().crossVectors(endpoint.clone().normalize(), normal);
-  if (tangent.lengthSq() < 1e-8) tangent = new THREE.Vector3(0, 1, 0).cross(endpoint.clone().normalize());
-  tangent.normalize();
-  const bend = 0.22 + (Math.abs(control.offset) / (Math.PI / 60)) * 0.055;
-  const handle = endpoint.clone().multiplyScalar(0.48).addScaledVector(tangent, bend);
-  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), handle, endpoint);
-  const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(36));
-  const path = new THREE.Line(geometry, new THREE.LineDashedMaterial({
-    color: control.r > 1 ? 0x9b302c : 0x77716b,
-    transparent: true,
-    opacity: control.r > 1 ? 0.3 : 0.14,
-    dashSize: 0.045,
-    gapSize: 0.035,
-    depthTest: false,
-  }));
-  path.computeLineDistances();
-  path.renderOrder = 2;
-  trajectoriesRoot.add(path);
-  trajectories.set(control.id, path);
 }
 
 // Each quantitative control gets an origin-centered circle whose radius is its
@@ -165,15 +144,13 @@ for (const control of quantitative) {
     const angle = index / 128 * Math.PI * 2;
     return direction.clone().multiplyScalar(Math.cos(angle)).addScaledVector(tangent, Math.sin(angle)).multiplyScalar(control.r);
   });
-  const exceeded = control.r > 1;
   const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: exceeded ? 0x8f2d29 : 0x5f5953, transparent: true, opacity: exceeded ? 0.32 : 0.24 }),
+    new THREE.LineBasicMaterial({ color: 0x65615d, transparent: true, opacity: 0.1 }),
   );
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
   orbitLine.userData.r = control.r;
-  orbitLine.userData.exceeded = exceeded;
   orbitLine.renderOrder = 1;
   riskOrbitsRoot.add(orbitLine);
   riskOrbits.set(control.id, orbitLine);
@@ -289,6 +266,48 @@ function fields(rows) {
   return `<dl class="fields">${rows.map(([key, value]) => `<div><dt>${escape(key)}</dt><dd>${escape(value ?? 'NOT QUANTIFIED')}</dd></div>`).join('')}</dl>`;
 }
 
+const codeFor = (control) => controlCodes[control?.id] ?? control?.id?.toUpperCase() ?? shortNames[selectedGroup.order - 1];
+const instrumentNumber = (value) => {
+  const fixed = Number(value).toFixed(3);
+  return fixed.startsWith('0.') ? fixed.slice(1) : fixed.startsWith('-0.') ? `-${fixed.slice(2)}` : fixed;
+};
+
+function updateInstrument() {
+  $('read-status').textContent = 'SYSTEM / ACTIVE';
+  $('read-status').classList.remove('reading');
+  if (!selected || selected.r === null) {
+    const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
+    $('reference-content').innerHTML = `<div class="reference-code">${escape(code)}</div><div class="reference-name">${escape(selected?.raw.control_label ?? selectedGroup.name)}</div><div class="reference-vector">X / UNDEFINED<br>Y / UNDEFINED<br>Z / UNDEFINED<br>R / ${selected ? 'NOT QUANTIFIED' : 'NO GROUP AGGREGATE'}</div>`;
+    $('distance-list').innerHTML = '<div class="distance-row"><span class="distance-code">NO NUMERIC REFERENCE</span><span class="distance-value">--</span></div>';
+    $('distance-count').textContent = '0 DISTANCES / REFERENCE HAS NO XYZ';
+    $('relation-content').innerHTML = `<div class="relation-row"><span>GROUP</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+    inspect();
+    return;
+  }
+
+  const [x, y, z] = selected.position;
+  $('reference-content').innerHTML = `<div class="reference-code">${escape(codeFor(selected))}</div><div class="reference-name">${escape(selected.raw.control_label)} / ${escape(selectedGroup.name)}</div><div class="reference-vector">X / ${instrumentNumber(x)}<br>Y / ${instrumentNumber(y)}<br>Z / ${instrumentNumber(z)}<br>R / ${instrumentNumber(selected.r)}</div>`;
+  const distances = quantitative
+    .filter((control) => control.id !== selected.id)
+    .map((control) => ({ control, distance: new THREE.Vector3(...control.position).distanceTo(new THREE.Vector3(...selected.position)) }))
+    .sort((a, b) => a.distance - b.distance);
+  $('distance-list').innerHTML = distances.map(({ control, distance }) => `<div class="distance-row ${control.groupId === selected.groupId ? 'same-group' : ''}"><span class="distance-code">${escape(codeFor(control))}</span><span class="distance-value">DIST ${instrumentNumber(distance)}</span></div>`).join('');
+  $('distance-count').textContent = `${distances.length} OBSERVATIONS / SELECTED NODE EXCLUDED`;
+  const peers = controlsData.filter((control) => control.groupId === selected.groupId && control.id !== selected.id).map(codeFor);
+  $('relation-content').innerHTML = `<div class="relation-row"><span>MEASURE</span><span>ORIGIN -> ${escape(codeFor(selected))} / R ${instrumentNumber(selected.r)}</span></div><div class="relation-row"><span>CONTROL</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>PEER</span><span>${escape(peers.join(', ') || 'NONE')}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+  inspect();
+}
+
+let readTimer = null;
+function scheduleInstrumentRead() {
+  clearTimeout(readTimer);
+  $('read-status').textContent = 'READING DATA...';
+  $('read-status').classList.remove('reading');
+  void $('read-status').offsetWidth;
+  $('read-status').classList.add('reading');
+  readTimer = setTimeout(updateInstrument, 200);
+}
+
 function inspect() {
   if (!selected) {
     const nq = selectedGroup.controls.filter((c) => c.r === null).length;
@@ -327,21 +346,14 @@ function select(control, group) {
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
-    const risk = controlsData.find((item) => item.id === id).r;
-    line.material.color.setHex(active && risk <= 1 ? 0xd8d2ca : lineColorFor(risk));
-    line.material.opacity = active ? 0.62 : (risk > 1 ? 0.48 : 0.28);
-  }
-  for (const [id, path] of trajectories) {
-    const active = id === control?.id;
-    const risk = controlsData.find((item) => item.id === id).r;
-    path.material.color.setHex(active && risk <= 1 ? 0xd8d2ca : risk > 1 ? 0xef4037 : 0x77716b);
-    path.material.opacity = active ? 0.82 : (risk > 1 ? 0.3 : 0.14);
+    line.material.color.setHex(active ? 0xdf3d35 : lineColorFor());
+    line.material.opacity = active ? 0.58 : 0.14;
   }
   for (const [id, orbitLine] of riskOrbits) {
     const active = id === control?.id;
     const groupActive = orbitLine.userData.groupId === group.id;
-    orbitLine.material.color.setHex(orbitLine.userData.exceeded ? (active ? 0xef4037 : 0x8f2d29) : (active || groupActive ? 0xd8d2ca : 0x5f5953));
-    orbitLine.material.opacity = active ? 0.78 : groupActive ? 0.52 : orbitLine.userData.exceeded ? 0.32 : 0.24;
+    orbitLine.material.color.setHex(active ? 0xdf3d35 : groupActive ? 0x99938c : 0x65615d);
+    orbitLine.material.opacity = active ? 0.58 : groupActive ? 0.2 : 0.1;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -354,7 +366,7 @@ function select(control, group) {
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !control || control.r === null;
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
-  inspect();
+  scheduleInstrumentRead();
 }
 
 function liveValidation() {
@@ -393,7 +405,10 @@ function liveValidation() {
 
 const maxRadius = Math.max(...quantitative.map((c) => c.r));
 const overviewDirection = new THREE.Vector3(1.3, 0.8, 1.2).normalize();
+let focusTransition = null;
 function fit(radius = maxRadius) {
+  focusTransition = null;
+  orbit.enabled = true;
   orbit.enableDamping = false; orbit.update();
   orbit.target.set(0, 0, 0);
   const halfFov = Math.min(THREE.MathUtils.degToRad(camera.fov / 2), Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect));
@@ -413,14 +428,21 @@ function fit(radius = maxRadius) {
 }
 $('fit').addEventListener('click', () => fit());
 $('reference-view').addEventListener('click', () => fit(2.7));
-$('focus').addEventListener('click', () => {
+function focusSelected() {
   if (!selected || selected.r === null) return;
   const direction = camera.position.clone().sub(orbit.target).normalize();
-  orbit.enableDamping = false; orbit.update();
-  orbit.target.fromArray(selected.position);
-  camera.position.copy(orbit.target).addScaledVector(direction, 2.5);
-  orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
-});
+  const target = new THREE.Vector3(...selected.position);
+  focusTransition = {
+    startedAt: performance.now(),
+    duration: 420,
+    fromPosition: camera.position.clone(),
+    fromTarget: orbit.target.clone(),
+    toPosition: target.clone().addScaledVector(direction, 2.5),
+    toTarget: target,
+  };
+  orbit.enabled = false;
+}
+$('focus').addEventListener('click', focusSelected);
 $('align-group').addEventListener('click', () => {
   const distance = orbit.getDistance();
   orbit.enableDamping = false; orbit.update();
@@ -431,10 +453,7 @@ $('align-group').addEventListener('click', () => {
 $('pb-toggle').addEventListener('change', (e) => { pbShell.visible = e.target.checked; });
 $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.checked; });
 $('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; });
-$('guides-toggle').addEventListener('change', (e) => {
-  trajectoriesRoot.visible = e.target.checked;
-  riskOrbitsRoot.visible = e.target.checked;
-});
+$('guides-toggle').addEventListener('change', (e) => { riskOrbitsRoot.visible = e.target.checked; });
 $('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
 $('export').addEventListener('click', () => {
   const report = { createdAt: new Date().toISOString(), normalization: 'Original numeric riskScore, full precision; SVG rounding parity checked', layout: 'Fixed Fibonacci group directions; paired controls +/-3 degrees', ...liveValidation(), observer: observationReport() };
@@ -445,17 +464,39 @@ $('export').addEventListener('click', () => {
 
 const raycaster = new THREE.Raycaster();
 let down = null;
-renderer.domElement.addEventListener('pointerdown', (event) => { down = [event.clientX, event.clientY]; });
-renderer.domElement.addEventListener('pointerup', (event) => {
-  if (!down || Math.hypot(event.clientX - down[0], event.clientY - down[1]) > 5) return;
-  down = null;
+function controlAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   raycaster.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, -(event.clientY - bounds.top) / bounds.height * 2 + 1), camera);
   const hit = raycaster.intersectObjects([...meshes.values()])[0];
-  if (hit) {
-    const control = controlsData.find((c) => c.id === hit.object.userData.controlId);
+  return hit ? controlsData.find((control) => control.id === hit.object.userData.controlId) : null;
+}
+renderer.domElement.addEventListener('pointerdown', (event) => { down = { x: event.clientX, y: event.clientY, button: event.button }; });
+renderer.domElement.addEventListener('pointerup', (event) => {
+  const press = down;
+  down = null;
+  if (!press || press.button !== 0 || event.button !== 0 || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5) return;
+  const control = controlAtPointer(event);
+  if (control) {
     select(control, groups.find((g) => g.id === control.groupId));
   }
+});
+renderer.domElement.addEventListener('pointermove', (event) => {
+  if (event.buttons) { $('hover-label').hidden = true; return; }
+  const control = controlAtPointer(event);
+  if (!control) { $('hover-label').hidden = true; return; }
+  const bounds = renderer.domElement.getBoundingClientRect();
+  $('hover-label').hidden = false;
+  $('hover-label').style.left = `${event.clientX - bounds.left + 10}px`;
+  $('hover-label').style.top = `${event.clientY - bounds.top + 10}px`;
+  $('hover-label').textContent = `${codeFor(control)} / R ${instrumentNumber(control.r)}`;
+});
+renderer.domElement.addEventListener('pointerleave', () => { $('hover-label').hidden = true; });
+renderer.domElement.addEventListener('dblclick', (event) => {
+  if (event.button !== 0) return;
+  const control = controlAtPointer(event);
+  if (!control) return;
+  select(control, groups.find((group) => group.id === control.groupId));
+  focusSelected();
 });
 
 let width = 1, height = 1;
@@ -468,60 +509,11 @@ resize(); fit(); select(selected, selectedGroup);
 createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass } });
 
 function observationReport() {
-  const axisId = $('reference-axis').value === 'group' ? selectedGroup.id : 'world-y';
+  const axisId = selectedGroup.id;
   return { selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id, referenceAxisId: axisId,
     ...observe({ points: controlsData, camera, target: orbit.target,
-      axis: axisId === 'world-y' ? [0, 1, 0] : selectedGroup.direction, width, height }) };
+      axis: selectedGroup.direction, width, height }) };
 }
-
-const obsNumber = (n) => n === null || n === undefined ? 'UNDEFINED' : Number(n.toFixed(4)).toString();
-const obsVector = (v) => v ? v.map(obsNumber).join(', ') : 'UNDEFINED';
-function inspectObserver() {
-  if ($('observer-panel').hidden) return;
-  const report = observationReport();
-  const point = report.points.find((p) => p.id === selected?.id);
-  const projection = point?.projection;
-  $('observer-content').innerHTML = `<div class="state">${liveValidation().stateUnchanged ? 'DATA STATE UNCHANGED' : 'ERROR: DATA STATE CHANGED'}</div>${fields([
-    ['SEMANTIC TARGET', selected?.raw.control_label ?? selectedGroup.name],
-    ['CAMERA XYZ', obsVector(report.camera.position)], ['ORBIT PIVOT XYZ', obsVector(report.camera.target)],
-    ['CAMERA TO PIVOT', obsNumber(report.camera.observationDistance)],
-    ['VIEW DIRECTION', obsVector(report.camera.forward)], ['FOV (degrees)', camera.fov],
-    ['REFERENCE AXIS', report.referenceAxisId], ['AXIS VECTOR', obsVector(report.basis.z)],
-  ])}<h2 class="subheading">PROJECTED VIEW</h2>${fields([
-    ['POINT STATUS', point?.status ?? 'GROUP DIRECTION ONLY'],
-    ['CAMERA LOCAL XYZ', obsVector(projection?.cameraLocal)],
-    ['BEARING (degrees)', obsNumber(point?.bearing)], ['ELEVATION (degrees)', obsNumber(point?.elevation)],
-    ['CAMERA DEPTH', obsNumber(projection?.depth)],
-    ['POINT CENTER', !projection ? 'NO POSITION' : projection.inFrustum ? 'IN FRUSTUM' : projection.depth <= 0 ? 'BEHIND CAMERA' : 'OUTSIDE FRUSTUM'],
-    ['SCREEN XY (px)', obsVector(projection?.screen)],
-    ['SCREEN TO ORIGIN (px)', obsNumber(point?.screenOriginDistance)],
-    ['NEAR CENTERS (<10px)', !projection ? 'NOT APPLICABLE' : point.overlapIds.join(', ') || 'NONE'],
-    ['PROJECTION PLANE', report.projectionPlane],
-  ])}<h2 class="subheading">REFERENCE-RELATIVE / LAYOUT</h2>${fields([
-    ['AXIS LOCAL XYZ', obsVector(point?.axisCoordinates)],
-    ['AXIS ANGLE (degrees)', obsNumber(point?.axisAngle)],
-    ['DATA R (FIXED)', !selected ? 'NO REPRESENTATIVE R' : selected.r === null ? 'NOT QUANTIFIED' : fmt(selected.r)],
-  ])}`;
-}
-function showInspectorTab(id) {
-  for (const tab of ['state', 'observer']) {
-    const active = tab === id;
-    $(`${tab}-tab`).setAttribute('aria-selected', String(active));
-    $(`${tab}-tab`).tabIndex = active ? 0 : -1;
-    $(`${tab}-panel`).hidden = !active;
-  }
-  inspectObserver();
-}
-for (const id of ['state', 'observer']) {
-  $(`${id}-tab`).addEventListener('click', () => showInspectorTab(id));
-  $(`${id}-tab`).addEventListener('keydown', (event) => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next = event.key === 'Home' ? 'state' : event.key === 'End' ? 'observer' : id === 'state' ? 'observer' : 'state';
-    showInspectorTab(next); $(`${next}-tab`).focus();
-  });
-}
-$('reference-axis').addEventListener('change', inspectObserver);
 
 // HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
 function positionLabels() {
@@ -598,11 +590,21 @@ window.__PB_DEBUG__ = {
 };
 
 let lastValidation = -Infinity;
-let lastObservation = -Infinity;
+function updateFocusTransition(now) {
+  if (!focusTransition) return;
+  const t = Math.min(1, (now - focusTransition.startedAt) / focusTransition.duration);
+  const step = t * t * (3 - 2 * t);
+  camera.position.lerpVectors(focusTransition.fromPosition, focusTransition.toPosition, step);
+  orbit.target.lerpVectors(focusTransition.fromTarget, focusTransition.toTarget, step);
+  if (t === 1) {
+    focusTransition = null;
+    orbit.enabled = true;
+    orbit.enableDamping = $('damping-toggle').checked;
+  }
+}
 renderer.setAnimationLoop((now) => {
-  orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels();
+  updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
-  if (now - lastObservation > 100) { inspectObserver(); lastObservation = now; }
   if (now - lastValidation > 500) {
     const report = liveValidation();
     $('validation-status').textContent = report.failed || !report.stateUnchanged ? 'DATA VALIDATION ERROR' : `${report.passed}/11 RADIUS CHECKS PASS`;

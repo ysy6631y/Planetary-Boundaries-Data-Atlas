@@ -10,8 +10,8 @@ position zero.
 | Node state | Core / halo | Opacity |
 | --- | --- | ---: |
 | ordinary (`r <= 1`) | white core, pale gray middle, transparent dark outer band | 7% |
-| important (`1 < r <= 2`) | white core, pale gray middle, transparent dark outer band | 28% |
-| primary red (`r > 2`) | near-white core, saturated red middle, dark red outer band | 62% |
+| important (`1 < r <= 2`) | white core, pale gray middle, transparent dark outer band | 22% |
+| high risk (`r > 2`) | white core, pale gray middle, transparent dark outer band | 34% |
 | selected | near-white/red core, saturated red middle, dark red outer band | 68% |
 
 The texture is a 17x17 canvas raster with nearest-neighbor sampling, stepped
@@ -23,23 +23,21 @@ camera. The core remains approximately 1-3 pixels.
 ## Dry geometry
 
 Direct measurement lines and reference geometry use dry `LineBasicMaterial` only.
-The separate navigation traces use a thin `LineDashedMaterial` so the selected
-point can read like a plotted route in the Hail Mary reference. They are view
-paths, not analytical edges, and have no additive material, bloom, postprocessing,
-volumetric lighting or lens flare. Red line color indicates a red signal or
-current selection; line opacity changes selection emphasis but does not add glow.
+The redundant curved navigation traces were removed. Unselected measurement lines
+remain faint gray; only the selected point's measurement relation turns red. No
+line uses additive material, bloom, postprocessing, volumetric lighting or lens
+flare.
 
 Each quantitative control also has one origin-centered orbit circle. Its radius is
 the control's actual unified risk distance `r`, and the circle's plane is oriented
-so the corresponding node lies exactly on its circumference. A circle is red only
-when that control has `r > 1`; selection changes opacity, not the threshold status.
-Boundaries with two quantitative controls therefore have two circles. Qualitative
-and not-quantified controls have no circle because they have no valid numerical
-radius.
+so the corresponding node lies exactly on its circumference. Unselected circles
+remain gray; the selected circle turns red as the active reference. Boundaries
+with two quantitative controls therefore have two circles. Qualitative and
+not-quantified controls have no circle because they have no valid numerical radius.
 
 ## Data meaning
 
 The halo is a presentation signal, not an additional risk value. The existing
 `r`, XYZ positions, line endpoints and validation checks remain untouched. A red
-halo means `r > 2` or selected observation; it does not mean the camera is close,
-the point is physically luminous, or two points are related.
+halo means selected observation only; it does not mean the camera is close, the
+point is physically luminous, or two points are related.

@@ -18,6 +18,8 @@ COMPLETED
 - Saved research, data audit, final spatial logic, license notices, validation reports and screenshots.
 
 PARTIALLY COMPLETED
+- Planned multi-scale field: non-data parallax star layers remain non-interactive; actual chapter CSV rows become provenance-backed LOCAL ANALYSIS nodes revealed only near their boundary. Proposed LOD is SYSTEM FIELD -> BOUNDARY -> CONTROL -> LOCAL ANALYSIS -> RAW OBSERVATION.
+- Planned node provenance requires source row, boundary/chapter, entity, observation value/unit, XYZ derivation and edge type. Do not scatter chapter rows globally or present reference stars as data.
 - Local analysis integration is designed with separate units/provenance/metric spaces; not rendered. Metadata confirms mixed units/years and explicit XY preferences.
 - LOD hierarchy is specified; only SYSTEM/BOUNDARY/CONTROL have current inspection behavior, no automatic distance-driven analysis activation.
 - Animation review used temporal samples, not every frame of continuous playback.
@@ -38,6 +40,7 @@ BLOCKERS
 - No reusable official NASA Eyes source/license established; no NASA production code copied.
 
 NEXT ACTION
+- After the desktop observation-instrument UI, build foreground/background reference-star parallax and one reviewed local-analysis cluster without inventing coordinates or relations.
 - Review the prototype at http://127.0.0.1:5173/ and the saved screenshots.
 - Read OBSERVATION_SYSTEM.md sections 8-11 and compare State/Observer tabs before/after orbit and axis selection.
 - Reproduce checks with npm test, npm run validate, node scripts/browser-check.mjs, node scripts/observer-browser-check.mjs, npm run build (run separately).
