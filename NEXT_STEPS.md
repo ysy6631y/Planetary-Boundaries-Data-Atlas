@@ -1,4 +1,10 @@
 COMPLETED
+- Saved git checkpoint `0401a75` before the observation-depth redesign.
+- Removed the full-width header and moved the instrument identity/validation to sparse edge UI.
+- Added deterministic far/mid/near reference-star layers and a larger layout-only reference plane; data XYZ and unified risk radii remain unchanged.
+- Added observation-distance LOD: system view hides measurement geometry, selection reveals only the selected origin-to-point edge and its true-r circle, and r=1/r=2 shells appear only at close range.
+- Changed point selection to a stepped measurement-framing transition that keeps the selected node and its complete origin-centered r circle visible, including r=7.4.
+- Made the boundary index request-driven rather than permanently visible; the inspector remains contextual.
 - Preserved pre-observer working source, tests, audit, lockfile and dist in checkpoints/phase1-before-observer-20261005/ before edits.
 - Reread the entire supplied astronomy text and all 30 unique static images; inspected temporal samples of the four embedded animations.
 - Saved OBSERVATION_SYSTEM.md: 12 requested sections, A/B/C classification, three alternatives, selected B (dual-frame observation instrument).
@@ -18,7 +24,8 @@ COMPLETED
 - Saved research, data audit, final spatial logic, license notices, validation reports and screenshots.
 
 PARTIALLY COMPLETED
-- Planned multi-scale field: non-data parallax star layers remain non-interactive; actual chapter CSV rows become provenance-backed LOCAL ANALYSIS nodes revealed only near their boundary. Proposed LOD is SYSTEM FIELD -> BOUNDARY -> CONTROL -> LOCAL ANALYSIS -> RAW OBSERVATION.
+- Current LOD covers SYSTEM / APPROACH / BOUNDARY / CONTROL presentation states, but LOCAL ANALYSIS still awaits provenance-backed chapter data.
+- Multi-scale non-data reference-star layers are rendered and remain non-interactive; actual chapter CSV rows still need to become provenance-backed LOCAL ANALYSIS nodes revealed only near their boundary.
 - Planned node provenance requires source row, boundary/chapter, entity, observation value/unit, XYZ derivation and edge type. Do not scatter chapter rows globally or present reference stars as data.
 - Local analysis integration is designed with separate units/provenance/metric spaces; not rendered. Metadata confirms mixed units/years and explicit XY preferences.
 - LOD hierarchy is specified; only SYSTEM/BOUNDARY/CONTROL have current inspection behavior, no automatic distance-driven analysis activation.
@@ -28,7 +35,7 @@ PARTIALLY COMPLETED
 NOT STARTED
 - Reviewed many-to-many chapter/boundary crosswalk and evidence-backed local analytical edge records.
 - Exact glyph/edge occlusion, stored observer comparisons and projection-mode comparison.
-- Phase 2 cancellable camera/target travel transitions and multi-scale information hierarchy.
+- Phase 2 local-analysis travel transitions and the deeper LOCAL ANALYSIS / RAW OBSERVATION hierarchy.
 - Chapter detail visualization and advanced target navigation.
 - Surface topology and scientific interpretation (outside Phase 1).
 - Touch-device hardware and non-Chrome browser testing.
@@ -40,8 +47,8 @@ BLOCKERS
 - No reusable official NASA Eyes source/license established; no NASA production code copied.
 
 NEXT ACTION
+- Review the new system and selected-boundary checkpoints at http://127.0.0.1:4174/; tune brightness only after comparing both distances.
 - After the desktop observation-instrument UI, build foreground/background reference-star parallax and one reviewed local-analysis cluster without inventing coordinates or relations.
-- Review the prototype at http://127.0.0.1:5173/ and the saved screenshots.
 - Read OBSERVATION_SYSTEM.md sections 8-11 and compare State/Observer tabs before/after orbit and axis selection.
 - Reproduce checks with npm test, npm run validate, node scripts/browser-check.mjs, node scripts/observer-browser-check.mjs, npm run build (run separately).
 - Phase 2: start with one reviewed local analysis dataset with original units, then cancellable target travel/LOD, not visual polish or global renormalization.
