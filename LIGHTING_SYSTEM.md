@@ -22,10 +22,12 @@ camera. The core remains approximately 1-3 pixels.
 
 ## Dry geometry
 
-Measurement lines and reference geometry use `LineBasicMaterial` only. They have
-no additive material, bloom, postprocessing, volumetric lighting or lens flare.
-Red line color indicates a red signal or current selection; line opacity changes
-selection emphasis but does not add glow.
+Direct measurement lines and reference geometry use dry `LineBasicMaterial` only.
+The separate navigation traces use a thin `LineDashedMaterial` so the selected
+point can read like a plotted route in the Hail Mary reference. They are view
+paths, not analytical edges, and have no additive material, bloom, postprocessing,
+volumetric lighting or lens flare. Red line color indicates a red signal or
+current selection; line opacity changes selection emphasis but does not add glow.
 
 ## Data meaning
 

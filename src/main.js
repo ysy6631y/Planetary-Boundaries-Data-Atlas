@@ -58,11 +58,8 @@ const dataRoot = new THREE.Group();
 scene.add(dataRoot);
 const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
-const renderLinesRoot = new THREE.Group();
-scene.add(renderLinesRoot);
 const meshes = new Map();
 const lines = new Map();
-const renderLines = new Map();
 const colorFor = (r) => r > 2 ? 0xf0443a : 0xf4f0e9;
 const lineColorFor = (r) => r > 2 ? 0xb83731 : r > 1 ? 0x9c948b : 0x77716b;
 const lightOpacityFor = (r) => r > 2 ? 0.62 : r > 1 ? 0.28 : 0.07;
@@ -80,7 +77,7 @@ function rasterSignalTexture({ core, middle, outer }) {
     const radius = Math.hypot(x - 8, y - 8);
     const band = radius < 2.15 ? 0 : radius < 4.2 ? 1 : 2;
     const uneven = ((x * 3 + y * 5) % 4) === 0 ? 0.72 : 1;
-    const alpha = radius < 2.15 ? 255 : radius < 4.2 ? 160 : radius < 6.7 ? Math.round(55 * uneven) : 0;
+    const alpha = radius < 2.15 ? 255 : radius < 4.2 ? 214 : radius < 6.7 ? Math.round(112 * uneven) : 0;
     const offset = (y * size + x) * 4;
     image.data[offset] = colors[band][0];
     image.data[offset + 1] = colors[band][1];
@@ -119,23 +116,83 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.48 : 0.28 }));
   linesRoot.add(line);
   lines.set(control.id, line);
-
-  const endpoint = new THREE.Vector3(...control.position);
-  const direction = endpoint.clone().normalize();
-  const renderLine = new THREE.Mesh(
-    new THREE.CylinderGeometry(control.r > 2 ? 0.008 : 0.006, control.r > 2 ? 0.008 : 0.006, endpoint.length(), 5, 1, false),
-    new THREE.MeshBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.58 : 0.40 }),
-  );
-  renderLine.position.copy(endpoint).multiplyScalar(.5);
-  renderLine.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-  renderLinesRoot.add(renderLine);
-  renderLines.set(control.id, renderLine);
 }
 
-const origin = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+// Hail Mary-style navigation traces: each trace ends at a real control point.
+// They are view paths, not analytical relations or extra data edges.
+const trajectoriesRoot = new THREE.Group();
+scene.add(trajectoriesRoot);
+const trajectories = new Map();
+for (const control of quantitative) {
+  const endpoint = new THREE.Vector3(...control.position);
+  const group = groups.find((item) => item.id === control.groupId);
+  const normal = new THREE.Vector3(...group.direction);
+  let tangent = new THREE.Vector3().crossVectors(endpoint.clone().normalize(), normal);
+  if (tangent.lengthSq() < 1e-8) tangent = new THREE.Vector3(0, 1, 0).cross(endpoint.clone().normalize());
+  tangent.normalize();
+  const bend = 0.22 + (Math.abs(control.offset) / (Math.PI / 60)) * 0.055;
+  const handle = endpoint.clone().multiplyScalar(0.48).addScaledVector(tangent, bend);
+  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(), handle, endpoint);
+  const geometry = new THREE.BufferGeometry().setFromPoints(curve.getPoints(36));
+  const path = new THREE.Line(geometry, new THREE.LineDashedMaterial({
+    color: control.r > 2 ? 0x9b302c : 0x77716b,
+    transparent: true,
+    opacity: control.r > 2 ? 0.3 : 0.14,
+    dashSize: 0.045,
+    gapSize: 0.035,
+    depthTest: false,
+  }));
+  path.computeLineDistances();
+  path.renderOrder = 2;
+  trajectoriesRoot.add(path);
+  trajectories.set(control.id, path);
+}
+
+// These are navigation references only. They carry no environmental values.
+const referencePlane = new THREE.GridHelper(7, 14, 0x5a514b, 0x272321);
+referencePlane.position.set(0, -1.05, 0);
+referencePlane.rotation.set(-0.34, 0.18, 0.12);
+referencePlane.material.transparent = true;
+referencePlane.material.opacity = 0.22;
+referencePlane.renderOrder = 1;
+scene.add(referencePlane);
+
+const starGeometry = new THREE.BufferGeometry();
+const starPositions = [];
+const starColors = [];
+let starSeed = 0x1a96;
+const random = () => {
+  starSeed = (starSeed * 1664525 + 1013904223) >>> 0;
+  return starSeed / 0x100000000;
+};
+for (let i = 0; i < 420; i++) {
+  const radius = 11 + random() * 44;
+  const z = random() * 2 - 1;
+  const angle = random() * Math.PI * 2;
+  const spread = Math.sqrt(1 - z * z);
+  starPositions.push(radius * spread * Math.cos(angle), radius * z, radius * spread * Math.sin(angle));
+  const brightness = 0.28 + random() * 0.55;
+  const warm = random() > 0.84;
+  starColors.push(brightness, warm ? brightness * 0.78 : brightness, warm ? brightness * 0.68 : brightness * 0.96);
+}
+starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({
+  size: 0.026,
+  sizeAttenuation: true,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.62,
+  depthWrite: false,
+}));
+starField.renderOrder = -1;
+scene.add(starField);
+
+// The origin remains a mathematical anchor for validation, never a visible node.
+const origin = new THREE.Object3D();
 scene.add(origin);
 const referenceGeometry = [];
 function shell(radius, color) {
@@ -240,10 +297,15 @@ function select(control, group) {
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
-    line.material.color.setHex(active ? 0xf0443a : lineColorFor(controlsData.find((item) => item.id === id).r));
-    const renderLine = renderLines.get(id);
-    renderLine.material.opacity = active ? 0.92 : (meshes.get(id).userData.baseColor === 0xf0443a ? 0.58 : 0.40);
-    renderLine.material.color.setHex(active ? 0xf0443a : lineColorFor(controlsData.find((item) => item.id === id).r));
+    const risk = controlsData.find((item) => item.id === id).r;
+    line.material.color.setHex(active ? 0xf0443a : lineColorFor(risk));
+    line.material.opacity = active ? 0.62 : (risk > 2 ? 0.48 : 0.28);
+  }
+  for (const [id, path] of trajectories) {
+    const active = id === control?.id;
+    const risk = controlsData.find((item) => item.id === id).r;
+    path.material.color.setHex(active ? 0xef4037 : risk > 2 ? 0x9b302c : 0x77716b);
+    path.material.opacity = active ? 0.82 : (risk > 2 ? 0.3 : 0.14);
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -323,7 +385,7 @@ $('align-group').addEventListener('click', () => {
 });
 $('pb-toggle').addEventListener('change', (e) => { pbShell.visible = e.target.checked; });
 $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.checked; });
-$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; renderLinesRoot.visible = e.target.checked; });
+$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; trajectoriesRoot.visible = e.target.checked; });
 $('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
 $('export').addEventListener('click', () => {
   const report = { createdAt: new Date().toISOString(), normalization: 'Original numeric riskScore, full precision; SVG rounding parity checked', layout: 'Fixed Fibonacci group directions; paired controls +/-3 degrees', ...liveValidation(), observer: observationReport() };
@@ -460,7 +522,8 @@ function positionSignalLights() {
     const signal = point.userData.signal;
     const distance = Math.max(0.01, point.getWorldPosition(new THREE.Vector3()).distanceTo(cameraPosition));
     const active = id === selected?.id;
-    const targetPixels = active ? 16 : point.userData.baseColor === 0xf0443a ? 14 : point.userData.baseColor === 0xf4f0e9 && point.userData.signal.userData.baseOpacity > .1 ? 11 : 9;
+    const baseOpacity = signal.userData.baseOpacity;
+    const targetPixels = active ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9;
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
     signal.scale.set(worldSize, worldSize, 1);
   }
