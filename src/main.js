@@ -240,14 +240,14 @@ for (const [index, group] of groups.entries()) {
   title.className = 'group-title';
   title.dataset.group = group.id;
   title.innerHTML = `<span class="number">${String(group.order).padStart(2, '0')}</span><span>${escape(group.name)}</span>`;
-  title.addEventListener('click', () => select(null, group));
+  title.addEventListener('click', () => { select(null, group); focusGroup(group); });
   wrapper.append(title);
   for (const control of group.controls) {
     const button = document.createElement('button');
     button.className = `control ${control.r === null ? 'nq' : ''}`;
     button.dataset.control = control.id;
     button.innerHTML = `<span class="name">${escape(control.raw.control_label)}</span><span class="value">${control.r === null ? 'NQ' : control.r.toFixed(4)}</span>`;
-    button.addEventListener('click', () => { select(control, group); closeIndex(); });
+    button.addEventListener('click', () => { select(control, group); focusSelected(); closeIndex(); });
     wrapper.append(button);
   }
   $('group-list').append(wrapper);
@@ -256,7 +256,7 @@ for (const [index, group] of groups.entries()) {
   label.className = `group-label ${nq ? 'nq' : ''}`;
   label.title = 'Boundary direction label; layout anchor only, no representative data radius';
   label.innerHTML = `${String(group.order).padStart(2, '0')} ${shortNames[index]}${nq ? `<small>${nq} NOT QUANTIFIED</small>` : ''}`;
-  label.addEventListener('click', () => select(null, group));
+  label.addEventListener('click', () => { select(null, group); focusGroup(group); });
   $('labels').append(label);
   groupLabels.set(group.id, label);
 }
@@ -493,14 +493,22 @@ $('fit').addEventListener('click', () => fit());
 $('reference-view').addEventListener('click', () => fit(2.7));
 function focusSelected() {
   if (!selected || selected.r === null) return;
+  focusAt(new THREE.Vector3(...selected.position));
+}
+function focusGroup(group) {
+  const points = group.controls.filter((control) => control.position);
+  if (!points.length) return;
+  const center = points.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(points.length);
+  focusAt(center, Math.max(3.2, ...points.map((control) => new THREE.Vector3(...control.position).distanceTo(center) * 3.2)));
+}
+function focusAt(target, distance = 2.5) {
   const direction = camera.position.clone().sub(orbit.target).normalize();
-  const target = new THREE.Vector3(...selected.position);
   focusTransition = {
     startedAt: performance.now(),
-    duration: 420,
+    duration: 950,
     fromPosition: camera.position.clone(),
     fromTarget: orbit.target.clone(),
-    toPosition: target.clone().addScaledVector(direction, 2.5),
+    toPosition: target.clone().addScaledVector(direction, distance),
     toTarget: target,
   };
   orbit.enabled = false;
@@ -541,6 +549,7 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   const control = controlAtPointer(event);
   if (control) {
     select(control, groups.find((g) => g.id === control.groupId));
+    focusSelected();
   }
 });
 renderer.domElement.addEventListener('pointermove', (event) => {
