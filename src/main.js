@@ -58,8 +58,11 @@ const dataRoot = new THREE.Group();
 scene.add(dataRoot);
 const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
+const renderLinesRoot = new THREE.Group();
+scene.add(renderLinesRoot);
 const meshes = new Map();
 const lines = new Map();
+const renderLines = new Map();
 const colorFor = (r) => r > 2 ? 0xf0443a : 0xf4f0e9;
 const lineColorFor = (r) => r > 2 ? 0xb83731 : r > 1 ? 0x9c948b : 0x77716b;
 const lightOpacityFor = (r) => r > 2 ? 0.62 : r > 1 ? 0.28 : 0.07;
@@ -95,7 +98,8 @@ const whiteSignal = rasterSignalTexture({ core: '#ffffff', middle: '#c9c4bc', ou
 const redSignal = rasterSignalTexture({ core: '#fff3ec', middle: '#ed4138', outer: '#681815' });
 
 for (const control of quantitative) {
-  const point = new THREE.Mesh(glyph, new THREE.MeshBasicMaterial({ color: colorFor(control.r) }));
+  // Keep the existing pickable node geometry, but let the raster sprite carry the visible light.
+  const point = new THREE.Mesh(glyph, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false }));
   point.position.fromArray(control.position);
   point.userData.controlId = control.id;
   point.userData.baseColor = colorFor(control.r);
@@ -115,9 +119,20 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.52 : 0.30 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0 }));
   linesRoot.add(line);
   lines.set(control.id, line);
+
+  const endpoint = new THREE.Vector3(...control.position);
+  const direction = endpoint.clone().normalize();
+  const renderLine = new THREE.Mesh(
+    new THREE.CylinderGeometry(control.r > 2 ? 0.008 : 0.006, control.r > 2 ? 0.008 : 0.006, endpoint.length(), 5, 1, false),
+    new THREE.MeshBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: control.r > 2 ? 0.58 : 0.40 }),
+  );
+  renderLine.position.copy(endpoint).multiplyScalar(.5);
+  renderLine.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+  renderLinesRoot.add(renderLine);
+  renderLines.set(control.id, renderLine);
 }
 
 const origin = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffffff }));
@@ -225,8 +240,10 @@ function select(control, group) {
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
-    line.material.opacity = active ? 0.92 : (meshes.get(id).userData.baseColor === 0xf0443a ? 0.52 : 0.30);
     line.material.color.setHex(active ? 0xf0443a : lineColorFor(controlsData.find((item) => item.id === id).r));
+    const renderLine = renderLines.get(id);
+    renderLine.material.opacity = active ? 0.92 : (meshes.get(id).userData.baseColor === 0xf0443a ? 0.58 : 0.40);
+    renderLine.material.color.setHex(active ? 0xf0443a : lineColorFor(controlsData.find((item) => item.id === id).r));
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -306,7 +323,7 @@ $('align-group').addEventListener('click', () => {
 });
 $('pb-toggle').addEventListener('change', (e) => { pbShell.visible = e.target.checked; });
 $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.checked; });
-$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; });
+$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; renderLinesRoot.visible = e.target.checked; });
 $('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
 $('export').addEventListener('click', () => {
   const report = { createdAt: new Date().toISOString(), normalization: 'Original numeric riskScore, full precision; SVG rounding parity checked', layout: 'Fixed Fibonacci group directions; paired controls +/-3 degrees', ...liveValidation(), observer: observationReport() };
@@ -398,7 +415,7 @@ $('reference-axis').addEventListener('change', inspectObserver);
 // HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
 function positionLabels() {
   const occupied = [];
-  selectionRing.visible = selected?.r !== null && !!selected;
+  selectionRing.visible = false;
   pointLabel.hidden = true;
   if (selectionRing.visible) {
     selectionRing.position.fromArray(selected.position); selectionRing.quaternion.copy(camera.quaternion);

@@ -47,6 +47,7 @@ canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 .group-label.selected { color: #fff; border-color: #ef4037; }
 .group-label small { display: block; font-size: 9px; }
 .point-label { position: absolute; transform: translate(-50%, 8px); color: #fff; background: #210b09; border: 1px solid #803029; white-space: nowrap; padding: 3px 5px; font: 11px monospace; }
+.group-label, .point-label, .legend, .scene-bottom, footer, dt, .check, .sources, .tools button { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
 .scene-top { position: absolute; top: 16px; left: 18px; right: 18px; display: flex; align-items: center; gap: 10px; justify-content: space-between; pointer-events: none; }
 #scene-selection { font-size: 11px; color: #d2cbc2; max-width: 55%; line-height: 1.5; }
