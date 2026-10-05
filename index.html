@@ -8,12 +8,13 @@
 </head>
 <body>
   <header>
-    <div class="system-title"><h1>PLANETARY DATA ATLAS</h1><span>SYSTEM / ACTIVE</span></div>
-    <div class="counts"><span>GROUPS / 09</span><span>OBSERVATIONS / 11</span><span>NQ / 02</span></div>
-    <output id="validation-status">VALIDATING</output>
+    <div class="system-title"><h1>PLANETARY DATA ATLAS</h1></div>
   </header>
   <main>
-    <nav id="boundaries" aria-label="Boundary groups"><h2>INDEX / BOUNDARIES <span>2025</span></h2><div id="group-list"></div></nav>
+    <nav id="boundaries" aria-label="Boundary groups">
+      <button id="index-trigger" class="index-trigger" aria-expanded="false" aria-controls="group-list">INDEX <span aria-hidden="true">+</span></button>
+      <div class="index-sheet"><h2>INDEX / BOUNDARIES <span>2025</span></h2><div id="group-list"></div></div>
+    </nav>
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
       <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span><div class="tools" aria-label="View commands">
@@ -21,35 +22,38 @@
         <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i></button>
         <button id="focus" title="Focus selected quantitative point" aria-label="Focus selected quantitative point"><i data-lucide="crosshair"></i></button>
         <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i></button>
-        <button id="export" title="Download validation JSON" aria-label="Download validation JSON"><i data-lucide="download"></i></button>
       </div></div>
       <div class="legend">
         <span><b class="origin-key"></b>BASELINE <strong>R=0</strong></span>
         <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>BOUNDARY <strong>R=1</strong></label>
         <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH RISK <strong>R=2</strong></label>
       </div>
-      <div class="scene-bottom"><div>OBSERVATION DISTANCE <output id="camera-distance">-</output><small>CAMERA TO TARGET / OBSERVER STATE</small></div><div class="toggles">
+      <div class="scene-bottom"><div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance">-</output><small>CAMERA TO TARGET</small></div><div id="observer-controls" class="observer-controls" hidden><div class="projection-status" aria-label="Projected view readout">
+        <span>FRAME <output id="observer-frame">GROUP AXIS</output></span>
+        <span>BEARING <output id="observer-bearing">--</output></span>
+        <span>ELEVATION <output id="observer-elevation">--</output></span>
+        <span>DEPTH <output id="observer-depth">--</output></span>
+      </div><div class="toggles">
         <label><input id="lines-toggle" type="checkbox" checked>MEASUREMENT</label>
         <label><input id="guides-toggle" type="checkbox" checked>R ORBITS</label>
         <label><input id="labels-toggle" type="checkbox" checked>LABELS</label>
         <label><input id="damping-toggle" type="checkbox" checked>DAMPING</label>
-      </div></div>
+      </div><div class="readout-actions"><output id="validation-status">VALIDATING</output><button id="export" title="Download validation JSON" aria-label="Download validation JSON"><i data-lucide="download"></i> OUTPUT</button></div></div><button id="readout-trigger" class="readout-trigger" aria-expanded="false" aria-controls="observer-controls">READOUT <span aria-hidden="true">+</span></button></div>
       <div id="hover-label" class="hover-label" hidden></div>
       <div id="webgl-error" role="alert" hidden></div>
     </section>
     <aside id="inspector" aria-label="Selection readout" hidden>
-      <div class="panel-head"><div><div id="read-status" class="read-status">SYSTEM / ACTIVE</div><div id="panel-reference">REFERENCE / --</div></div><button id="close-inspector" aria-label="Close readout" title="Close readout"><i data-lucide="x"></i></button></div>
+      <div class="panel-head"><div><div id="read-status" class="read-status">DATA READY</div><div id="panel-reference">REFERENCE / --</div></div><button id="close-inspector" aria-label="Close readout" title="Close readout"><i data-lucide="x"></i></button></div>
       <div class="instrument-tabs" role="tablist" aria-label="Selection data views">
         <button data-readout-tab="reference" role="tab" aria-selected="true">REFERENCE</button>
         <button data-readout-tab="distance" role="tab" aria-selected="false">DISTANCE</button>
         <button data-readout-tab="data" role="tab" aria-selected="false">DATA</button>
       </div>
-      <section id="reference-readout" class="instrument-view" role="tabpanel"><h2>REFERENCE</h2><div id="reference-content"></div><h2 class="secondary-heading">RELATIONS</h2><div id="relation-content"></div></section>
+      <section id="reference-readout" class="instrument-view" role="tabpanel"><h2>REFERENCE</h2><div id="reference-content"></div><h2 class="secondary-heading">OBSERVER FRAME <span>DERIVED</span></h2><div id="observer-content"></div><h2 class="secondary-heading">RELATIONS</h2><div id="relation-content"></div></section>
       <section id="distance-readout" class="instrument-view" role="tabpanel" hidden><h2>DISTANCE <span>NORMALIZED XYZ</span></h2><div id="distance-list" class="distance-list"></div><div id="distance-count" class="section-count"></div></section>
       <section id="data-readout" class="instrument-view data-readout" role="tabpanel" hidden><h2>DATA / VALIDATION</h2><div id="inspect-content"></div></section>
     </aside>
   </main>
-  <footer><span id="runtime-status">READ / SOURCE DATA</span><span>COMPUTE / XYZ</span><span>PROJECT / PERSPECTIVE</span><span>OUTPUT / ACTIVE</span></footer>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

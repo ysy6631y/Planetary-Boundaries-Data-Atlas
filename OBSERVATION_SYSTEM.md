@@ -258,3 +258,33 @@ Checkpoint: `checkpoints/phase1-before-observer-20261005/` (source + runnable di
 선정한 B의 최소 검증 기능만 적용한다. 새 환경 데이터, 새 normalization,
 global-local analytical edge, timeline, surface, visual polish는 이번 변경 범위가 아니다.
 완료 상태와 검증 산출물은 `NEXT_STEPS.md`, `VALIDATION.md`에서 갱신한다.
+
+## Prototype application after visual restore
+
+2026-10-05 재적용 범위는 visual redesign이 아니라 관측 로직 계측이다.
+복원된 geometry, point positions, origin-to-point measurement lines, r-orbits,
+reference shells, node scale은 유지한다.
+
+적용한 천문 개념은 다음 세 가지로 제한한다.
+
+| 원리 | 앱에서의 계산 | 데이터 보존 규칙 |
+|---|---|---|
+| 관측자 중심 좌표 | `camera.matrixWorldInverse`로 world point를 camera-local point로 변환 | `control.position`과 `r`은 수정하지 않는다. |
+| 기준축/기준면 | 선택 boundary direction으로 `axisFrame()`을 만들고 local XYZ와 axis angle 계산 | group direction은 layout parameter이며 과학적 방위/원인축이 아니다. |
+| 투영/겉보기 변화 | camera image plane의 screen x/y, depth, bearing, elevation, overlap list 계산 | 화면 겹침/깊이/방위는 relation이나 risk score가 아니다. |
+
+UI에는 `OBSERVER FRAME / DERIVED` readout과 하단 projected readout을 추가한다.
+`DATA STATE`는 `R`과 fixed world XYZ를 표시하고,
+`LOCAL FRAME`, `SIGHTLINE`, `DEPTH`, `SCREEN`, `OVERLAP`은 observer-dependent
+값으로 분리한다. 카메라 orbit 또는 wheel dolly는 이 derived 값만 바꾼다.
+
+이 변경으로 사용자가 테스트할 수 있는 핵심 명제:
+
+1. 같은 node를 선택한 채 회전하면 `BEARING / ELEVATION / SCREEN / DEPTH`가 바뀐다.
+2. 같은 회전에서 `R`과 validation의 `WORLD |position|`은 바뀌지 않는다.
+3. `ALIGN GROUP`으로 reference axis를 바꾸면 local frame readout이 바뀐다.
+4. NQ boundary/control은 direction context는 있지만 `NO XYZ`로 남는다.
+
+향후 이 readout은 NASA Eyes식 깊이 navigation이나 local analysis layer를 붙일 때
+좌표계 전환을 설명하는 계기판 역할을 한다. 아직 시간축, 가짜 orbit animation,
+국가/관측값 star field, analytical edges는 추가하지 않는다.

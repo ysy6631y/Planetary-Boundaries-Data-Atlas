@@ -247,7 +247,7 @@ for (const [index, group] of groups.entries()) {
     button.className = `control ${control.r === null ? 'nq' : ''}`;
     button.dataset.control = control.id;
     button.innerHTML = `<span class="name">${escape(control.raw.control_label)}</span><span class="value">${control.r === null ? 'NQ' : control.r.toFixed(4)}</span>`;
-    button.addEventListener('click', () => select(control, group));
+    button.addEventListener('click', () => { select(control, group); closeIndex(); });
     wrapper.append(button);
   }
   $('group-list').append(wrapper);
@@ -260,6 +260,31 @@ for (const [index, group] of groups.entries()) {
   $('labels').append(label);
   groupLabels.set(group.id, label);
 }
+const indexNav = $('boundaries');
+const indexTrigger = $('index-trigger');
+function closeIndex() {
+  indexNav.classList.remove('open');
+  indexTrigger.setAttribute('aria-expanded', 'false');
+  if (indexNav.contains(document.activeElement)) document.activeElement.blur();
+}
+indexTrigger.addEventListener('click', () => {
+  const open = !indexNav.classList.contains('open');
+  indexNav.classList.toggle('open', open);
+  indexTrigger.setAttribute('aria-expanded', String(open));
+});
+document.addEventListener('pointerdown', (event) => {
+  if (!indexNav.contains(event.target)) closeIndex();
+});
+indexNav.addEventListener('mouseleave', () => {
+  if (!indexNav.matches(':focus-within')) closeIndex();
+});
+document.querySelectorAll('.group-title').forEach((button) => button.addEventListener('click', closeIndex));
+const readoutTrigger = $('readout-trigger');
+readoutTrigger.addEventListener('click', () => {
+  const open = $('observer-controls').hidden;
+  $('observer-controls').hidden = !open;
+  readoutTrigger.setAttribute('aria-expanded', String(open));
+});
 const pointLabel = document.createElement('div');
 pointLabel.className = 'point-label';
 $('labels').append(pointLabel);
@@ -273,9 +298,40 @@ const instrumentNumber = (value) => {
   const fixed = Number(value).toFixed(3);
   return fixed.startsWith('0.') ? fixed.slice(1) : fixed.startsWith('-0.') ? `-${fixed.slice(2)}` : fixed;
 };
+const angleNumber = (value) => value === null || value === undefined ? '--' : `${instrumentNumber(value)} DEG`;
+const observerValue = (value) => value === null || value === undefined ? '--' : instrumentNumber(value);
+
+function selectedObservation() {
+  const report = observationReport();
+  const point = report.points.find((entry) => entry.id === selected?.id) ?? null;
+  return { report, point };
+}
+
+function observerRows({ point, report }) {
+  const axis = report.basis.z;
+  const frameName = selectedGroup ? shortNames[selectedGroup.order - 1] : 'GROUP AXIS';
+  if (!selected || selected.r === null || !point) {
+    return `<div class="observer-grid">
+      <div class="observer-row fixed"><span>STATE</span><span>${selected ? 'NOT QUANTIFIED / NO XYZ' : 'GROUP DIRECTION ONLY'}</span></div>
+      <div class="observer-row derived"><span>FRAME</span><span>${escape(frameName)} / AXIS ${axis.map(observerValue).join(' ')}</span></div>
+      <div class="observer-row derived"><span>PROJECTED</span><span>NO POINT PROJECTION</span></div>
+    </div>`;
+  }
+  const [lx, ly, lz] = point.axisCoordinates;
+  const screen = point.projection?.screen;
+  return `<div class="observer-grid">
+    <div class="observer-row fixed"><span>DATA STATE</span><span>R ${instrumentNumber(selected.r)} / WORLD XYZ FIXED</span></div>
+    <div class="observer-row derived"><span>LOCAL FRAME</span><span>${escape(frameName)} / X ${instrumentNumber(lx)} Y ${instrumentNumber(ly)} Z ${instrumentNumber(lz)}</span></div>
+    <div class="observer-row derived"><span>AXIS ANGLE</span><span>${angleNumber(point.axisAngle)} / CHANGES WITH REFERENCE AXIS</span></div>
+    <div class="observer-row derived"><span>SIGHTLINE</span><span>BEARING ${angleNumber(point.bearing)} / ELEV ${angleNumber(point.elevation)}</span></div>
+    <div class="observer-row derived"><span>DEPTH</span><span>${observerValue(point.projection?.depth)} / CAMERA IMAGE PLANE</span></div>
+    <div class="observer-row derived"><span>SCREEN</span><span>${screen ? `X ${observerValue(screen[0])} Y ${observerValue(screen[1])}` : 'OUT OF VIEW'} / CSS PX</span></div>
+    <div class="observer-row derived"><span>OVERLAP</span><span>${point.overlapIds.length ? point.overlapIds.map((id) => codeFor(controlsData.find((control) => control.id === id))).join(', ') : 'NONE'}</span></div>
+  </div>`;
+}
 
 function updateInstrument() {
-  $('read-status').textContent = 'SYSTEM / ACTIVE';
+  $('read-status').textContent = 'DATA READY';
   $('read-status').classList.remove('reading');
   if (!selected || selected.r === null) {
     const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
@@ -284,6 +340,7 @@ function updateInstrument() {
     $('distance-list').innerHTML = '<div class="distance-row"><span class="distance-code">NO NUMERIC REFERENCE</span><span class="distance-value">--</span></div>';
     $('distance-count').textContent = '0 DISTANCES / REFERENCE HAS NO XYZ';
     $('relation-content').innerHTML = `<div class="relation-row"><span>GROUP</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+    $('observer-content').innerHTML = observerRows(selectedObservation());
     inspect();
     return;
   }
@@ -299,6 +356,7 @@ function updateInstrument() {
   $('distance-count').textContent = `${distances.length} OBSERVATIONS / SELECTED NODE EXCLUDED`;
   const peers = controlsData.filter((control) => control.groupId === selected.groupId && control.id !== selected.id).map(codeFor);
   $('relation-content').innerHTML = `<div class="relation-row"><span>MEASURE</span><span>ORIGIN -> ${escape(codeFor(selected))} / R ${instrumentNumber(selected.r)}</span></div><div class="relation-row"><span>CONTROL</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>PEER</span><span>${escape(peers.join(', ') || 'NONE')}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+  $('observer-content').innerHTML = observerRows(selectedObservation());
   inspect();
 }
 
@@ -588,6 +646,15 @@ function positionSignalLights() {
   }
 }
 
+function updateProjectionReadout() {
+  const { point } = selectedObservation();
+  $('observer-frame').textContent = shortNames[selectedGroup.order - 1];
+  $('observer-bearing').textContent = angleNumber(point?.bearing);
+  $('observer-elevation').textContent = angleNumber(point?.elevation);
+  $('observer-depth').textContent = observerValue(point?.projection?.depth);
+  if (!$('inspector').hidden) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
+}
+
 window.__PB_DEBUG__ = {
   observation: observationReport,
   snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
@@ -621,13 +688,12 @@ function updateFocusTransition(now) {
   }
 }
 renderer.setAnimationLoop((now) => {
-  updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels();
+  updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels(); updateProjectionReadout();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
   if (now - lastValidation > 500) {
     const report = liveValidation();
     $('validation-status').textContent = report.failed || !report.stateUnchanged ? 'DATA VALIDATION ERROR' : `${report.passed}/11 RADIUS CHECKS PASS`;
     $('validation-status').classList.toggle('fail', report.failed > 0 || !report.stateUnchanged);
-    $('runtime-status').textContent = `CPU + GPU / ${report.notQuantified} NQ / ${report.stateUnchanged ? 'STATE UNCHANGED' : 'STATE ERROR'}`;
     if (report.failed) inspect();
     lastValidation = now;
   }
