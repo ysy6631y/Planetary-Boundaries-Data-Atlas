@@ -65,7 +65,7 @@ changes, local norm invariance, behind/at-camera and vertical singularities,
 CSS-pixel scaling, exponential dolly direction/unit conversion/clamps.
 
 `validation/observer-browser-check.json` passes in Chrome/Playwright:
-- Downward 100px wheel reduces camera-pivot distance by 3.921%; FOV and pivot unchanged.
+- Downward 100px wheel reduces camera-pivot distance by 1.587%; FOV and pivot unchanged. Limits are 0.25 and 240.
 - Orbit changes bearing/screen coordinates, not world XYZ/r or angle to an unchanged axis.
 - Reference-axis changes preserve transformed norms and the camera.
 - NQ controls have null projected/axis coordinates; direction alignment uses origin pivot.

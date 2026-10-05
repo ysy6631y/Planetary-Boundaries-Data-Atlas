@@ -116,7 +116,7 @@ try {
   assert.ok(Math.abs((await snapshot()).observationDistance - initial.camera.minDistance) < 1e-8);
   await page.mouse.wheel(0, -100000); await page.waitForTimeout(200);
   assert.ok(Math.abs((await snapshot()).observationDistance - initial.camera.maxDistance) < 1e-8);
-  report.checks.push('Wheel minDistance=0.25 and maxDistance=90 clamps verified');
+  report.checks.push('Wheel minDistance=0.25 and maxDistance=240 clamps verified');
   await page.locator('#reference-view').click();
   await capture('desktop-references');
   const downloadPromise = page.waitForEvent('download');

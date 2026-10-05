@@ -5,7 +5,7 @@ import source from '../audit/planetary-boundaries.source.json';
 import existingAudit from '../audit/controls.json';
 import { parseData } from './data.js';
 import { spatialize, validatePosition, GPU_TOLERANCE } from './spatial.js';
-import { deepFreeze, observe, wheelDistance } from './observation.js';
+import { deepFreeze, observe, wheelDistance, MIN_OBSERVATION_DISTANCE, MAX_OBSERVATION_DISTANCE } from './observation.js';
 import './style.css';
 
 const $ = (id) => document.getElementById(id);
@@ -25,7 +25,7 @@ let selected = quantitative[0];
 let selectedGroup = groups[0];
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
-const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 500);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 2000);
 let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
@@ -43,8 +43,8 @@ orbit.enableDamping = true;
 orbit.dampingFactor = 0.07;
 orbit.enablePan = false;
 orbit.zoomToCursor = false;
-orbit.minDistance = 0.25;
-orbit.maxDistance = 90;
+orbit.minDistance = MIN_OBSERVATION_DISTANCE;
+orbit.maxDistance = MAX_OBSERVATION_DISTANCE;
 orbit.zoomSpeed = 1;
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();

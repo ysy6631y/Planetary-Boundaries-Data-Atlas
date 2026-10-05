@@ -148,8 +148,8 @@ group direction 정렬, 좁은 wheel step, 원본/좌표 불변성 검사. UI �
 
 Wheel은 canvas 위에서만 page scroll 대신 dolly로 해석한다. 요청대로 deltaY>0이면
 inward, <0이면 outward. CSS pixel로 deltaMode를 통일한다.
-`d_next = clamp(d * exp(-0.0004 * deltaPixels), 0.25, 90)`.
-100px 한 입력의 inward 이동은 약 3.9%다. d=40이면 약 1.57, d=1이면 약 .039.
+`d_next = clamp(d * exp(-0.00016 * deltaPixels), 0.25, 240)`.
+100px 한 입력의 inward 이동은 약 1.59%다. d=40이면 약 .635, d=1이면 약 .016.
 이는 기존 위험 점수의 log 변환이 아니라 camera 거리의 비선형 입력 응답이다.
 크게 모인 delta도 같은 합산 법칙을 사용한다. 공중 flight가 아니라 선택 pivot로의 접근이며
 near bound에 도달하면 멈춘다. 밖에서 wheel은 일반 page scroll로 남긴다.

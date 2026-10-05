@@ -25,7 +25,7 @@ Browser check expects the dev server on 5173 and installed Google Chrome. For a 
 
 - Left list selects any of 9 groups or 13 controls, including non-quantified controls.
 - Quantitative glyphs in the canvas can be selected directly.
-- Drag orbits; wheel down moves inward, wheel up retreats. Small exponential steps slow in absolute distance near the target. Observation distance is camera-to-target distance, not risk.
+- Drag orbits; wheel down moves inward, wheel up retreats. A 100px wheel input changes observation distance by about 1.59%, with a 0.25-240 range, so system-to-point travel takes substantially longer. Observation distance is camera-to-target distance, not risk.
 - Toolbar icons: fit all data, frame r=1/r=2 shells, focus quantitative point, align selected group direction, export validation JSON. Hover exposes titles.
 - Shells and measurement lines can be toggled. Focus is disabled for groups/NQ states because no numeric target exists.
 - Every quantitative inspector shows raw input, thresholds, direction, unified score, r, angles, XYZ and world-space radius validation.

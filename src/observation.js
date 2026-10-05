@@ -1,5 +1,9 @@
 import { Vector3, MathUtils } from 'three';
 
+export const DOLLY_RATE = 0.00016;
+export const MIN_OBSERVATION_DISTANCE = 0.25;
+export const MAX_OBSERVATION_DISTANCE = 240;
+
 export function deepFreeze(value) {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
     for (const child of Object.values(value)) deepFreeze(child);
@@ -18,10 +22,10 @@ export function axisFrame(direction) {
   return { x: x.toArray(), y: y.toArray(), z: z.toArray(), origin: [0, 0, 0] };
 }
 
-export function wheelDistance(distance, deltaY, deltaMode, height, min = .25, max = 90) {
+export function wheelDistance(distance, deltaY, deltaMode, height, min = MIN_OBSERVATION_DISTANCE, max = MAX_OBSERVATION_DISTANCE) {
   const pixels = deltaY * (deltaMode === 1 ? 16 : deltaMode === 2 ? height : 1);
   // Bound the exponent, not the data or the accumulated input distance.
-  return MathUtils.clamp(distance * Math.exp(MathUtils.clamp(-.0004 * pixels, -50, 50)), min, max);
+  return MathUtils.clamp(distance * Math.exp(MathUtils.clamp(-DOLLY_RATE * pixels, -50, 50)), min, max);
 }
 
 function projectPoint(position, camera, width, height) {

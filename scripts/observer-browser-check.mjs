@@ -31,11 +31,11 @@ try {
   await page.mouse.move(canvas.x + canvas.width * .65, canvas.y + canvas.height * .6);
   await page.mouse.wheel(0, 100); await page.waitForTimeout(300);
   const zoom = await observation();
-  assert.ok(Math.abs(zoom.camera.observationDistance / before.camera.observationDistance - Math.exp(-.04)) < 1e-8);
+  assert.ok(Math.abs(zoom.camera.observationDistance / before.camera.observationDistance - Math.exp(-.016)) < 1e-8);
   assert.deepEqual(zoom.camera.target, before.camera.target);
   assert.equal(zoom.camera.fov, before.camera.fov);
   assert.deepEqual(coordinates(await state()), coordinates(baseline));
-  report.checks.push('One downward 100px wheel reduces observation distance by 3.921%, same FOV/target/data');
+  report.checks.push('One downward 100px wheel reduces observation distance by 1.587%, same FOV/target/data');
   await page.mouse.down();
   await page.mouse.move(canvas.x + canvas.width * .85, canvas.y + canvas.height * .69, { steps: 12 });
   await page.mouse.up(); await page.waitForTimeout(1800);

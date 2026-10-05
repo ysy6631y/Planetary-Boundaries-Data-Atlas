@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { deepFreeze, axisFrame, observe, wheelDistance } from '../src/observation.js';
+import { deepFreeze, axisFrame, observe, wheelDistance, DOLLY_RATE, MAX_OBSERVATION_DISTANCE } from '../src/observation.js';
 
 function fixture() {
   const camera = new PerspectiveCamera(50, 1, .01, 100);
@@ -83,12 +83,13 @@ test('CSS-pixel projection scales with viewport, never with data state', () => {
 });
 
 test('wheel down is inward; fine exponential dolly has smaller absolute steps nearby and hard bounds', () => {
+  assert.equal(wheelDistance(40, 100, 0, 800), 40 * Math.exp(-DOLLY_RATE * 100));
   assert.ok(wheelDistance(40, 100, 0, 800) < 40);
   assert.ok(wheelDistance(40, -100, 0, 800) > 40);
   assert.ok(40 - wheelDistance(40, 100, 0, 800) > 1 - wheelDistance(1, 100, 0, 800));
   assert.equal(wheelDistance(40, 1, 1, 800), wheelDistance(40, 16, 0, 800));
   assert.equal(wheelDistance(40, 1, 2, 800), wheelDistance(40, 800, 0, 800));
   assert.equal(wheelDistance(40, 1e6, 0, 800), .25);
-  assert.equal(wheelDistance(1, -1e6, 0, 800), 90);
+  assert.equal(wheelDistance(1, -1e6, 0, 800), MAX_OBSERVATION_DISTANCE);
   assert.ok(Math.abs(wheelDistance(wheelDistance(40, 50, 0, 800), 50, 0, 800) - wheelDistance(40, 100, 0, 800)) < 1e-12);
 });
