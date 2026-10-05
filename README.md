@@ -2,16 +2,6 @@
 
 9 boundary groups, 11 quantitative control points, 2 non-quantitative states. No boundary aggregation, fabricated missing values, data radius clipping or UI-pixel normalization.
 
-## Atlas system date
-
-The current visual output is `PLANETARY DATA ATLAS / SYSTEM DATE 1996`: an
-alternative historical scientific Web3D system, not a retro-styled modern site.
-`SYSTEM DATE / 1996` is interface fiction only; `SOURCE / 2025` remains visible
-in the app and the supplied data is not historically relabelled. See
-`ATLAS_1996_SYSTEM.md` for the color, light, geometry, interaction and explicit
-non-goal rules. The red signal is reserved for boundary/pressure/selection/system
-status; it is not decorative.
-
 ## Run
 
 ```sh

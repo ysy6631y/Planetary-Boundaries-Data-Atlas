@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createIcons, Maximize, Scan, Crosshair, Download, Compass } from 'lucide';
 import source from '../audit/planetary-boundaries.source.json';
 import existingAudit from '../audit/controls.json';
 import { parseData } from './data.js';
@@ -39,8 +40,7 @@ renderer.domElement.setAttribute('aria-label', 'Planetary boundary quantitative 
 $('scene').append(renderer.domElement);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.enableDamping = true;
-orbit.dampingFactor = 0.12;
-orbit.rotateSpeed = 0.55;
+orbit.dampingFactor = 0.07;
 orbit.enablePan = false;
 orbit.zoomToCursor = false;
 orbit.minDistance = 0.25;
@@ -60,44 +60,13 @@ const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
 const meshes = new Map();
 const lines = new Map();
-const colorFor = (r) => r > 2 ? 0xf14238 : r <= 1 ? 0xf2eee7 : 0xbab5af;
+const colorFor = (r) => r <= 1 ? 0x7fdcba : r <= 2 ? 0xe2d2a3 : 0xef917f;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
-
-function rasterSignalTexture(core, middle, outer) {
-  const size = 17;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const context = canvas.getContext('2d');
-  const image = context.createImageData(size, size);
-  const parse = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
-  const colors = [parse(core), parse(middle), parse(outer)];
-  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
-    const radius = Math.hypot(x - 8, y - 8);
-    const pixel = (y * size + x) * 4;
-    const band = radius < 2.2 ? 0 : radius < 4.4 ? 1 : 2;
-    const alpha = radius < 2.2 ? 255 : radius < 4.4 ? 185 : radius < 6.7 ? 76 : 0;
-    image.data[pixel] = colors[band][0]; image.data[pixel + 1] = colors[band][1]; image.data[pixel + 2] = colors[band][2]; image.data[pixel + 3] = alpha;
-  }
-  context.putImageData(image, 0, 0);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.magFilter = THREE.NearestFilter;
-  texture.minFilter = THREE.NearestFilter;
-  texture.generateMipmaps = false;
-  return texture;
-}
-const neutralSignal = rasterSignalTexture('#fffaf2', '#d8d1c7', '#4a302d');
-const redSignal = rasterSignalTexture('#ffe3da', '#ee493e', '#4d1616');
 
 for (const control of quantitative) {
   const point = new THREE.Mesh(glyph, new THREE.MeshBasicMaterial({ color: colorFor(control.r) }));
   point.position.fromArray(control.position);
   point.userData.controlId = control.id;
-  point.userData.baseColor = colorFor(control.r);
-  const signal = new THREE.Sprite(new THREE.SpriteMaterial({ map: control.r > 2 ? redSignal : neutralSignal, transparent: true, depthWrite: false }));
-  signal.scale.setScalar(control.r > 2 ? .36 : .25);
-  signal.renderOrder = 2;
-  point.add(signal);
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
@@ -133,9 +102,9 @@ function shell(radius, color) {
   scene.add(root);
   return root;
 }
-const pbShell = shell(1, 0x8e2f2a);
-const hrShell = shell(2, 0xf14238);
-const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.078, 0.087, 16), new THREE.MeshBasicMaterial({ color: 0xf14238, side: THREE.DoubleSide, depthTest: false }));
+const pbShell = shell(1, 0x6dd3b0);
+const hrShell = shell(2, 0xd194ef);
+const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.078, 0.087, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: false }));
 selectionRing.renderOrder = 10;
 scene.add(selectionRing);
 
@@ -209,11 +178,7 @@ function select(control, group) {
   selected = control; selectedGroup = group;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
-  for (const [id, line] of lines) {
-    line.material.opacity = id === control?.id ? .96 : .28;
-    line.material.color.setHex(id === control?.id ? 0xf14238 : meshes.get(id).userData.baseColor);
-  }
-  for (const [id, point] of meshes) point.material.color.setHex(id === control?.id ? 0xf14238 : point.userData.baseColor);
+  for (const [id, line] of lines) line.material.opacity = id === control?.id ? 0.95 : 0.38;
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !control || control.r === null;
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
@@ -315,6 +280,7 @@ function resize() {
 }
 new ResizeObserver(resize).observe($('viewport'));
 resize(); fit(); select(selected, selectedGroup);
+createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass } });
 
 function observationReport() {
   const axisId = $('reference-axis').value === 'group' ? selectedGroup.id : 'world-y';
