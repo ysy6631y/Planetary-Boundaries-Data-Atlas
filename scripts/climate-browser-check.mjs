@@ -14,6 +14,8 @@ try {
   await page.goto('http://127.0.0.1:4174/');
   await page.waitForFunction(() => window.__PB_DEBUG__);
   const initial = await page.evaluate(() => window.__PB_DEBUG__.snapshot());
+  assert.equal((await page.evaluate(() => window.__PB_DEBUG__.climate())).active, true);
+  assert.ok(initial.camera.position.some((value, axis) => Math.abs(value - initial.camera.target[axis]) > 0));
   const point = await page.evaluate(() => window.__PB_DEBUG__.project('co2'));
   await page.mouse.click(point.x, point.y);
   await page.waitForTimeout(2000);
@@ -63,14 +65,15 @@ try {
   assert.equal(after.failed, 0); assert.equal(after.stateUnchanged, true);
   assert.deepEqual(after.points.map((p) => p.position), initial.points.map((p) => p.position));
   await page.locator('#fit').click();
-  assert.equal((await page.evaluate(() => window.__PB_DEBUG__.climate())).active, false);
+  assert.equal((await page.evaluate(() => window.__PB_DEBUG__.climate())).active, true);
+  assert.ok((await page.evaluate(() => window.__PB_DEBUG__.snapshot().camera.position.reduce((sum, value, axis) => sum + (value - window.__PB_DEBUG__.snapshot().camera.target[axis]) ** 2, 0))) > 100);
   await page.setViewportSize({ width: 1920, height: 1080 });
   await page.locator('#index-trigger').click();
   await page.locator('[data-control="radiative-forcing"]').click();
   await page.waitForTimeout(1900);
   await page.screenshot({ path: 'validation/climate-wide.png' });
   assert.deepEqual(errors, []);
-  report.checks = ['120 raster lights', 'country picking and raw readout', 'linear/log display', 'optional convex extent', 'orbit and wheel preserve positions', '11 PB radii unchanged', 'overview exit', '1440 and 1920 desktop screenshots', 'no JS or shader errors'];
+  report.checks = ['120 small country points', 'country picking and raw readout', 'linear/log display', 'optional convex extent', 'orbit and wheel preserve positions', '11 PB radii unchanged', 'full view preserves climate field', '1440 and 1920 desktop screenshots', 'no JS or shader errors'];
   await writeFile('validation/climate-check.json', JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report));
 } finally { await browser.close(); }

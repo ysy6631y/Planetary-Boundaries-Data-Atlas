@@ -27,8 +27,9 @@ The country field is LOCAL ANALYSIS, with no assigned PB risk distance.
 
 - Default: X linear, Y and Z log10 (all supplied emission values are positive).
 - LINEAR selects untransformed axes. Neither mode changes the original values.
-- Each display axis is affinely mapped to an extent of 8 x 6 x 8 scene units.
-- The field has a single fixed atlas anchor at climate direction x 18. This is a
+- Each display axis is affinely mapped to an 8 x 6 x 8 local extent, then displayed
+  at 0.36 scale beside the climate chapter.
+- The field has a single fixed atlas anchor at climate direction x 3.5. This is a
   layout location, not a boundary aggregate, scientific distance or country risk.
 - CO2 and RF open the same contextual chapter field at the same anchor. The field
   does not claim country emissions directly determine either global control value.
@@ -42,9 +43,15 @@ correlation, or a validated country similarity metric.
 
 ## Light and navigation
 
-The camera travels to the fixed field in 1.5 seconds. Nodes fade in at fixed positions;
-they do not expand from the selected point. Wheel/drag can interrupt camera travel.
-Each country is a camera-facing raster light, with a small core and a screen-size cap.
+The initial view is framed on the climate field. Selecting the climate chapter
+returns to that close view; Full view shows the entire atlas without hiding the field.
+Wheel/drag can interrupt camera motion.
+Each country is a camera-facing point with a bounded screen size.
+The local X, Y and Z axis guides and field label show why the observations occupy
+this display position. They are display coordinates, not PB risk axes.
+Red solid links join quantified controls within the same boundary chapter.
+The dashed climate link marks the placement of the local country field beside
+that chapter; it does not represent causation or a measured risk distance.
 Brightness depends on view depth, not environmental importance. Selection alone adds
 red light. Labels are limited and culled to avoid the inspector and other labels.
 

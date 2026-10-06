@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { createIcons, Maximize, Scan, Crosshair, Download, Compass, X } from 'lucide';
+import { createIcons, Maximize, Scan, Crosshair, Download, Compass, Eye, EyeOff, X } from 'lucide';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import source from '../audit/planetary-boundaries.source.json';
@@ -108,6 +108,16 @@ function rasterSignalTexture({ core, middle, outer }) {
 }
 const whiteSignal = rasterSignalTexture({ core: '#ffffff', middle: '#c9c4bc', outer: '#5b504a' });
 const redSignal = rasterSignalTexture({ core: '#fff3ec', middle: '#ed4138', outer: '#681815' });
+const glowCanvas = document.createElement('canvas');
+glowCanvas.width = glowCanvas.height = 64;
+const glowContext = glowCanvas.getContext('2d');
+const glowGradient = glowContext.createRadialGradient(32, 32, 2, 32, 32, 32);
+glowGradient.addColorStop(0, 'rgba(255,91,70,.58)');
+glowGradient.addColorStop(.24, 'rgba(226,43,34,.25)');
+glowGradient.addColorStop(1, 'rgba(226,43,34,0)');
+glowContext.fillStyle = glowGradient;
+glowContext.fillRect(0, 0, 64, 64);
+const redGlow = new THREE.CanvasTexture(glowCanvas);
 
 for (const control of quantitative) {
   // Keep the existing pickable node geometry, but let the raster sprite carry the visible light.
@@ -126,8 +136,11 @@ for (const control of quantitative) {
   signal.userData.baseMap = whiteSignal;
   signal.userData.baseOpacity = lightOpacityFor(control.r);
   signal.renderOrder = 4;
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: redGlow, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false }));
+  glow.renderOrder = 3;
+  point.userData.glow = glow;
   point.userData.signal = signal;
-  point.add(signal);
+  point.add(glow, signal);
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
@@ -135,6 +148,27 @@ for (const control of quantitative) {
   linesRoot.add(line);
   lines.set(control.id, line);
 }
+
+const relatedLinks = new Map();
+for (const group of groups) {
+  const members = group.controls.filter((control) => control.position);
+  if (members.length < 2) continue;
+  const geometry = new THREE.BufferGeometry().setFromPoints(members.map((control) => new THREE.Vector3(...control.position)));
+  const link = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0xf05a4d, transparent: true, opacity: .82, depthWrite: false }));
+  link.visible = false;
+  link.renderOrder = 5;
+  scene.add(link);
+  relatedLinks.set(group.id, link);
+}
+const climateMembers = groups[0].controls.filter((control) => control.position);
+const climateMidpoint = climateMembers.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(climateMembers.length);
+const climateChapterLink = new THREE.Line(
+  new THREE.BufferGeometry().setFromPoints([climateMidpoint, climate.root.position]),
+  new THREE.LineDashedMaterial({ color: 0xd4473e, transparent: true, opacity: .48, dashSize: .075, gapSize: .055, depthWrite: false }),
+);
+climateChapterLink.computeLineDistances();
+climateChapterLink.visible = false;
+scene.add(climateChapterLink);
 
 // Each quantitative control gets an origin-centered circle whose radius is its
 // actual unified distance. Angle zero is the node itself, so the circle passes
@@ -435,12 +469,16 @@ function select(control, group, { openPanel = true } = {}) {
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
+    const related = group.controls.some((entry) => entry.id === id);
     point.material.color.setHex(active ? 0xf0443a : point.userData.baseColor);
     const signal = point.userData.signal;
-    signal.material.map = active ? redSignal : signal.userData.baseMap;
-    signal.material.opacity = active ? 0.68 : signal.userData.baseOpacity;
+    signal.material.map = related ? redSignal : signal.userData.baseMap;
+    signal.material.opacity = active ? .82 : related ? .58 : signal.userData.baseOpacity;
     signal.material.needsUpdate = true;
+    point.userData.glow.material.opacity = active ? .7 : related ? .36 : 0;
   }
+  for (const [id, link] of relatedLinks) link.visible = id === group.id;
+  climateChapterLink.visible = climate.active;
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !control || control.r === null;
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
@@ -486,9 +524,6 @@ const overviewDirection = new THREE.Vector3(1.3, 0.8, 1.2).normalize();
 let focusTransition = null;
 function fit(radius = maxRadius) {
   if (climate.active) $('inspector').hidden = true;
-  climate.activate(false);
-  $('local-field').hidden = true;
-  $('risk-ruler').hidden = true;
   focusTransition = null;
   orbit.enabled = true;
   orbit.enableDamping = false; orbit.update();
@@ -512,11 +547,11 @@ $('fit').addEventListener('click', () => fit());
 $('reference-view').addEventListener('click', () => fit(2.7));
 function focusSelected() {
   if (!selected || selected.r === null) return;
-  if (climate.active) { focusAt(climate.root.position.clone(), 11.5); return; }
+  if (climate.active) { focusAt(climate.root.position.clone(), 6.8); return; }
   focusAt(new THREE.Vector3(...selected.position));
 }
 function focusGroup(group) {
-  if (climate.active && group.id === 'climate-change') { focusAt(climate.root.position.clone(), 11.5); return; }
+  if (climate.active && group.id === 'climate-change') { focusAt(climate.root.position.clone(), 6.8); return; }
   const points = group.controls.filter((control) => control.position);
   if (!points.length) return;
   const center = points.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(points.length);
@@ -528,7 +563,7 @@ function focusAt(target, distance = 2.5) {
   const direction = camera.position.clone().sub(orbit.target).normalize();
   focusTransition = {
     startedAt: performance.now(),
-    duration: climate.active ? 1500 : 950,
+    duration: 950,
     fromPosition: camera.position.clone(),
     fromTarget: orbit.target.clone(),
     toPosition: target.clone().addScaledVector(direction, distance),
@@ -659,11 +694,24 @@ document.querySelectorAll('[data-readout-tab]').forEach((button) => {
   button.addEventListener('click', () => showReadoutTab(button.dataset.readoutTab));
 });
 $('close-inspector').addEventListener('click', () => { $('inspector').hidden = true; });
+const uiToggle = $('ui-toggle');
+function setUiHidden(hidden) {
+  document.body.classList.toggle('ui-hidden', hidden);
+  uiToggle.setAttribute('aria-pressed', String(hidden));
+  uiToggle.setAttribute('aria-label', hidden ? 'Show interface' : 'Hide interface');
+  uiToggle.title = hidden ? 'Show interface' : 'Hide interface';
+  if (hidden) closeIndex();
+}
+uiToggle.addEventListener('click', () => setUiHidden(!document.body.classList.contains('ui-hidden')));
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') $('inspector').hidden = true;
+  if (event.key.toLowerCase() === 'h' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) setUiHidden(!document.body.classList.contains('ui-hidden'));
 });
-resize(); fit(); select(selected, selectedGroup, { openPanel: false });
-createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, X } });
+resize(); fit(); select(selected, selectedGroup);
+orbit.target.copy(climate.root.position);
+camera.position.copy(climate.root.position).addScaledVector(overviewDirection, 6.8);
+orbit.update();
+createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, Eye, EyeOff, X } });
 
 function observationReport() {
   const axisId = selectedGroup.id;
@@ -724,6 +772,7 @@ function positionSignalLights() {
     const targetPixels = active ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9;
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
     signal.scale.set(worldSize, worldSize, 1);
+    point.userData.glow.scale.set(worldSize * 4.5, worldSize * 4.5, 1);
   }
 }
 
