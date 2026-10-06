@@ -1,4 +1,5 @@
 COMPLETED
+- Climate-only local field: 120 original country XYZ rows, fixed atlas anchor, tiny raster lights, click/hover provenance, LINEAR/LOG axes, optional convex extent, separate PB r ruler. See CLIMATE_FIELD.md. Checkpoint c826b9e preserves pre-field state.
 - Preserved pre-observer working source, tests, audit, lockfile and dist in checkpoints/phase1-before-observer-20261005/ before edits.
 - Reread the entire supplied astronomy text and all 30 unique static images; inspected temporal samples of the four embedded animations.
 - Saved OBSERVATION_SYSTEM.md: 12 requested sections, A/B/C classification, three alternatives, selected B (dual-frame observation instrument).
@@ -18,6 +19,7 @@ COMPLETED
 - Saved research, data audit, final spatial logic, license notices, validation reports and screenshots.
 
 PARTIALLY COMPLETED
+- The older local-analysis planning entries below remain applicable to other boundaries; the climate pilot is implemented. Its 120-country cohort cannot inherit the different 89-country red/final-reading results.
 - Planned multi-scale field: non-data parallax star layers remain non-interactive; actual chapter CSV rows become provenance-backed LOCAL ANALYSIS nodes revealed only near their boundary. Proposed LOD is SYSTEM FIELD -> BOUNDARY -> CONTROL -> LOCAL ANALYSIS -> RAW OBSERVATION.
 - Planned node provenance requires source row, boundary/chapter, entity, observation value/unit, XYZ derivation and edge type. Do not scatter chapter rows globally or present reference stars as data.
 - Local analysis integration is designed with separate units/provenance/metric spaces; not rendered. Metadata confirms mixed units/years and explicit XY preferences.

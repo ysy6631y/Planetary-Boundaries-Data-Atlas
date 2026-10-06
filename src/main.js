@@ -5,6 +5,8 @@ import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import source from '../audit/planetary-boundaries.source.json';
 import existingAudit from '../audit/controls.json';
+import climateField from './climate-field.generated.json';
+import { createClimateLayer } from './climate-layer.js';
 import { parseData } from './data.js';
 import { spatialize, validatePosition, GPU_TOLERANCE } from './spatial.js';
 import { deepFreeze, observe, wheelDistance, MIN_OBSERVATION_DISTANCE, MAX_OBSERVATION_DISTANCE } from './observation.js';
@@ -60,6 +62,7 @@ renderer.domElement.addEventListener('contextmenu', (event) => event.preventDefa
 renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
+  cancelFocus();
   const current = orbit.getDistance();
   const next = wheelDistance(current, event.deltaY, event.deltaMode, renderer.domElement.clientHeight, orbit.minDistance, orbit.maxDistance);
   if (next < current) orbit.dollyIn(next / current);
@@ -69,6 +72,7 @@ const dataRoot = new THREE.Group();
 scene.add(dataRoot);
 const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
+const climate = createClimateLayer(climateField, groups[0].direction, scene, $('labels'));
 const meshes = new Map();
 const lines = new Map();
 const colorFor = () => 0xf4f0e9;
@@ -333,6 +337,7 @@ function observerRows({ point, report }) {
 function updateInstrument() {
   $('read-status').textContent = 'DATA READY';
   $('read-status').classList.remove('reading');
+  if (climate.active && climate.selectedIndex >= 0) { inspectCountry(); return; }
   if (!selected || selected.r === null) {
     const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
     $('panel-reference').textContent = `REFERENCE / ${code}`;
@@ -404,7 +409,17 @@ function inspect() {
 
 function select(control, group, { openPanel = true } = {}) {
   selected = control; selectedGroup = group;
-  if (openPanel) $('inspector').hidden = false;
+  climate.activate(group.id === 'climate-change' && openPanel);
+  climate.select(-1);
+  $('local-field').hidden = !climate.active;
+  $('risk-ruler').hidden = !climate.active || control?.r == null;
+  if (climate.active && control?.r != null) {
+    $('risk-value').textContent = `${codeFor(control)} / R ${control.r.toFixed(3)}`;
+    $('risk-mark').style.bottom = `${control.r * 24}px`;
+    $('risk-stem').style.height = `${control.r * 24}px`;
+  }
+  if (openPanel) $('inspector').hidden = climate.active;
+  $('hover-label').hidden = true;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
@@ -470,6 +485,10 @@ const maxRadius = Math.max(...quantitative.map((c) => c.r));
 const overviewDirection = new THREE.Vector3(1.3, 0.8, 1.2).normalize();
 let focusTransition = null;
 function fit(radius = maxRadius) {
+  if (climate.active) $('inspector').hidden = true;
+  climate.activate(false);
+  $('local-field').hidden = true;
+  $('risk-ruler').hidden = true;
   focusTransition = null;
   orbit.enabled = true;
   orbit.enableDamping = false; orbit.update();
@@ -493,19 +512,23 @@ $('fit').addEventListener('click', () => fit());
 $('reference-view').addEventListener('click', () => fit(2.7));
 function focusSelected() {
   if (!selected || selected.r === null) return;
+  if (climate.active) { focusAt(climate.root.position.clone(), 11.5); return; }
   focusAt(new THREE.Vector3(...selected.position));
 }
 function focusGroup(group) {
+  if (climate.active && group.id === 'climate-change') { focusAt(climate.root.position.clone(), 11.5); return; }
   const points = group.controls.filter((control) => control.position);
   if (!points.length) return;
   const center = points.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(points.length);
   focusAt(center, Math.max(3.2, ...points.map((control) => new THREE.Vector3(...control.position).distanceTo(center) * 3.2)));
 }
 function focusAt(target, distance = 2.5) {
+  orbit.enableDamping = false;
+  orbit.update();
   const direction = camera.position.clone().sub(orbit.target).normalize();
   focusTransition = {
     startedAt: performance.now(),
-    duration: 950,
+    duration: climate.active ? 1500 : 950,
     fromPosition: camera.position.clone(),
     fromTarget: orbit.target.clone(),
     toPosition: target.clone().addScaledVector(direction, distance),
@@ -514,6 +537,11 @@ function focusAt(target, distance = 2.5) {
   orbit.enabled = false;
 }
 $('focus').addEventListener('click', focusSelected);
+$('climate-scale').addEventListener('change', (event) => {
+  climate.setMode(event.target.value);
+  if (climate.selectedIndex >= 0) inspectCountry();
+});
+$('climate-surface').addEventListener('change', (event) => climate.setSurface(event.target.checked));
 $('align-group').addEventListener('click', () => {
   const distance = orbit.getDistance();
   orbit.enableDamping = false; orbit.update();
@@ -535,17 +563,48 @@ $('export').addEventListener('click', () => {
 
 const raycaster = new THREE.Raycaster();
 let down = null;
+function cancelFocus() {
+  if (!focusTransition) return;
+  focusTransition = null;
+  orbit.enabled = true;
+  orbit.enableDamping = $('damping-toggle').checked;
+}
+function climateAtPointer(event) {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  return climate.pick(event.clientX - bounds.left, event.clientY - bounds.top, camera, bounds.width, bounds.height);
+}
+function inspectCountry() {
+  const row = climateField.observations[climate.selectedIndex];
+  if (!row) return;
+  $('panel-reference').textContent = `OBSERVATION / ${row.code}`;
+  $('read-status').textContent = 'LOCAL ANALYSIS';
+  $('reference-content').innerHTML = `<div class="reference-code">${escape(row.code)}</div><div class="reference-name">${escape(row.label.split(' / ')[0])}</div>${fields(climateField.axes.map((axis, i) => [axis, fmt(row.xyz[i])]))}`;
+  $('observer-content').innerHTML = `<div class="note">${escape(climate.mode.toUpperCase())} AXES / LOCAL ANALYSIS<br>COUNTRY VALUES / NO PLANETARY R</div>`;
+  $('relation-content').innerHTML = '<div class="note">ATMOSPHERIC PRESSURE / SHARED ANALYSIS<br>NO COUNTRY-TO-COUNTRY RELATIONS SUPPLIED</div>';
+  $('distance-list').innerHTML = '<div class="note">LOCAL DISPLAY AXES HAVE DIFFERENT UNITS. NO RISK DISTANCE ASSIGNED.</div>';
+  $('distance-count').textContent = '120 COUNTRY OBSERVATIONS';
+  $('inspect-content').innerHTML = `${fields([['SOURCE ROW', climate.selectedIndex + 2], ['ORIGINAL LABEL', row.label], ['ARCHIVE / FILE', climateField.source], ['DISPLAY TRANSFORM', climate.mode === 'log' ? 'X linear; Y and Z log10; each axis scaled to local extent' : 'Each axis linearly scaled to local extent'], ['ATLAS ANCHOR', 'Layout only; not a risk distance'], ['EXTENT', 'Convex envelope; not a correlation or risk surface']])}`;
+}
 function controlAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   raycaster.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, -(event.clientY - bounds.top) / bounds.height * 2 + 1), camera);
   const hit = raycaster.intersectObjects([...meshes.values()])[0];
   return hit ? controlsData.find((control) => control.id === hit.object.userData.controlId) : null;
 }
+renderer.domElement.addEventListener('pointerdown', cancelFocus, { capture: true });
 renderer.domElement.addEventListener('pointerdown', (event) => { down = { x: event.clientX, y: event.clientY, button: event.button }; });
 renderer.domElement.addEventListener('pointerup', (event) => {
   const press = down;
   down = null;
   if (!press || press.button !== 0 || event.button !== 0 || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5) return;
+  const local = climateAtPointer(event);
+  if (local) {
+    clearTimeout(readTimer);
+    climate.select(local.index);
+    $('inspector').hidden = false;
+    showReadoutTab('reference'); inspectCountry();
+    return;
+  }
   const control = controlAtPointer(event);
   if (control) {
     select(control, groups.find((g) => g.id === control.groupId));
@@ -554,6 +613,17 @@ renderer.domElement.addEventListener('pointerup', (event) => {
 });
 renderer.domElement.addEventListener('pointermove', (event) => {
   if (event.buttons) { $('hover-label').hidden = true; return; }
+  const local = climateAtPointer(event);
+  if (local) {
+    const row = climateField.observations[local.index];
+    $('hover-label').hidden = false;
+    $('hover-label').style.left = `${Math.min(event.clientX + 12, width - 230)}px`;
+    $('hover-label').style.top = `${event.clientY - 22}px`;
+    $('hover-label').textContent = `${row.code} / CO2 ${row.xyz[1].toFixed(3)} t/person`;
+    renderer.domElement.style.cursor = 'pointer';
+    return;
+  }
+  renderer.domElement.style.cursor = 'default';
   const control = controlAtPointer(event);
   if (!control) { $('hover-label').hidden = true; return; }
   const bounds = renderer.domElement.getBoundingClientRect();
@@ -565,6 +635,8 @@ renderer.domElement.addEventListener('pointermove', (event) => {
 renderer.domElement.addEventListener('pointerleave', () => { $('hover-label').hidden = true; });
 renderer.domElement.addEventListener('dblclick', (event) => {
   if (event.button !== 0) return;
+  const local = climateAtPointer(event);
+  if (local) { focusAt(climate.worldPosition(local.index), 5); return; }
   const control = controlAtPointer(event);
   if (!control) return;
   select(control, groups.find((group) => group.id === control.groupId));
@@ -605,20 +677,20 @@ function positionLabels() {
   const occupied = [];
   selectionRing.visible = false;
   pointLabel.hidden = true;
-  if (selectionRing.visible) {
+  if (selected?.r !== null && selected?.position) {
     selectionRing.position.fromArray(selected.position); selectionRing.quaternion.copy(camera.quaternion);
     const p = new THREE.Vector3(...selected.position).project(camera);
     if (p.z > -1 && p.z < 1 && Math.abs(p.x) < 0.86 && Math.abs(p.y) < 0.65) {
       pointLabel.hidden = false;
       const x = (p.x * .5 + .5) * width, y = (-p.y * .5 + .5) * height;
       pointLabel.style.left = `${x}px`; pointLabel.style.top = `${y}px`;
-      pointLabel.textContent = `r = ${selected.r.toFixed(4)}`;
+      pointLabel.textContent = `DATA R / ${selected.r.toFixed(4)}`;
       occupied.push({ x, y: y + 18, w: pointLabel.offsetWidth, h: pointLabel.offsetHeight + 12 });
     }
   }
   for (const group of [selectedGroup, ...groups.filter((g) => g.id !== selectedGroup.id)]) {
     const label = groupLabels.get(group.id);
-    label.hidden = !$('labels-toggle').checked;
+    label.hidden = !$('labels-toggle').checked || climate.active;
     if (label.hidden) continue;
     const v = new THREE.Vector3(...group.direction).multiplyScalar(3.25).project(camera);
     if (v.z < -1 || v.z > 1) { label.hidden = true; continue; }
@@ -661,10 +733,11 @@ function updateProjectionReadout() {
   $('observer-bearing').textContent = angleNumber(point?.bearing);
   $('observer-elevation').textContent = angleNumber(point?.elevation);
   $('observer-depth').textContent = observerValue(point?.projection?.depth);
-  if (!$('inspector').hidden) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
+  if (!$('inspector').hidden && climate.selectedIndex < 0) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
 }
 
 window.__PB_DEBUG__ = {
+  climate: () => ({ active: climate.active, mode: climate.mode, selected: climate.selectedIndex, positions: climate.positions, projected: climate.projected(camera, width, height) }),
   observation: observationReport,
   snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
     camera: { position: camera.position.toArray(), target: orbit.target.toArray(), fov: camera.fov, minDistance: orbit.minDistance, maxDistance: orbit.maxDistance },
@@ -697,6 +770,7 @@ function updateFocusTransition(now) {
   }
 }
 renderer.setAnimationLoop((now) => {
+  climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels(); updateProjectionReadout();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
   if (now - lastValidation > 500) {
