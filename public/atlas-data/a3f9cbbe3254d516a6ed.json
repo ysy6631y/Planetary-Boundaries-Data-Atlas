@@ -1,0 +1,1 @@
+{"columns":["x","y","label"],"rows":[["1","113","no_stress_lt25; countries=113; n=166"],["2","23","low_25_50; countries=23; n=166"],["3","10","medium_50_75; countries=10; n=166"],["4","7","high_75_100; countries=7; n=166"],["5","13","critical_gt100; countries=13; n=166"]]}

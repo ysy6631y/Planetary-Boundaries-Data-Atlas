@@ -5,7 +5,9 @@ import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import source from '../audit/planetary-boundaries.source.json';
 import existingAudit from '../audit/controls.json';
-import climateField from './climate-field.generated.json';
+import climateSeed from './climate-field.generated.json';
+import atlasManifest from './atlas-manifest.generated.json';
+import { loadDataset } from './atlas-data.js';
 import { createClimateLayer } from './climate-layer.js';
 import { parseData } from './data.js';
 import { spatialize, validatePosition, GPU_TOLERANCE } from './spatial.js';
@@ -31,6 +33,10 @@ for (const control of quantitative) {
 }
 
 let selected = quantitative[0];
+let overview = false;
+let overviewReady = false;
+let overviewError = null;
+const overviewLayers = new Map();
 let selectedGroup = groups[0];
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
@@ -38,6 +44,9 @@ const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 2000);
 let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  // Keep the canvas background at true black regardless of browser alpha or
+  // compositing behavior; the only visible lift should come from the scene.
+  renderer.setClearColor(0x000000, 1);
 } catch (error) {
   $('webgl-error').hidden = false;
   $('webgl-error').textContent = `WebGL unavailable: ${error.message}`;
@@ -72,12 +81,21 @@ const dataRoot = new THREE.Group();
 scene.add(dataRoot);
 const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
+let climateField = climateSeed;
+let datasetFull = null;
+let inspectedRecord = null;
+let datasetRequest = 0;
+let datasetError = null;
+const datasetMemory = new Map();
+const metadataById = new Map(atlasManifest.datasets.map((item) => [item.id, item]));
 const climate = createClimateLayer(climateField, groups[0].direction, scene, $('labels'));
 const meshes = new Map();
 const lines = new Map();
 const colorFor = () => 0xf4f0e9;
 const lineColorFor = () => 0x77716b;
-const lightOpacityFor = (r) => r > 2 ? 0.46 : r > 1 ? 0.32 : 0.13;
+// Keep the dark observatory background while bringing the data signals closer
+// to the bright, pixel-lit reference image.
+const lightOpacityFor = (r) => r > 2 ? 0.82 : r > 1 ? 0.64 : 0.38;
 const glyph = new THREE.SphereGeometry(0.047, 16, 12);
 
 function rasterSignalTexture({ core, middle, outer }) {
@@ -112,8 +130,8 @@ const glowCanvas = document.createElement('canvas');
 glowCanvas.width = glowCanvas.height = 64;
 const glowContext = glowCanvas.getContext('2d');
 const glowGradient = glowContext.createRadialGradient(32, 32, 2, 32, 32, 32);
-glowGradient.addColorStop(0, 'rgba(255,91,70,.58)');
-glowGradient.addColorStop(.24, 'rgba(226,43,34,.25)');
+glowGradient.addColorStop(0, 'rgba(255,111,91,.76)');
+glowGradient.addColorStop(.24, 'rgba(226,43,34,.36)');
 glowGradient.addColorStop(1, 'rgba(226,43,34,0)');
 glowContext.fillStyle = glowGradient;
 glowContext.fillRect(0, 0, 64, 64);
@@ -144,7 +162,7 @@ for (const control of quantitative) {
   dataRoot.add(point);
   meshes.set(control.id, point);
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(...control.position)]);
-  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.22 }));
+  const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: lineColorFor(control.r), transparent: true, opacity: 0.3 }));
   linesRoot.add(line);
   lines.set(control.id, line);
 }
@@ -186,7 +204,9 @@ for (const control of quantitative) {
   });
   const orbitLine = new THREE.LineLoop(
     new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color: 0x817b75, transparent: true, opacity: 0.17 }),
+    // Orbit guides carry most of the central volume. Keep them crisp enough
+    // to read through overlaps while preserving the dark negative space.
+    new THREE.LineBasicMaterial({ color: 0x9a3b34, transparent: true, opacity: 0.34 }),
   );
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
@@ -197,11 +217,11 @@ for (const control of quantitative) {
 }
 
 // These are navigation references only. They carry no environmental values.
-const referencePlane = new THREE.GridHelper(7, 14, 0x5a514b, 0x272321);
+const referencePlane = new THREE.GridHelper(7, 14, 0x4b3935, 0x241816);
 referencePlane.position.set(0, -1.05, 0);
 referencePlane.rotation.set(-0.34, 0.18, 0.12);
 referencePlane.material.transparent = true;
-referencePlane.material.opacity = 0.3;
+referencePlane.material.opacity = 0.32;
 referencePlane.renderOrder = 1;
 scene.add(referencePlane);
 
@@ -219,7 +239,7 @@ for (let i = 0; i < 420; i++) {
   const angle = random() * Math.PI * 2;
   const spread = Math.sqrt(1 - z * z);
   starPositions.push(radius * spread * Math.cos(angle), radius * z, radius * spread * Math.sin(angle));
-  const brightness = 0.38 + random() * 0.58;
+  const brightness = 0.55 + random() * 0.45;
   const warm = random() > 0.84;
   starColors.push(brightness, warm ? brightness * 0.78 : brightness, warm ? brightness * 0.68 : brightness * 0.96);
 }
@@ -230,7 +250,7 @@ const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({
   sizeAttenuation: true,
   vertexColors: true,
   transparent: true,
-  opacity: 0.76,
+  opacity: 0.94,
   depthWrite: false,
 }));
 starField.renderOrder = -1;
@@ -242,7 +262,7 @@ scene.add(origin);
 const referenceGeometry = [];
 function shell(radius, color) {
   const root = new THREE.Group();
-  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.48 });
+  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.66 });
   function addCircle(points) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     root.add(new THREE.LineLoop(geometry, material));
@@ -264,8 +284,8 @@ function shell(radius, color) {
   scene.add(root);
   return root;
 }
-const pbShell = shell(1, 0x756e67);
-const hrShell = shell(2, 0x7f2925);
+const pbShell = shell(1, 0xb0a79b);
+const hrShell = shell(2, 0xe34a3d);
 const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.078, 0.087, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: false }));
 selectionRing.renderOrder = 10;
 scene.add(selectionRing);
@@ -371,14 +391,15 @@ function observerRows({ point, report }) {
 function updateInstrument() {
   $('read-status').textContent = 'DATA READY';
   $('read-status').classList.remove('reading');
-  if (climate.active && climate.selectedIndex >= 0) { inspectCountry(); return; }
+  if (inspectedRecord) { inspectCountry(inspectedRecord); return; }
+  const localStatus = hasLocalData(selectedGroup) ? `${atlasManifest.boundaries[selectedGroup.id].datasets.length} SOURCE DATASETS` : 'NO LOCAL SOURCE';
   if (!selected || selected.r === null) {
     const code = selected ? codeFor(selected) : shortNames[selectedGroup.order - 1];
     $('panel-reference').textContent = `REFERENCE / ${code}`;
     $('reference-content').innerHTML = `<div class="reference-code">${escape(code)}</div><div class="reference-name">${escape(selected?.raw.control_label ?? selectedGroup.name)}</div><div class="reference-vector">X / UNDEFINED<br>Y / UNDEFINED<br>Z / UNDEFINED<br>R / ${selected ? 'NOT QUANTIFIED' : 'NO GROUP AGGREGATE'}</div>`;
     $('distance-list').innerHTML = '<div class="distance-row"><span class="distance-code">NO NUMERIC REFERENCE</span><span class="distance-value">--</span></div>';
     $('distance-count').textContent = '0 DISTANCES / REFERENCE HAS NO XYZ';
-    $('relation-content').innerHTML = `<div class="relation-row"><span>GROUP</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+    $('relation-content').innerHTML = `<div class="relation-row"><span>GROUP</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>${localStatus}</span></div>`;
     $('observer-content').innerHTML = observerRows(selectedObservation());
     inspect();
     return;
@@ -394,7 +415,7 @@ function updateInstrument() {
   $('distance-list').innerHTML = distances.map(({ control, distance }) => `<div class="distance-row ${control.groupId === selected.groupId ? 'same-group' : ''}"><span class="distance-code">${escape(codeFor(control))}</span><span class="distance-value">DIST ${instrumentNumber(distance)}</span></div>`).join('');
   $('distance-count').textContent = `${distances.length} OBSERVATIONS / SELECTED NODE EXCLUDED`;
   const peers = controlsData.filter((control) => control.groupId === selected.groupId && control.id !== selected.id).map(codeFor);
-  $('relation-content').innerHTML = `<div class="relation-row"><span>MEASURE</span><span>ORIGIN -> ${escape(codeFor(selected))} / R ${instrumentNumber(selected.r)}</span></div><div class="relation-row"><span>CONTROL</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>PEER</span><span>${escape(peers.join(', ') || 'NONE')}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>NOT LOADED</span></div>`;
+  $('relation-content').innerHTML = `<div class="relation-row"><span>MEASURE</span><span>ORIGIN -> ${escape(codeFor(selected))} / R ${instrumentNumber(selected.r)}</span></div><div class="relation-row"><span>CONTROL</span><span>${escape(selectedGroup.name.toUpperCase())}</span></div><div class="relation-row"><span>PEER</span><span>${escape(peers.join(', ') || 'NONE')}</span></div><div class="relation-row"><span>ANALYTICAL</span><span>${localStatus}</span></div>`;
   $('observer-content').innerHTML = observerRows(selectedObservation());
   inspect();
 }
@@ -441,31 +462,122 @@ function inspect() {
   }).join('')}</div>`;
 }
 
+function hasLocalData(group) { return Boolean(atlasManifest.boundaries[group.id]?.datasets.length); }
+
+function refreshField(data) {
+  climateField = data;
+  climate.setData(data, selectedGroup.direction, shortNames[selectedGroup.order - 1]);
+  climate.root.visible = data.observations.length > 0;
+  climate.activate(data.observations.length > 0);
+  $('climate-scale').value = data.defaultMode;
+  $('climate-scale').disabled = !data.observations.length;
+  $('climate-scale').querySelector('[value="log"]').disabled = !data.logAvailable;
+  $('climate-surface').disabled = !climate.canSurface;
+  $('climate-surface').checked = false;
+  climate.setSurface(false);
+  $('local-count').textContent = `${data.observations.length.toLocaleString('en')} OBSERVATIONS / ${data.records.length.toLocaleString('en')} SOURCE ROWS${data.kind === 'records' ? ' / READING RECORDS' : data.omittedCount ? ` / ${data.omittedCount} WITHOUT COORDINATES` : ''}`;
+  $('local-axes').textContent = data.axes.length ? data.axes.map((axis, i) => `${'XYZ'[i]} / ${axis}`).join('  |  ') : data.mappingReason;
+  $('local-shared').textContent = data.boundaries.length > 1 ? `SHARED / ${data.boundaries.map((id) => groups.find((g) => g.id === id)?.name ?? id).join(' / ')}` : data.mappingReason;
+  const members = selectedGroup.controls.filter((control) => control.position);
+  if (members.length && data.observations.length) {
+    const start = members.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(members.length);
+    climateChapterLink.geometry.dispose();
+    climateChapterLink.geometry = new THREE.BufferGeometry().setFromPoints([start, climate.root.position]);
+    climateChapterLink.computeLineDistances();
+  }
+  climateChapterLink.visible = Boolean(members.length && data.observations.length);
+}
+
+async function openDataset(id) {
+  const request = ++datasetRequest;
+  const groupId = selectedGroup.id;
+  inspectedRecord = null; datasetError = null; datasetFull = null;
+  climate.activate(false); climate.root.visible = false; climateChapterLink.visible = false;
+  $('local-count').textContent = 'READING DATA...';
+  $('local-axes').textContent = ''; $('local-shared').textContent = '';
+  $('entity-filter').disabled = true; $('source-record').disabled = true;
+  $('climate-scale').disabled = true; $('climate-surface').disabled = true;
+  $('inspector').hidden = true;
+  try {
+    const data = await loadDataset(metadataById.get(id));
+    if (request !== datasetRequest || selectedGroup.id !== groupId) return;
+    datasetFull = data;
+    datasetMemory.set(groupId, id);
+    $('entity-filter').replaceChildren(new Option('ALL ENTITIES', ''));
+    if (data.kind !== 'records') for (const entity of data.entities) $('entity-filter').add(new Option(entity, entity));
+    $('entity-filter').disabled = data.kind === 'records';
+    $('source-record').disabled = !data.records.length;
+    $('source-record').min = '2'; $('source-record').max = String(data.records.length + 1); $('source-record').value = '2';
+    refreshField(data);
+    if (data.kind === 'records' && data.records.length) {
+      clearTimeout(readTimer);
+      inspectedRecord = data.records[0]; $('inspector').hidden = false; inspectCountry(inspectedRecord);
+    }
+  } catch (error) {
+    if (request !== datasetRequest) return;
+    datasetError = error.message;
+    $('local-count').textContent = `LOAD FAILED / ${error.message}`;
+  }
+}
+
+function openBoundary(group) {
+  ++datasetRequest;
+  datasetFull = null; inspectedRecord = null; datasetError = null;
+  climate.activate(false); climate.root.visible = false; climate.root.position.fromArray(group.direction).multiplyScalar(3.5);
+  climateChapterLink.visible = false;
+  $('local-field').hidden = false;
+  $('local-title').textContent = `${shortNames[group.order - 1]} / LOCAL ANALYSIS`;
+  const boundary = atlasManifest.boundaries[group.id];
+  $('dataset-select').replaceChildren();
+  $('local-count').textContent = boundary.datasets.length ? 'READING DATA...' : 'NO CORRESPONDING LOCAL DATA';
+  $('local-axes').textContent = boundary.reason ?? '';
+  $('local-shared').textContent = '';
+  $('dataset-select').disabled = !boundary.datasets.length;
+  $('entity-filter').replaceChildren(new Option('ALL ENTITIES', ''));
+  for (const id of ['entity-filter', 'source-record', 'climate-scale', 'climate-surface']) $(id).disabled = true;
+  const roles = ['analysis', 'processed', 'history', 'statistics', 'red-points', 'relations', 'summary'];
+  for (const role of roles) {
+    const entries = boundary.datasets.map((id) => metadataById.get(id)).filter((item) => item.role === role);
+    if (!entries.length) continue;
+    const optgroup = document.createElement('optgroup'); optgroup.label = role.toUpperCase();
+    for (const item of entries) optgroup.append(new Option(`${item.title} / ${item.rowCount.toLocaleString('en')}`, item.id));
+    $('dataset-select').append(optgroup);
+  }
+  if (boundary.datasets.length) {
+    const id = datasetMemory.get(group.id) ?? boundary.default;
+    $('dataset-select').value = id;
+    void openDataset(id);
+  }
+}
+
 function select(control, group, { openPanel = true } = {}) {
+  overview = false;
+  for (const layer of overviewLayers.values()) layer.root.visible = false;
+  $('align-group').disabled = false;
   selected = control; selectedGroup = group;
-  climate.activate(group.id === 'climate-change' && openPanel);
+  if (openPanel) openBoundary(group);
   climate.select(-1);
-  $('local-field').hidden = !climate.active;
-  $('risk-ruler').hidden = !climate.active || control?.r == null;
-  if (climate.active && control?.r != null) {
+  $('risk-ruler').hidden = !hasLocalData(group) || control?.r == null;
+  if (hasLocalData(group) && control?.r != null) {
     $('risk-value').textContent = `${codeFor(control)} / R ${control.r.toFixed(3)}`;
     $('risk-mark').style.bottom = `${control.r * 24}px`;
     $('risk-stem').style.height = `${control.r * 24}px`;
+    document.querySelector('.risk-scale').style.height = `${Math.max(120, control.r * 24)}px`;
   }
-  if (openPanel) $('inspector').hidden = climate.active;
+  if (openPanel) $('inspector').hidden = hasLocalData(group);
   $('hover-label').hidden = true;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
   document.querySelectorAll('[data-group]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.group === group.id)));
   for (const [id, line] of lines) {
     const active = id === control?.id;
     line.material.color.setHex(active ? 0xdf3d35 : lineColorFor());
-    line.material.opacity = active ? 0.72 : 0.22;
+    line.material.opacity = active ? 0.82 : 0.3;
   }
   for (const [id, orbitLine] of riskOrbits) {
     const active = id === control?.id;
     const groupActive = orbitLine.userData.groupId === group.id;
     orbitLine.material.color.setHex(active ? 0xdf3d35 : groupActive ? 0xb5afa8 : 0x817b75);
-    orbitLine.material.opacity = active ? 0.72 : groupActive ? 0.32 : 0.17;
+    orbitLine.material.opacity = active ? 0.86 : groupActive ? 0.5 : 0.34;
   }
   for (const [id, point] of meshes) {
     const active = id === control?.id;
@@ -475,12 +587,12 @@ function select(control, group, { openPanel = true } = {}) {
     signal.material.map = related ? redSignal : signal.userData.baseMap;
     signal.material.opacity = active ? .82 : related ? .58 : signal.userData.baseOpacity;
     signal.material.needsUpdate = true;
-    point.userData.glow.material.opacity = active ? .7 : related ? .36 : 0;
+    point.userData.glow.material.opacity = active ? .82 : related ? .5 : 0;
   }
   for (const [id, link] of relatedLinks) link.visible = id === group.id;
   climateChapterLink.visible = climate.active;
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
-  $('focus').disabled = !control || control.r === null;
+  $('focus').disabled = !hasLocalData(group) && (!control || control.r === null);
   $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
   scheduleInstrumentRead();
 }
@@ -543,15 +655,81 @@ function fit(radius = maxRadius) {
   camera.position.copy(overviewDirection).multiplyScalar(Math.min(85, distance));
   orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
 }
-$('fit').addEventListener('click', () => fit());
+async function enterOverview() {
+  overview = true; selected = null;
+  ++datasetRequest; clearTimeout(readTimer);
+  datasetFull = null; inspectedRecord = null;
+  climate.activate(false); climate.root.visible = false; climateChapterLink.visible = false;
+  for (const id of ['inspector', 'local-field', 'risk-ruler', 'hover-label']) $(id).hidden = true;
+  closeIndex();
+  $('focus').disabled = true; $('align-group').disabled = true;
+  $('scene-selection').textContent = 'SYSTEM OVERVIEW';
+  document.querySelectorAll('[data-control], [data-group]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
+  for (const label of groupLabels.values()) label.classList.remove('selected');
+  for (const link of relatedLinks.values()) link.visible = false;
+  for (const line of lines.values()) { line.material.color.setHex(lineColorFor()); line.material.opacity = .3; }
+  for (const line of riskOrbits.values()) {
+    const exceeded = line.userData.r > 1;
+    line.material.color.setHex(exceeded ? 0xdf5148 : 0xc9c4bc);
+    line.material.opacity = exceeded ? .56 : .48;
+  }
+  for (const [id, point] of meshes) {
+    const exceeded = quantitative.find(control => control.id === id).r > 1;
+    point.material.color.setHex(point.userData.baseColor);
+    point.userData.signal.material.map = exceeded ? redSignal : whiteSignal;
+    point.userData.signal.material.opacity = exceeded ? .86 : .52;
+    point.userData.signal.material.needsUpdate = true;
+    point.userData.glow.material.opacity = 0;
+  }
+  fit();
+  try {
+    for (const group of groups) {
+      const id = atlasManifest.boundaries[group.id].default;
+      if (!id) continue;
+      if (!overviewLayers.has(group.id)) {
+        const data = await loadDataset(metadataById.get(id));
+        if (!overviewLayers.has(group.id)) {
+          const layer = createClimateLayer(data, group.direction, scene, document.createDocumentFragment());
+          layer.setData(data, group.direction, shortNames[group.order - 1]);
+          layer.overview = true; layer.activate(true);
+          overviewLayers.set(group.id, layer);
+        }
+      }
+      overviewLayers.get(group.id).root.visible = overview;
+    }
+    overviewReady = true; overviewError = null;
+  } catch (error) {
+    overviewError = error.message;
+    if (overview) $('scene-selection').textContent = `OVERVIEW LOAD FAILED / ${error.message}`;
+  }
+}
+$('fit').addEventListener('click', () => void enterOverview());
+$('save-image').addEventListener('click', () => {
+  const ratio = renderer.getPixelRatio();
+  const exportRatio = 3840 / width;
+  try {
+    renderer.setPixelRatio(exportRatio);
+    climate.update(performance.now(), camera, width, height, exportRatio, width);
+    for (const layer of overviewLayers.values()) layer.update(performance.now(), camera, width, height, exportRatio, width);
+    positionSignalLights(); renderer.render(scene, camera);
+    const link = document.createElement('a');
+    link.download = 'planetary-data-atlas-4k.png';
+    link.href = renderer.domElement.toDataURL('image/png'); link.click();
+  } finally {
+    renderer.setPixelRatio(ratio);
+    climate.update(performance.now(), camera, width, height, ratio, width);
+    for (const layer of overviewLayers.values()) layer.update(performance.now(), camera, width, height, ratio, width);
+  }
+});
 $('reference-view').addEventListener('click', () => fit(2.7));
 function focusSelected() {
+  if (hasLocalData(selectedGroup)) { focusAt(climate.root.position.clone(), 6.8); return; }
   if (!selected || selected.r === null) return;
   if (climate.active) { focusAt(climate.root.position.clone(), 6.8); return; }
   focusAt(new THREE.Vector3(...selected.position));
 }
 function focusGroup(group) {
-  if (climate.active && group.id === 'climate-change') { focusAt(climate.root.position.clone(), 6.8); return; }
+  if (hasLocalData(group)) { focusAt(climate.root.position.clone(), 6.8); return; }
   const points = group.controls.filter((control) => control.position);
   if (!points.length) return;
   const center = points.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(points.length);
@@ -577,6 +755,20 @@ $('climate-scale').addEventListener('change', (event) => {
   if (climate.selectedIndex >= 0) inspectCountry();
 });
 $('climate-surface').addEventListener('change', (event) => climate.setSurface(event.target.checked));
+$('dataset-select').addEventListener('change', (event) => void openDataset(event.target.value));
+$('entity-filter').addEventListener('change', (event) => {
+  if (!datasetFull) return;
+  inspectedRecord = null; $('inspector').hidden = true;
+  refreshField({ ...datasetFull, observations: datasetFull.observations.filter((row) => !event.target.value || row.entity === event.target.value), domainObservations: datasetFull.observations });
+});
+$('source-record').addEventListener('change', (event) => {
+  const row = datasetFull?.records.find((row) => row.sourceRow === Number(event.target.value));
+  if (!row) return;
+  clearTimeout(readTimer);
+  inspectedRecord = row;
+  climate.select(climateField.observations.findIndex((entry) => entry.sourceRow === row.sourceRow));
+  $('inspector').hidden = false; inspectCountry(row);
+});
 $('align-group').addEventListener('click', () => {
   const distance = orbit.getDistance();
   orbit.enableDamping = false; orbit.update();
@@ -608,17 +800,19 @@ function climateAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   return climate.pick(event.clientX - bounds.left, event.clientY - bounds.top, camera, bounds.width, bounds.height);
 }
-function inspectCountry() {
-  const row = climateField.observations[climate.selectedIndex];
+function inspectCountry(record = null) {
+  const row = record ?? climateField.observations[climate.selectedIndex];
   if (!row) return;
-  $('panel-reference').textContent = `OBSERVATION / ${row.code}`;
+  inspectedRecord = row;
+  $('source-record').value = String(row.sourceRow);
+  $('panel-reference').textContent = `SOURCE ROW / ${row.sourceRow}`;
   $('read-status').textContent = 'LOCAL ANALYSIS';
-  $('reference-content').innerHTML = `<div class="reference-code">${escape(row.code)}</div><div class="reference-name">${escape(row.label.split(' / ')[0])}</div>${fields(climateField.axes.map((axis, i) => [axis, fmt(row.xyz[i])]))}`;
-  $('observer-content').innerHTML = `<div class="note">${escape(climate.mode.toUpperCase())} AXES / LOCAL ANALYSIS<br>COUNTRY VALUES / NO PLANETARY R</div>`;
-  $('relation-content').innerHTML = '<div class="note">ATMOSPHERIC PRESSURE / SHARED ANALYSIS<br>NO COUNTRY-TO-COUNTRY RELATIONS SUPPLIED</div>';
+  $('reference-content').innerHTML = `<div class="reference-code">${escape(row.code.length < 16 ? row.code : `ROW ${row.sourceRow}`)}</div><div class="reference-name">${escape(row.label)}</div>${fields(climateField.columns.map((column, i) => [column, row.raw[i] === '' ? '(empty)' : row.raw[i]]))}`;
+  $('observer-content').innerHTML = `<div class="note">${row.plotted ? `${escape(climate.mode.toUpperCase())} / ${climateField.axes.length} DATA AXES` : 'SOURCE RECORD / NO PLOTTED COORDINATES'}<br>LOCAL DATA / NO PLANETARY R</div>`;
+  $('relation-content').innerHTML = `<div class="note">${escape(climateField.mappingReason)}<br>${escape(climateField.boundaries.join(' / '))}</div>`;
   $('distance-list').innerHTML = '<div class="note">LOCAL DISPLAY AXES HAVE DIFFERENT UNITS. NO RISK DISTANCE ASSIGNED.</div>';
-  $('distance-count').textContent = '120 COUNTRY OBSERVATIONS';
-  $('inspect-content').innerHTML = `${fields([['SOURCE ROW', climate.selectedIndex + 2], ['ORIGINAL LABEL', row.label], ['ARCHIVE / FILE', climateField.source], ['DISPLAY TRANSFORM', climate.mode === 'log' ? 'X linear; Y and Z log10; each axis scaled to local extent' : 'Each axis linearly scaled to local extent'], ['ATLAS ANCHOR', 'Layout only; not a risk distance'], ['EXTENT', 'Convex envelope; not a correlation or risk surface']])}`;
+  $('distance-count').textContent = `${climateField.records.length.toLocaleString('en')} SOURCE ROWS`;
+  $('inspect-content').innerHTML = `${fields([['SOURCE ROW', row.sourceRow], ['ORIGINAL LABEL', row.label], ['ARCHIVE / FILE', climateField.source], ['MAPPING', climateField.mappingReason], ['DISPLAY TRANSFORM', row.plotted ? climate.mode === 'log' ? 'X linear; positive Y/Z log10; local extent' : 'Linear local extent; categorical X is layout only where labeled' : 'NOT SPATIALIZED'], ['XY PLANE', climateField.axes.length === 2 ? 'Display Z=0 only; no third measured variable' : 'N/A'], ['ATLAS ANCHOR', 'Layout only; not a risk distance'], ['EXTENT', 'Convex envelope; not a correlation or risk surface']])}`;
 }
 function controlAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
@@ -654,7 +848,7 @@ renderer.domElement.addEventListener('pointermove', (event) => {
     $('hover-label').hidden = false;
     $('hover-label').style.left = `${Math.min(event.clientX + 12, width - 230)}px`;
     $('hover-label').style.top = `${event.clientY - 22}px`;
-    $('hover-label').textContent = `${row.code} / CO2 ${row.xyz[1].toFixed(3)} t/person`;
+    $('hover-label').textContent = `${row.code} / ${climateField.axes[1]} ${fmt(row.xyz[1])}`;
     renderer.domElement.style.cursor = 'pointer';
     return;
   }
@@ -707,10 +901,7 @@ window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') $('inspector').hidden = true;
   if (event.key.toLowerCase() === 'h' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) setUiHidden(!document.body.classList.contains('ui-hidden'));
 });
-resize(); fit(); select(selected, selectedGroup);
-orbit.target.copy(climate.root.position);
-camera.position.copy(climate.root.position).addScaledVector(overviewDirection, 6.8);
-orbit.update();
+resize(); void enterOverview();
 createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, Eye, EyeOff, X } });
 
 function observationReport() {
@@ -723,6 +914,11 @@ function observationReport() {
 // HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
 function positionLabels() {
   const occupied = [];
+  for (const element of [document.querySelector('.legend'), $('local-field'), $('inspector')]) {
+    if (element.hidden || !element.getClientRects().length) continue;
+    const rect = element.getBoundingClientRect();
+    occupied.push({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, w: rect.width, h: rect.height });
+  }
   selectionRing.visible = false;
   pointLabel.hidden = true;
   if (selected?.r !== null && selected?.position) {
@@ -769,7 +965,7 @@ function positionSignalLights() {
     const distance = Math.max(0.01, point.getWorldPosition(new THREE.Vector3()).distanceTo(cameraPosition));
     const active = id === selected?.id;
     const baseOpacity = signal.userData.baseOpacity;
-    const targetPixels = active ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9;
+    const targetPixels = active ? 16 : overview ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9;
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
     signal.scale.set(worldSize, worldSize, 1);
     point.userData.glow.scale.set(worldSize * 4.5, worldSize * 4.5, 1);
@@ -777,18 +973,21 @@ function positionSignalLights() {
 }
 
 function updateProjectionReadout() {
+  if (overview) { $('observer-frame').textContent = 'SYSTEM'; return; }
   const { point } = selectedObservation();
   $('observer-frame').textContent = shortNames[selectedGroup.order - 1];
   $('observer-bearing').textContent = angleNumber(point?.bearing);
   $('observer-elevation').textContent = angleNumber(point?.elevation);
   $('observer-depth').textContent = observerValue(point?.projection?.depth);
-  if (!$('inspector').hidden && climate.selectedIndex < 0) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
+  if (!$('inspector').hidden && !inspectedRecord) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
 }
 
 window.__PB_DEBUG__ = {
+  overview: () => ({ active: overview, ready: overviewReady, error: overviewError, fields: [...overviewLayers].map(([boundary, layer]) => ({ boundary, dataset: layer.data.id, observations: layer.data.observations.length, visible: layer.root.visible, sources: layer.data.sources })) }),
+  atlas: () => ({ dataset: datasetFull?.id ?? null, error: datasetError, sourceRows: datasetFull?.records.length ?? 0, displayed: datasetFull ? climateField.observations.length : 0, boundary: selectedGroup.id, available: atlasManifest.boundaries[selectedGroup.id].datasets, canSurface: climate.canSurface, kind: datasetFull?.kind ?? null }),
   climate: () => ({ active: climate.active, mode: climate.mode, selected: climate.selectedIndex, positions: climate.positions, projected: climate.projected(camera, width, height) }),
   observation: observationReport,
-  snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id,
+  snapshot: () => ({ ...liveValidation(), selectedId: selected?.id ?? null, selectedGroup: overview ? null : selectedGroup.id,
     camera: { position: camera.position.toArray(), target: orbit.target.toArray(), fov: camera.fov, minDistance: orbit.minDistance, maxDistance: orbit.maxDistance },
     groupDirections: groups.map((g) => ({ id: g.id, direction: g.direction })),
     meshCount: meshes.size, measurementLineCount: lines.size, riskOrbitCount: riskOrbits.size,
@@ -819,6 +1018,7 @@ function updateFocusTransition(now) {
   }
 }
 renderer.setAnimationLoop((now) => {
+  for (const layer of overviewLayers.values()) if (layer.root.visible) layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels(); updateProjectionReadout();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);

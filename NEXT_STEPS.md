@@ -1,4 +1,6 @@
 COMPLETED
+- 2026-10-07: Tests pass for all 96 dataset parsers/rows, shared references, source/missing/signed values, fixed-domain entity filters and immutable PB geometry. Desktop browser checks cover all 9 boundary menus, 38,150-row source data, RED record access and XY volume restrictions.
+- 2026-10-07: Extended local data access to all supported boundaries: 133 CSV files accounted for, 96 unique datasets, 257,474 source rows, shared provenance, original-row readout, entity filters and explicit empty local states for ocean acidification/aerosols/ozone. See ATLAS_DATA.md; baseline 77c44c0 preserved.
 - Climate-only local field: 120 original country XYZ rows, fixed atlas anchor, tiny raster lights, click/hover provenance, LINEAR/LOG axes, optional convex extent, separate PB r ruler. See CLIMATE_FIELD.md. Checkpoint c826b9e preserves pre-field state.
 - Preserved pre-observer working source, tests, audit, lockfile and dist in checkpoints/phase1-before-observer-20261005/ before edits.
 - Reread the entire supplied astronomy text and all 30 unique static images; inspected temporal samples of the four embedded animations.
@@ -19,6 +21,7 @@ COMPLETED
 - Saved research, data audit, final spatial logic, license notices, validation reports and screenshots.
 
 PARTIALLY COMPLETED
+- The older climate-only/local-data-not-rendered entries below are historical. All corresponding sources are now selectable; RED/correlation records are source readouts, not new country relation geometry.
 - The older local-analysis planning entries below remain applicable to other boundaries; the climate pilot is implemented. Its 120-country cohort cannot inherit the different 89-country red/final-reading results.
 - Planned multi-scale field: non-data parallax star layers remain non-interactive; actual chapter CSV rows become provenance-backed LOCAL ANALYSIS nodes revealed only near their boundary. Proposed LOD is SYSTEM FIELD -> BOUNDARY -> CONTROL -> LOCAL ANALYSIS -> RAW OBSERVATION.
 - Planned node provenance requires source row, boundary/chapter, entity, observation value/unit, XYZ derivation and edge type. Do not scatter chapter rows globally or present reference stars as data.

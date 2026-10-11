@@ -53,10 +53,27 @@ Browser check expects the dev server on 5173 and installed Google Chrome. For a 
 
 ## Limits
 
-Angles are layout parameters, not geographical or causal variables. Group labels are HTML layout anchors, not observations. Perspective makes screen lengths unsuitable for exact risk comparison; inspect the numbers. No time series, interpolated surface or Earth model. Numeric distance expresses the supplied piecewise threshold scale, not an independently calibrated probability or additive total risk.
+Angles are layout parameters, not geographical or causal variables. Group labels are HTML layout anchors, not observations. Perspective makes screen lengths unsuitable for exact risk comparison; inspect the numbers. Historical source series are static local XY views, not time animations. Numeric distance expresses the supplied piecewise threshold scale, not an independently calibrated probability or additive total risk.
 
-Reference-shell framing deliberately allows distant points to leave the viewport; fit-all restores the complete field. NQ remains accessible in the boundary list and labels. Camera focus is immediate in Phase 1; smooth transitions are Phase 2.
+Reference-shell framing deliberately allows distant points to leave the viewport; fit-all restores the global field. NQ remains accessible in the boundary list and labels. Click-to-focus camera transitions can be interrupted by wheel or drag.
 
 THIRD_PARTY_NOTICES.md and public/licenses/ document dependencies. NASA/Hail Mary/Interstellarmap assets and app code are not bundled.
 
-Observation is not additional environmental evidence. These 11 scalar values do not intrinsically require 3D; the instrument makes viewpoint/projection changes inspectable. Local chapter XY/XYZ analyses remain a separate metric space, not yet connected or rendered. Integration requires explicit provenance and reviewed boundary mappings. No analytical edges or time animation were invented.
+Observation is not additional environmental evidence. These 11 scalar values do not intrinsically require 3D; the instrument makes viewpoint/projection changes inspectable. Local chapter XY/XYZ analyses remain a separate metric space. The optional convex extent is a geometric envelope, not a risk or correlation surface.
+
+## Boundary datasets (2026-10-07)
+
+Select a boundary in INDEX, then choose DATA. Six boundaries have corresponding local
+sources; ocean acidification, aerosols and ozone explicitly report no local source.
+ENTITY filters the selected source without moving its points. CSV ROW reads an original
+record, including records without valid coordinates. Statistics and RED/correlation
+files open as source records, preserving their original cohorts.
+
+133 CSV files are accounted for as 96 unique datasets plus duplicates/union indexes.
+The 257,474 source rows include repeated subjects across years and analyses, not that
+many independent observations. See [ATLAS_DATA.md](ATLAS_DATA.md) for the mappings.
+
+- `npm run data:atlas`: rebuild manifest and per-source JSON from the original ZIPs.
+- `src/atlas-data.js`: typed views over preserved CSV cells, with row provenance.
+- `src/climate-layer.js`: shared local point rendering, picking, axes and extent.
+- `node scripts/atlas-browser-check.mjs`: desktop checks against port 4174.

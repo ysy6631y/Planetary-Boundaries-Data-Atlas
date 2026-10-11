@@ -1,0 +1,40 @@
+import { chromium } from 'playwright';
+import { PNG } from 'pngjs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+
+await mkdir('exports', { recursive: true });
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto('http://127.0.0.1:4174/');
+  await page.waitForFunction(() => window.__PB_DEBUG__?.overview().ready);
+  await page.waitForTimeout(1800);
+  const report = await page.evaluate(() => ({ overview: window.__PB_DEBUG__.overview(), validation: window.__PB_DEBUG__.snapshot() }));
+  assert.equal(report.validation.selectedGroup, null);
+  assert.equal(report.validation.selectedId, null);
+  assert.equal(report.validation.passed, 11);
+  assert.equal(report.overview.fields.length, 6);
+  assert.ok(report.overview.fields.every(f => f.visible));
+  await page.screenshot({ path: 'exports/overview-preview.png' });
+  const download = page.waitForEvent('download');
+  await page.locator('#save-image').click();
+  await (await download).saveAs('exports/planetary-data-atlas-4k.png');
+  const png = PNG.sync.read(await readFile('exports/planetary-data-atlas-4k.png'));
+  assert.equal(png.width, 3840); assert.equal(png.height, 2160);
+  let bright = 0;
+  for (let i = 0; i < png.data.length; i += 4) if (Math.max(png.data[i], png.data[i + 1], png.data[i + 2]) > 40) bright++;
+  assert.ok(bright > 1000);
+  await page.locator('#index-trigger').click();
+  await page.locator('[data-group="climate-change"]').click();
+  await page.waitForFunction(() => !!window.__PB_DEBUG__.atlas().dataset);
+  assert.equal(await page.evaluate(() => window.__PB_DEBUG__.overview().active), false);
+  await page.locator('#fit').click();
+  assert.equal(await page.evaluate(() => window.__PB_DEBUG__.snapshot().selectedGroup), null);
+  assert.equal(await page.locator('[aria-pressed="true"][data-group]').count(), 0);
+  assert.deepEqual(errors, []);
+  await writeFile('exports/planetary-data-atlas-4k.json', JSON.stringify({ ...report, image: { width: png.width, height: png.height, brightPixels: bright }, note: 'Six boundary-context fields. Shared datasets are repeated contexts, not independent observations. This is not all 96 analyses superimposed.' }, null, 2));
+  console.log(JSON.stringify({ pass: true, image: [png.width, png.height], bright, fields: report.overview.fields.map(f => [f.boundary, f.observations]) }));
+} finally { await browser.close(); }

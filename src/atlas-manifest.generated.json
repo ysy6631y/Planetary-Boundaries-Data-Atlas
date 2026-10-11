@@ -1,0 +1,4383 @@
+{
+  "datasets": [
+    {
+      "id": "cc56796f9ee91266a502",
+      "title": "01_forest_cover/processed.csv",
+      "section": "01",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Share of land covered by forest"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 215,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/01_forest_cover/processed.csv",
+          "sha256": "7091b9796d3eb517ee1a66cda94990d16378609b0569b26256adb90d48f50b05"
+        }
+      ],
+      "url": "/atlas-data/cc56796f9ee91266a502.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "865d6d78398f50ff9621",
+      "title": "01_forest_cover/source.csv",
+      "section": "01",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Share of land covered by forest"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 8078,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Share of land covered by forest",
+        "Share of land covered by forest (Annotations)"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/01_forest_cover/source.csv",
+          "sha256": "e3fc91593bf3909357cdeac505b680483df08e45a63e6787d38f7578c74a9906"
+        }
+      ],
+      "url": "/atlas-data/865d6d78398f50ff9621.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "68d8e3018500173f07ee",
+      "title": "02_renewable_freshwater_resources/processed.csv",
+      "section": "01",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Renewable internal freshwater resources per capita (cubic meters)"
+      ],
+      "boundaries": [
+        "freshwater-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 181,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/02_renewable_freshwater_resources/processed.csv",
+          "sha256": "261437de9adb1726ae2baddbeb4f427a61f17cd3848b6df2ec84ef34affbbf9b"
+        }
+      ],
+      "url": "/atlas-data/68d8e3018500173f07ee.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0ba1259449ea36756d02",
+      "title": "02_renewable_freshwater_resources/source.csv",
+      "section": "01",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Renewable internal freshwater resources per capita (cubic meters)"
+      ],
+      "boundaries": [
+        "freshwater-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 11213,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Renewable internal freshwater resources per capita (cubic meters)"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/02_renewable_freshwater_resources/source.csv",
+          "sha256": "5b688a83691250907433624c04cea8d976941aff4fa7561244653b12a5e23bee"
+        }
+      ],
+      "url": "/atlas-data/0ba1259449ea36756d02.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "f4513000751f00b12a90",
+      "title": "03_red_list_index/processed.csv",
+      "section": "01",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Red List Index"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 247,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/03_red_list_index/processed.csv",
+          "sha256": "6c37209b76e4cda260d19c88d4667a60426af8de82ee7ee5903f1cdb5aff788e"
+        }
+      ],
+      "url": "/atlas-data/f4513000751f00b12a90.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "7d79605a10f8d91522b9",
+      "title": "03_red_list_index/source.csv",
+      "section": "01",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Red List Index"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 12013,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Red List Index"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/03_red_list_index/source.csv",
+          "sha256": "55c582fb6775ca0062f0baccae884a706733a115988f3d3ef708e4c543fee52d"
+        }
+      ],
+      "url": "/atlas-data/7d79605a10f8d91522b9.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "dfa8e5dceddea9cb6ceb",
+      "title": "raw_xyz.csv",
+      "section": "01",
+      "role": "analysis",
+      "kind": "xyz",
+      "axes": [
+        "forest cover (%)",
+        "freshwater (m3/person/year)",
+        "Red List Index"
+      ],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 183,
+      "columns": [
+        "x",
+        "y",
+        "z",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/section_01_analysis/csv/raw_xyz.csv",
+          "sha256": "00c69aaf4267b8cac930a82137128edd1664c4a702ed7317b319ca68ef74ff2c"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/01_maintaining_systems/raw_xyz.csv",
+          "sha256": "00c69aaf4267b8cac930a82137128edd1664c4a702ed7317b319ca68ef74ff2c"
+        }
+      ],
+      "url": "/atlas-data/dfa8e5dceddea9cb6ceb.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "672f9f8cb1ec4016f4ca",
+      "title": "stat_01_distribution.csv",
+      "section": "01",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 15,
+      "columns": [
+        "stat",
+        "indicator",
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/section_01_analysis/csv/stat_01_distribution.csv",
+          "sha256": "d90408a936d5209bb3c906ea8dc13b5e647dd37ecf8394eb96a5a05107042d29"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/01_maintaining_systems/stat_01_distribution.csv",
+          "sha256": "d90408a936d5209bb3c906ea8dc13b5e647dd37ecf8394eb96a5a05107042d29"
+        }
+      ],
+      "url": "/atlas-data/672f9f8cb1ec4016f4ca.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "4c882a273a43d5225ad5",
+      "title": "stat_02_rank_extremes.csv",
+      "section": "01",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 60,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/section_01_analysis/csv/stat_02_rank_extremes.csv",
+          "sha256": "a43670704b153445dbeb8143d7ff640f7589c68a92611ec56ff2fb4a5ec95ca2"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/01_maintaining_systems/stat_02_rank_extremes.csv",
+          "sha256": "a43670704b153445dbeb8143d7ff640f7589c68a92611ec56ff2fb4a5ec95ca2"
+        }
+      ],
+      "url": "/atlas-data/4c882a273a43d5225ad5.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "5f1104bfb26c827636c2",
+      "title": "stat_03_association.csv",
+      "section": "01",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 3,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/section_01_analysis/csv/stat_03_association.csv",
+          "sha256": "0861c81ec33e30eab36f30a5e4e867e0a843a7b3d053e70abe1a419ad5f73061"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/01_maintaining_systems/stat_03_association.csv",
+          "sha256": "0861c81ec33e30eab36f30a5e4e867e0a843a7b3d053e70abe1a419ad5f73061"
+        }
+      ],
+      "url": "/atlas-data/5f1104bfb26c827636c2.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "978ce0d655f4459460ac",
+      "title": "stat_04_synthesis.csv",
+      "section": "01",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 8,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "01_maintaining_systems.zip",
+          "path": "01_maintaining_systems/section_01_analysis/csv/stat_04_synthesis.csv",
+          "sha256": "4155bbc642b891eceef80be42e5f93eb6a5bab738a4f1067dce2ffae5eaf2fde"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/01_maintaining_systems/stat_04_synthesis.csv",
+          "sha256": "4155bbc642b891eceef80be42e5f93eb6a5bab738a4f1067dce2ffae5eaf2fde"
+        }
+      ],
+      "url": "/atlas-data/978ce0d655f4459460ac.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "2d2ef41680fd4b08eb18",
+      "title": "04_agricultural_land_share/processed.csv",
+      "section": "02",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Agricultural land (% of land area)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 209,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/04_agricultural_land_share/processed.csv",
+          "sha256": "1b64df84cecd17dd206b2fd2c3a2eeb8361559f92b19c33f8b3a6390427fb554"
+        }
+      ],
+      "url": "/atlas-data/2d2ef41680fd4b08eb18.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e61977da5a5185db9722",
+      "title": "04_agricultural_land_share/source.csv",
+      "section": "02",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Agricultural land (% of land area)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 12940,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Agricultural land (% of land area)"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/04_agricultural_land_share/source.csv",
+          "sha256": "04390e1a03d4234257900f29994bde1fd996d359ef1952df3bf2bc777964af20"
+        }
+      ],
+      "url": "/atlas-data/e61977da5a5185db9722.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0af63e14f7b5d6a0b77c",
+      "title": "05_arable_land_share/processed.csv",
+      "section": "02",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Arable land (% of land area)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 206,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/05_arable_land_share/processed.csv",
+          "sha256": "29a897365bb97d575c44bf4347d3a6016634def1b06b96f3ae2cd80ef7b0827d"
+        }
+      ],
+      "url": "/atlas-data/0af63e14f7b5d6a0b77c.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "b12f88612680c9cd218d",
+      "title": "05_arable_land_share/source.csv",
+      "section": "02",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Arable land (% of land area)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 12690,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Arable land (% of land area)"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/05_arable_land_share/source.csv",
+          "sha256": "465c0ac27a138465f3630a800ee8b84e71992b141e5dc30872e51f18cf6d2e23"
+        }
+      ],
+      "url": "/atlas-data/b12f88612680c9cd218d.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "4779653708333348e823",
+      "title": "06_cereal_yield/processed.csv",
+      "section": "02",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Cereals - Yield (tonnes per hectare)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 177,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/06_cereal_yield/processed.csv",
+          "sha256": "da9a09b630860e52f8d254cafdd3c92a4be1f759c2bcf62c2bb4479b35c0c838"
+        }
+      ],
+      "url": "/atlas-data/4779653708333348e823.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "f7fe4072213e515e83e0",
+      "title": "06_cereal_yield/source.csv",
+      "section": "02",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Cereals - Yield (tonnes per hectare)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 13488,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Cereals - Yield (tonnes per hectare)"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/06_cereal_yield/source.csv",
+          "sha256": "52c445126fe3454891bf6199d94640629f3374f45bbf47f85d6f5e19209aedda"
+        }
+      ],
+      "url": "/atlas-data/f7fe4072213e515e83e0.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e131f8e0cdb9944e85ea",
+      "title": "07_forest_area_change_rate/processed.csv",
+      "section": "02",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Annual change in forest area as share of forest area"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 228,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/07_forest_area_change_rate/processed.csv",
+          "sha256": "8acd665e8294d9c6a0b2e64df326c2319343d57e19f0897401a59e5b9439abcf"
+        }
+      ],
+      "url": "/atlas-data/e131f8e0cdb9944e85ea.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "b3be43a24c8d343a8778",
+      "title": "07_forest_area_change_rate/source.csv",
+      "section": "02",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Annual change in forest area as share of forest area"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 8435,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Annual change in forest area as share of forest area"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/07_forest_area_change_rate/source.csv",
+          "sha256": "30b9f992edf42e1b2078cb7245c254b387c10c43aa7c5d57ad39bf9f1dd831b4"
+        }
+      ],
+      "url": "/atlas-data/b3be43a24c8d343a8778.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "08e23869f8da2e3e0258",
+      "title": "projection_xy_agri_yield.csv",
+      "section": "02",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "agricultural land (%)",
+        "cereal yield (t/ha)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 180,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/projection_xy_agri_yield.csv",
+          "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902"
+        },
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/section02_main_02_xy_land_occupation_productivity.csv",
+          "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/section02_main_02_xy_land_occupation_productivity.csv",
+          "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902"
+        }
+      ],
+      "url": "/atlas-data/08e23869f8da2e3e0258.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "b40aafe947033b712a2d",
+      "title": "projection_xz_agri_forest_change.csv",
+      "section": "02",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "agricultural land (%)",
+        "forest change (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 180,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/projection_xz_agri_forest_change.csv",
+          "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346"
+        },
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/section02_main_03_xy_land_occupation_forest_change.csv",
+          "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/section02_main_03_xy_land_occupation_forest_change.csv",
+          "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346"
+        }
+      ],
+      "url": "/atlas-data/b40aafe947033b712a2d.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "c888509d56b033a7395c",
+      "title": "projection_yz_yield_forest_change.csv",
+      "section": "02",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "cereal yield (t/ha)",
+        "forest change (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 180,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/projection_yz_yield_forest_change.csv",
+          "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6"
+        },
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/section02_main_04_xy_productivity_forest_change.csv",
+          "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/section02_main_04_xy_productivity_forest_change.csv",
+          "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6"
+        }
+      ],
+      "url": "/atlas-data/c888509d56b033a7395c.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "507312544760135b44da",
+      "title": "raw_xy_land_structure.csv",
+      "section": "02",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "agricultural land (%)",
+        "arable land (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 180,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/raw_xy_land_structure.csv",
+          "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067"
+        },
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/section02_main_01_xy_land_occupation_cultivation.csv",
+          "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/section02_main_01_xy_land_occupation_cultivation.csv",
+          "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067"
+        }
+      ],
+      "url": "/atlas-data/507312544760135b44da.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "93ec15e3b0d287df6761",
+      "title": "raw_xyz_land_production_forest.csv",
+      "section": "02",
+      "role": "analysis",
+      "kind": "xyz",
+      "axes": [
+        "agricultural land (%)",
+        "cereal yield (t/ha)",
+        "forest change (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 180,
+      "columns": [
+        "x",
+        "y",
+        "z",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/raw_xyz_land_production_forest.csv",
+          "sha256": "e2c958c22154ec1682ceaa54eb4bc36b36ac09e7a0dc242410bef36475d141f9"
+        }
+      ],
+      "url": "/atlas-data/93ec15e3b0d287df6761.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0cedfaa18f63bc38a678",
+      "title": "stat_01_distribution.csv",
+      "section": "02",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 20,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/stat_01_distribution.csv",
+          "sha256": "6ae57425dbb07515f31b86a27c466a4726136d3111faa838a880af7ca0d7b0e5"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/stat_01_distribution.csv",
+          "sha256": "6ae57425dbb07515f31b86a27c466a4726136d3111faa838a880af7ca0d7b0e5"
+        }
+      ],
+      "url": "/atlas-data/0cedfaa18f63bc38a678.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "94cdcfa48ce79f6650c3",
+      "title": "stat_02_association.csv",
+      "section": "02",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 6,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/stat_02_association.csv",
+          "sha256": "68395d7031804750a1711ffc0a19be51a48ab3e3816f0886390443636cd8011e"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/stat_02_association.csv",
+          "sha256": "68395d7031804750a1711ffc0a19be51a48ab3e3816f0886390443636cd8011e"
+        }
+      ],
+      "url": "/atlas-data/94cdcfa48ce79f6650c3.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "3c845d5799da2c56f1b0",
+      "title": "stat_03_forest_change_direction.csv",
+      "section": "02",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 3,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/stat_03_forest_change_direction.csv",
+          "sha256": "3ebdc4ef05c7f24b2a6dd0aaca3d5931b8cd9d9f3729938c8d5860f1e6ee8ad2"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/stat_03_forest_change_direction.csv",
+          "sha256": "3ebdc4ef05c7f24b2a6dd0aaca3d5931b8cd9d9f3729938c8d5860f1e6ee8ad2"
+        }
+      ],
+      "url": "/atlas-data/3c845d5799da2c56f1b0.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "83006f5a80eecedc1237",
+      "title": "stat_04_rank_extremes.csv",
+      "section": "02",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 40,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "02_land_transformation.zip",
+          "path": "02_land_transformation/section_02_analysis/csv/stat_04_rank_extremes.csv",
+          "sha256": "4cc782324a9d2b91de26dfe89ea15169b6c6c55247b54a687f968da0b7256a5e"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/02_land_transformation/stat_04_rank_extremes.csv",
+          "sha256": "4cc782324a9d2b91de26dfe89ea15169b6c6c55247b54a687f968da0b7256a5e"
+        }
+      ],
+      "url": "/atlas-data/83006f5a80eecedc1237.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e778d5da416900bcc341",
+      "title": "08_freshwater_withdrawal_pressure/processed.csv",
+      "section": "03",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Level of water stress: freshwater withdrawal as a proportion of available freshwater resources (%) - No breakdown"
+      ],
+      "boundaries": [
+        "freshwater-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 182,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/08_freshwater_withdrawal_pressure/processed.csv",
+          "sha256": "e04a68aa8b3605ce21ca823ae026b202eff23802b7bb56011beecaa5b4f35d8e"
+        }
+      ],
+      "url": "/atlas-data/e778d5da416900bcc341.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "ecb4c2fb93691e640781",
+      "title": "08_freshwater_withdrawal_pressure/source.csv",
+      "section": "03",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Level of water stress: freshwater withdrawal as a proportion of available freshwater resources (%) - No breakdown"
+      ],
+      "boundaries": [
+        "freshwater-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 4583,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Level of water stress: freshwater withdrawal as a proportion of available freshwater resources (%) - No breakdown"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/08_freshwater_withdrawal_pressure/source.csv",
+          "sha256": "7e53ede8500f3ce06c98deae67d030e6581bfd34151db238e5504995196248a8"
+        }
+      ],
+      "url": "/atlas-data/ecb4c2fb93691e640781.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "f5ac1c5aa8f781ea6b84",
+      "title": "09_nitrogen_fertilizer/processed.csv",
+      "section": "03",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Use of nutrient nitrogen per area of cropland"
+      ],
+      "boundaries": [
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 198,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/09_nitrogen_fertilizer/processed.csv",
+          "sha256": "49facc80db0e4146f9a3d2bbe264da3dd858fc871fe7cf34bb5778323c5b5dc1"
+        }
+      ],
+      "url": "/atlas-data/f5ac1c5aa8f781ea6b84.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "fde7978fcae145c08638",
+      "title": "09_nitrogen_fertilizer/source.csv",
+      "section": "03",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Use of nutrient nitrogen per area of cropland"
+      ],
+      "boundaries": [
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 12568,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Use of nutrient nitrogen per area of cropland"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/09_nitrogen_fertilizer/source.csv",
+          "sha256": "a45dcb40bb0e4a014d5eafcfe36aadf11854a3c47a95225d3739f4498e0feb61"
+        }
+      ],
+      "url": "/atlas-data/fde7978fcae145c08638.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "068fd5a51cdcecab7225",
+      "title": "10_phosphate_fertilizer/processed.csv",
+      "section": "03",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Use of nutrient phosphate per area of cropland"
+      ],
+      "boundaries": [
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 197,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/10_phosphate_fertilizer/processed.csv",
+          "sha256": "5fde646afd233c578571c880f4858b68baddb0294cf01e8ebc9c0aadaafd9d15"
+        }
+      ],
+      "url": "/atlas-data/068fd5a51cdcecab7225.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e82f7868c826ef122579",
+      "title": "10_phosphate_fertilizer/source.csv",
+      "section": "03",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Use of nutrient phosphate per area of cropland"
+      ],
+      "boundaries": [
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 12280,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Use of nutrient phosphate per area of cropland"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/10_phosphate_fertilizer/source.csv",
+          "sha256": "b85b8fbd065982a0fc826bdca62cdfc8d86fe8ba12297957a997b0e55f1fc22a"
+        }
+      ],
+      "url": "/atlas-data/e82f7868c826ef122579.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "ad8681dacfb65f4e766a",
+      "title": "11_pesticide_use_per_hectare/processed.csv",
+      "section": "03",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Use of pesticides per area of cropland"
+      ],
+      "boundaries": [
+        "novel-entities"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 197,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/11_pesticide_use_per_hectare/processed.csv",
+          "sha256": "deab88e73e501006e9ff244b7ee2a6eaa23a895ed38edc41c1b0160a9c9e21d1"
+        }
+      ],
+      "url": "/atlas-data/ad8681dacfb65f4e766a.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "85702edec1b710e9b0b6",
+      "title": "11_pesticide_use_per_hectare/source.csv",
+      "section": "03",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Use of pesticides per area of cropland"
+      ],
+      "boundaries": [
+        "novel-entities"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 7804,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Use of pesticides per area of cropland"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/11_pesticide_use_per_hectare/source.csv",
+          "sha256": "00aa68f2977de03f61f30cd7f8657ff808d0af72f8e24ee43d33d8d5fad183a7"
+        }
+      ],
+      "url": "/atlas-data/85702edec1b710e9b0b6.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "f36a10df982cfe8f7c61",
+      "title": "12_domestic_material_consumption/processed.csv",
+      "section": "03",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Domestic material consumption per capita, by type of raw material (tonnes) - Total or no breakdown"
+      ],
+      "boundaries": [
+        "freshwater-change",
+        "novel-entities"
+      ],
+      "mappingReason": "Context only: material consumption is co-analysed with water and pesticides in section03. Not a direct PB measure.",
+      "rowCount": 226,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/12_domestic_material_consumption/processed.csv",
+          "sha256": "3768de351d7b12fd8d73c4fa3b7f91b5cf186963cbb672d508812254acb723d8"
+        }
+      ],
+      "url": "/atlas-data/f36a10df982cfe8f7c61.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "b15192540276e0f94e9f",
+      "title": "12_domestic_material_consumption/source.csv",
+      "section": "03",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Domestic material consumption per capita, by type of raw material (tonnes) - Total or no breakdown"
+      ],
+      "boundaries": [
+        "freshwater-change",
+        "novel-entities"
+      ],
+      "mappingReason": "Context only: material consumption is co-analysed with water and pesticides in section03. Not a direct PB measure.",
+      "rowCount": 6167,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Domestic material consumption per capita, by type of raw material (tonnes) - Total or no breakdown"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/12_domestic_material_consumption/source.csv",
+          "sha256": "9b03569e2d23b1f98c826fdc2b78ba7b3a7bdd907ab7ef18d7b6af68ab457f50"
+        }
+      ],
+      "url": "/atlas-data/b15192540276e0f94e9f.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "3fb696dded750ba908fd",
+      "title": "section03_main_01_xy_extraction_material_use.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "water stress (%)",
+        "material consumption (tonnes/person)"
+      ],
+      "boundaries": [
+        "freshwater-change",
+        "novel-entities"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_01_xy_extraction_material_use.csv",
+          "sha256": "1a65afff9a0373ee6fa66f80465fc58a1d008579cc3ef7ad8af771bdce5845e0"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/section03_main_01_xy_extraction_material_use.csv",
+          "sha256": "1a65afff9a0373ee6fa66f80465fc58a1d008579cc3ef7ad8af771bdce5845e0"
+        }
+      ],
+      "url": "/atlas-data/3fb696dded750ba908fd.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "6adee430170bd77152a0",
+      "title": "section03_main_02_xyz_nutrient_chemical_input.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xyz",
+      "axes": [
+        "nitrogen (kg/ha)",
+        "phosphate (kg/ha)",
+        "pesticide (kg/ha)"
+      ],
+      "boundaries": [
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "z",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_02_xyz_nutrient_chemical_input.csv",
+          "sha256": "415b9cfb8a1b93ccc953ddbe246af83a31778b50df3139fc9d59be2dc791a797"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/section03_main_02_xyz_nutrient_chemical_input.csv",
+          "sha256": "415b9cfb8a1b93ccc953ddbe246af83a31778b50df3139fc9d59be2dc791a797"
+        }
+      ],
+      "url": "/atlas-data/6adee430170bd77152a0.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "88f857abcd21575cb55f",
+      "title": "section03_main_03_xy_nutrient_input_balance.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "nitrogen (kg/ha)",
+        "phosphate (kg/ha)"
+      ],
+      "boundaries": [
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_03_xy_nutrient_input_balance.csv",
+          "sha256": "6700d72b21718500c76d75f16f4dc361a44f3356cabb3b928092700fb076cab3"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/section03_main_03_xy_nutrient_input_balance.csv",
+          "sha256": "6700d72b21718500c76d75f16f4dc361a44f3356cabb3b928092700fb076cab3"
+        }
+      ],
+      "url": "/atlas-data/88f857abcd21575cb55f.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0e9a56fee4a45b31d5b0",
+      "title": "section03_main_04_xy_nutrient_chemical_pressure.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "nitrogen (kg/ha)",
+        "pesticide (kg/ha)"
+      ],
+      "boundaries": [
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_04_xy_nutrient_chemical_pressure.csv",
+          "sha256": "d53a1775577f667b2dae31e6a0e48629eba1262945a0e3848c1033f45a451bb6"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/section03_main_04_xy_nutrient_chemical_pressure.csv",
+          "sha256": "d53a1775577f667b2dae31e6a0e48629eba1262945a0e3848c1033f45a451bb6"
+        }
+      ],
+      "url": "/atlas-data/0e9a56fee4a45b31d5b0.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "753889d2bb126dae9832",
+      "title": "section03_main_05_xy_phosphate_chemical_pressure.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "phosphate (kg/ha)",
+        "pesticide (kg/ha)"
+      ],
+      "boundaries": [
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_05_xy_phosphate_chemical_pressure.csv",
+          "sha256": "daf1897c6db7fdc726dc03ce38e6c1127b1250692b51839a919ad03f9277bbab"
+        }
+      ],
+      "url": "/atlas-data/753889d2bb126dae9832.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "74791f81db7fdb5832d5",
+      "title": "section03_main_06_xy_extraction_nutrient_input.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "water stress (%)",
+        "nitrogen (kg/ha)"
+      ],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_06_xy_extraction_nutrient_input.csv",
+          "sha256": "7bfda10e0c843672f6e3223f7c597e78cd7ddc9b6a3f94920f3c8c13308480fa"
+        }
+      ],
+      "url": "/atlas-data/74791f81db7fdb5832d5.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "3e5d5de1fbf262706388",
+      "title": "section03_main_07_xy_material_chemical_pressure.csv",
+      "section": "03",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "material consumption (tonnes/person)",
+        "pesticide (kg/ha)"
+      ],
+      "boundaries": [
+        "novel-entities"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 166,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/section03_main_07_xy_material_chemical_pressure.csv",
+          "sha256": "a281f51bee7bf9f3518dee6ebb6e9c241e6121365fb328e45a9635ec32eb3d59"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/section03_main_07_xy_material_chemical_pressure.csv",
+          "sha256": "a281f51bee7bf9f3518dee6ebb6e9c241e6121365fb328e45a9635ec32eb3d59"
+        }
+      ],
+      "url": "/atlas-data/3e5d5de1fbf262706388.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "7f0848943c9639a05114",
+      "title": "stat_01_distribution.csv",
+      "section": "03",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 25,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/stat_01_distribution.csv",
+          "sha256": "692b200a7582d2a09cac1a9f8ef2091771534a3409a8662a63e82da0ccf2bac8"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/stat_01_distribution.csv",
+          "sha256": "692b200a7582d2a09cac1a9f8ef2091771534a3409a8662a63e82da0ccf2bac8"
+        }
+      ],
+      "url": "/atlas-data/7f0848943c9639a05114.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "15d1ccae717c36635b42",
+      "title": "stat_02_association.csv",
+      "section": "03",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 10,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/stat_02_association.csv",
+          "sha256": "13bdf32302be917d04e9faa07e1a9c74de737c74c026098ec6d211e16439bb38"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/stat_02_association.csv",
+          "sha256": "13bdf32302be917d04e9faa07e1a9c74de737c74c026098ec6d211e16439bb38"
+        }
+      ],
+      "url": "/atlas-data/15d1ccae717c36635b42.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "a3f9cbbe3254d516a6ed",
+      "title": "stat_03_water_stress_classes.csv",
+      "section": "03",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 5,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/stat_03_water_stress_classes.csv",
+          "sha256": "ee6eb440b0829cfa2d5278647f75222ea8e1c2ecd7764ad21fbce5cd03223932"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/stat_03_water_stress_classes.csv",
+          "sha256": "ee6eb440b0829cfa2d5278647f75222ea8e1c2ecd7764ad21fbce5cd03223932"
+        }
+      ],
+      "url": "/atlas-data/a3f9cbbe3254d516a6ed.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "37013d1d2f95ffe064a7",
+      "title": "stat_04_rank_extremes.csv",
+      "section": "03",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 50,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "03_resource_pressure.zip",
+          "path": "03_resource_pressure/section_03_analysis/csv/stat_04_rank_extremes.csv",
+          "sha256": "26e8b8b6a3d2efd4f8a3d4e0b214b3a1087dac22be8a20db9bdd24fb6a5f588a"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/03_resource_pressure/stat_04_rank_extremes.csv",
+          "sha256": "26e8b8b6a3d2efd4f8a3d4e0b214b3a1087dac22be8a20db9bdd24fb6a5f588a"
+        }
+      ],
+      "url": "/atlas-data/37013d1d2f95ffe064a7.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "428159d8889295d2501e",
+      "title": "13_fossil_fuel_electricity_share/processed.csv",
+      "section": "04",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Fossil fuels"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 90,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/13_fossil_fuel_electricity_share/processed.csv",
+          "sha256": "d31d08fcb365afc381119391d4f067a168a62795b67570ea6ecc51a730a602f1"
+        }
+      ],
+      "url": "/atlas-data/428159d8889295d2501e.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "89c76029c81182cb0a57",
+      "title": "13_fossil_fuel_electricity_share/source.csv",
+      "section": "04",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Fossil fuels"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 7300,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Fossil fuels"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/13_fossil_fuel_electricity_share/source.csv",
+          "sha256": "f5bfd6c4ce2f87cd78001a26ab0e263edafe6b1cdd36b8c357a3a0bd873ccd07"
+        }
+      ],
+      "url": "/atlas-data/89c76029c81182cb0a57.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "44cbc69fe0ff6ebb7a22",
+      "title": "14_co2_emissions_per_capita/processed.csv",
+      "section": "04",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "CO₂ emissions per capita"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 213,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/14_co2_emissions_per_capita/processed.csv",
+          "sha256": "f57dfd155af4a6440af02180e02544acc16cad4c5af6fecc960e1effd3a2e18c"
+        }
+      ],
+      "url": "/atlas-data/44cbc69fe0ff6ebb7a22.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "ce33283e213bdb768e72",
+      "title": "14_co2_emissions_per_capita/source.csv",
+      "section": "04",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "CO₂ emissions per capita"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 26509,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "CO₂ emissions per capita"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/14_co2_emissions_per_capita/source.csv",
+          "sha256": "11a3a3531e4d814f96c5b6ce1ce4888be554cab5a48fe1394ba72f1b590e976e"
+        }
+      ],
+      "url": "/atlas-data/ce33283e213bdb768e72.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "442f33b247c5566d1137",
+      "title": "15_methane_emissions/processed.csv",
+      "section": "04",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Annual methane emissions including land use"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 199,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/15_methane_emissions/processed.csv",
+          "sha256": "df3b06cb76278dff96ddff9790e471e3d7509e15a9d30491ab92f06777f8058b"
+        }
+      ],
+      "url": "/atlas-data/442f33b247c5566d1137.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0d0fb5a2b79fa7ee4d04",
+      "title": "15_methane_emissions/source.csv",
+      "section": "04",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Annual methane emissions including land use"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 38150,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Annual methane emissions including land use"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/15_methane_emissions/source.csv",
+          "sha256": "5883255ad4e84ccd73f1259eb6bd7804d858dfac93d6cc0a2809527ad7b844d4"
+        }
+      ],
+      "url": "/atlas-data/0d0fb5a2b79fa7ee4d04.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "6af79a5fb0e404cc80a3",
+      "title": "16_nitrous_oxide_emissions_per_capita/processed.csv",
+      "section": "04",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Per capita nitrous oxide emissions including land use"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 201,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/16_nitrous_oxide_emissions_per_capita/processed.csv",
+          "sha256": "fe504e311f74a5031b49138f4832683fafcf96da800d46b7acd09dd203f02632"
+        }
+      ],
+      "url": "/atlas-data/6af79a5fb0e404cc80a3.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "7fed0f4c2a222cd2332a",
+      "title": "16_nitrous_oxide_emissions_per_capita/source.csv",
+      "section": "04",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Per capita nitrous oxide emissions including land use"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 36439,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Per capita nitrous oxide emissions including land use"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/16_nitrous_oxide_emissions_per_capita/source.csv",
+          "sha256": "fa9970a376a7f8c54f0749c02cc4e337bf2ed4847ac632a6c9bfdcb0447c1eea"
+        }
+      ],
+      "url": "/atlas-data/7fed0f4c2a222cd2332a.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "410debc8efa8704a7c79",
+      "title": "section04_main_01_xy_energy_dependence_co2_output.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "fossil electricity (%)",
+        "consumption CO2 (tonnes/person)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_01_xy_energy_dependence_co2_output.csv",
+          "sha256": "e84576e4188d97d866c5b789d93e4312f513c878b25c0159012ceb82fe487791"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_01_xy_energy_dependence_co2_output.csv",
+          "sha256": "e84576e4188d97d866c5b789d93e4312f513c878b25c0159012ceb82fe487791"
+        }
+      ],
+      "url": "/atlas-data/410debc8efa8704a7c79.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "4662f4da5d9370d783bf",
+      "title": "section04_main_02_xy_co2_n2o_per_capita.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "consumption CO2 (tonnes/person)",
+        "N2O (tonnes CO2e/person)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_02_xy_co2_n2o_per_capita.csv",
+          "sha256": "9be869d70083741465e6ff857c7b9a7e8288faa5e3368e62869b925b3ddeddad"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_02_xy_co2_n2o_per_capita.csv",
+          "sha256": "9be869d70083741465e6ff857c7b9a7e8288faa5e3368e62869b925b3ddeddad"
+        }
+      ],
+      "url": "/atlas-data/4662f4da5d9370d783bf.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "1d6fb30337d9a1f2b7e5",
+      "title": "section04_main_03_xy_energy_dependence_n2o_output.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "fossil electricity (%)",
+        "N2O (tonnes CO2e/person)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_03_xy_energy_dependence_n2o_output.csv",
+          "sha256": "4649b721b083518e91a52d84411666b489a0b11439d68d91704697ba08f84f0c"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_03_xy_energy_dependence_n2o_output.csv",
+          "sha256": "4649b721b083518e91a52d84411666b489a0b11439d68d91704697ba08f84f0c"
+        }
+      ],
+      "url": "/atlas-data/1d6fb30337d9a1f2b7e5.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "f4dacfbfa5850d69447b",
+      "title": "section04_main_04_xy_energy_dependence_methane_total.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "fossil electricity (%)",
+        "CH4 (tonnes CO2e)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_04_xy_energy_dependence_methane_total.csv",
+          "sha256": "72efd414b8e7aa735c0a25c9b795f7a05dede86643190e2b6217fd9decdab098"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_04_xy_energy_dependence_methane_total.csv",
+          "sha256": "72efd414b8e7aa735c0a25c9b795f7a05dede86643190e2b6217fd9decdab098"
+        }
+      ],
+      "url": "/atlas-data/f4dacfbfa5850d69447b.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "df26c0c84db1eb2a4d19",
+      "title": "section04_main_05_xy_co2_methane_total.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "consumption CO2 (tonnes/person)",
+        "CH4 (tonnes CO2e)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_05_xy_co2_methane_total.csv",
+          "sha256": "6912c454107bb6feae53558a52619467800abc9687d95bcfaf77f99920a48956"
+        }
+      ],
+      "url": "/atlas-data/df26c0c84db1eb2a4d19.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "188d481de4af3df01577",
+      "title": "section04_optional_xyz_energy_co2_n2o.csv",
+      "section": "04",
+      "role": "analysis",
+      "kind": "xyz",
+      "axes": [
+        "fossil electricity (%)",
+        "consumption CO2 (tonnes/person)",
+        "N2O (tonnes CO2e/person)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 120,
+      "columns": [
+        "x",
+        "y",
+        "z",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_optional_xyz_energy_co2_n2o.csv",
+          "sha256": "ae9be18d9624d0af84d13bf06e36ba6da6963bc9e551c420a57a79d1e6cc18d2"
+        }
+      ],
+      "url": "/atlas-data/188d481de4af3df01577.json",
+      "defaultMode": "log"
+    },
+    {
+      "id": "db1ae8da7dc5ec5ee73b",
+      "title": "stat_01_distribution.csv",
+      "section": "04",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 20,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_01_distribution.csv",
+          "sha256": "a7dfc712896284fb5eb67c1b09da984934894e695c8b930cba9d825b71b4f25a"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/stat_01_distribution.csv",
+          "sha256": "a7dfc712896284fb5eb67c1b09da984934894e695c8b930cba9d825b71b4f25a"
+        }
+      ],
+      "url": "/atlas-data/db1ae8da7dc5ec5ee73b.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "2bd85b67e15860d8a17c",
+      "title": "stat_02_association.csv",
+      "section": "04",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 6,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_02_association.csv",
+          "sha256": "a574463e8a3083f9074e558dd200c96ecdb00b971f923a4396891615e3869d4a"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/stat_02_association.csv",
+          "sha256": "a574463e8a3083f9074e558dd200c96ecdb00b971f923a4396891615e3869d4a"
+        }
+      ],
+      "url": "/atlas-data/2bd85b67e15860d8a17c.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "76c75fc3490e95c3d0dc",
+      "title": "stat_03_fossil_dependence_classes.csv",
+      "section": "04",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 4,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_03_fossil_dependence_classes.csv",
+          "sha256": "faf09ba4ed1ec1b915bd8b42d87e57cff30543cf439675a4d9a736e2f8385cd2"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/stat_03_fossil_dependence_classes.csv",
+          "sha256": "faf09ba4ed1ec1b915bd8b42d87e57cff30543cf439675a4d9a736e2f8385cd2"
+        }
+      ],
+      "url": "/atlas-data/76c75fc3490e95c3d0dc.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "9a51f705b04357d19c64",
+      "title": "stat_04_rank_extremes.csv",
+      "section": "04",
+      "role": "statistics",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 40,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "04_atmospheric_pressure.zip",
+          "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_04_rank_extremes.csv",
+          "sha256": "739cb0bdaa1aea05eb75aa2ba6d5fb7ac4e6c7c81d822c2a7ecc37682eb67e8d"
+        },
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/04_atmospheric_pressure/stat_04_rank_extremes.csv",
+          "sha256": "739cb0bdaa1aea05eb75aa2ba6d5fb7ac4e6c7c81d822c2a7ecc37682eb67e8d"
+        }
+      ],
+      "url": "/atlas-data/9a51f705b04357d19c64.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "b1a9983a44278ad0ce12",
+      "title": "17_sustainable_agricultural_land/processed.csv",
+      "section": "05",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Proportion of agricultural area under productive and sustainable agriculture (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 6,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/17_sustainable_agricultural_land/processed.csv",
+          "sha256": "37d1ca256febc82edc2f524d0979bafb97fd291fc66c1a1aaf2cb03fa1e9524c"
+        }
+      ],
+      "url": "/atlas-data/b1a9983a44278ad0ce12.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "c4e95cb56c613a1ed595",
+      "title": "17_sustainable_agricultural_land/source.csv",
+      "section": "05",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Proportion of agricultural area under productive and sustainable agriculture (%)"
+      ],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 20,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Proportion of agricultural area under productive and sustainable agriculture (%)"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/17_sustainable_agricultural_land/source.csv",
+          "sha256": "485a566e66613d39066675b25f73f74b07b7455078f70cb2de0e170b50a31d69"
+        }
+      ],
+      "url": "/atlas-data/c4e95cb56c613a1ed595.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e2268e4f8bfa7aa0146c",
+      "title": "18_terrestrial_protected_areas/processed.csv",
+      "section": "05",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Terrestrial protected areas (% of total land area)"
+      ],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 213,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/18_terrestrial_protected_areas/processed.csv",
+          "sha256": "59c81ede709316ae6fae8f880e3e6151102d190e7b64113b5bb3232ef7550198"
+        }
+      ],
+      "url": "/atlas-data/e2268e4f8bfa7aa0146c.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "d4bc07e12981402b6def",
+      "title": "18_terrestrial_protected_areas/source.csv",
+      "section": "05",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Terrestrial protected areas (% of total land area)"
+      ],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 2915,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Terrestrial protected areas (% of total land area)"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/18_terrestrial_protected_areas/source.csv",
+          "sha256": "dd292d5368222bb367a28b60abf8bb7a8ff79ead9b1eddb4f8a83c5d685107c0"
+        }
+      ],
+      "url": "/atlas-data/d4bc07e12981402b6def.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "d66a58b63c516211b77e",
+      "title": "19_marine_protected_areas/processed.csv",
+      "section": "05",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Marine protected areas (% of territorial waters)"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 174,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/19_marine_protected_areas/processed.csv",
+          "sha256": "6d6bff4413134854c72dbcff1e01088d769924e1efdc540d93456076b31c2ac5"
+        }
+      ],
+      "url": "/atlas-data/d66a58b63c516211b77e.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "44856bd836e19020eb8f",
+      "title": "19_marine_protected_areas/source.csv",
+      "section": "05",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Marine protected areas (% of territorial waters)"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 2392,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Marine protected areas (% of territorial waters)"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/19_marine_protected_areas/source.csv",
+          "sha256": "d91176831e2429a8241d42c38b6d7f7dc05eafec3ff0f859f5e42edc96f073ab"
+        }
+      ],
+      "url": "/atlas-data/44856bd836e19020eb8f.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "307e62ec6f9e15ffd7c2",
+      "title": "20_marine_kba_protected_coverage/processed.csv",
+      "section": "05",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Average proportion of Marine Key Biodiversity Areas (KBAs) covered by protected areas (%)"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 190,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/20_marine_kba_protected_coverage/processed.csv",
+          "sha256": "ef896d8f59d6970a3c8af180be6d2460c2fbb4dfadb4ab016f106dcae04f6601"
+        }
+      ],
+      "url": "/atlas-data/307e62ec6f9e15ffd7c2.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "645ef5ee99753e4f8589",
+      "title": "20_marine_kba_protected_coverage/source.csv",
+      "section": "05",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Average proportion of Marine Key Biodiversity Areas (KBAs) covered by protected areas (%)"
+      ],
+      "boundaries": [
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 5356,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Average proportion of Marine Key Biodiversity Areas (KBAs) covered by protected areas (%)"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/20_marine_kba_protected_coverage/source.csv",
+          "sha256": "f5e2b5ad1be96c6604e92de7faa052b0e5f63c9f369af9268970d49907e27513"
+        }
+      ],
+      "url": "/atlas-data/645ef5ee99753e4f8589.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "cabdced8011a489dc19c",
+      "title": "21_renewable_energy_share/processed.csv",
+      "section": "05",
+      "role": "processed",
+      "kind": "category",
+      "axes": [
+        "Entity (categorical layout)",
+        "Renewable energy share in the total final energy consumption (%)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 84,
+      "columns": [
+        "iso",
+        "value"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/21_renewable_energy_share/processed.csv",
+          "sha256": "09854ba001a924ce3d3dae6d50fdb17c6887fcefbc02b8913517bbb95834e6ed"
+        }
+      ],
+      "url": "/atlas-data/cabdced8011a489dc19c.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "9040a2b99635af369e3f",
+      "title": "21_renewable_energy_share/source.csv",
+      "section": "05",
+      "role": "history",
+      "kind": "history",
+      "axes": [
+        "Year",
+        "Renewable energy share in the total final energy consumption (%)"
+      ],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source indicator belongs to this boundary topic; raw units and years retained.",
+      "rowCount": 8309,
+      "columns": [
+        "Entity",
+        "Code",
+        "Year",
+        "Renewable energy share in the total final energy consumption (%)"
+      ],
+      "sources": [
+        {
+          "archive": "05_maintenance_and_response.zip",
+          "path": "05_maintenance_and_response/21_renewable_energy_share/source.csv",
+          "sha256": "087ebaf0ace0fa40101728fe448d76ee2e294b491b5dcd386e2da32176c57191"
+        }
+      ],
+      "url": "/atlas-data/9040a2b99635af369e3f.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "0a5d960e3063f34dc855",
+      "title": "OUTPUT_01_land_marine_kba_XYZ.csv",
+      "section": "05",
+      "role": "analysis",
+      "kind": "xyz",
+      "axes": [
+        "terrestrial protection (%)",
+        "marine protection (%)",
+        "marine KBA protection (%)"
+      ],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 160,
+      "columns": [
+        "x",
+        "y",
+        "z",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_01_land_marine_kba_XYZ.csv",
+          "sha256": "5e391c1c24e5eb617144b3a10e95cc6f0402f9268577ce0c827a0c2c2c33ff92"
+        }
+      ],
+      "url": "/atlas-data/0a5d960e3063f34dc855.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "612323e1d9cbd2a3ce00",
+      "title": "OUTPUT_02_land_renewable_XY.csv",
+      "section": "05",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "renewable energy (%)",
+        "terrestrial protection (%)"
+      ],
+      "boundaries": [
+        "climate-change",
+        "biosphere-integrity",
+        "land-system-change"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 160,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_02_land_renewable_XY.csv",
+          "sha256": "9011e6cc992973c1547d53380b3acf5671963326e29a7e7d2a3fd4e747407246"
+        }
+      ],
+      "url": "/atlas-data/612323e1d9cbd2a3ce00.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "4276bac8f5d1cf72d4e8",
+      "title": "OUTPUT_03_marine_renewable_XY.csv",
+      "section": "05",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "renewable energy (%)",
+        "marine protection (%)"
+      ],
+      "boundaries": [
+        "climate-change",
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 160,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_03_marine_renewable_XY.csv",
+          "sha256": "675787df24d6164cada0d53c3dde1adf91e8d163ecf19bdb767d3a5f6c4f6353"
+        }
+      ],
+      "url": "/atlas-data/4276bac8f5d1cf72d4e8.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "9007db6d66c870534308",
+      "title": "OUTPUT_04_marine_kba_renewable_XY.csv",
+      "section": "05",
+      "role": "analysis",
+      "kind": "xy",
+      "axes": [
+        "renewable energy (%)",
+        "marine KBA protection (%)"
+      ],
+      "boundaries": [
+        "climate-change",
+        "biosphere-integrity"
+      ],
+      "mappingReason": "Variables explicitly occur in this supplied analysis; contextual membership, not causal attribution.",
+      "rowCount": 160,
+      "columns": [
+        "x",
+        "y",
+        "label"
+      ],
+      "sources": [
+        {
+          "archive": "final_csv_bundle.zip",
+          "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_04_marine_kba_renewable_XY.csv",
+          "sha256": "f455a1b14fead8bfc36701b34595217d5d4854aa2f1b8210af80145d83528750"
+        }
+      ],
+      "url": "/atlas-data/9007db6d66c870534308.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "4c2a500297a9291e0868",
+      "title": "final_reading_relations.csv",
+      "section": "01",
+      "role": "relations",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Source-defined variable relations, not country-to-country edges.",
+      "rowCount": 6,
+      "columns": [
+        "section",
+        "node_a",
+        "node_b",
+        "spearman_rho",
+        "abs_rho",
+        "sign",
+        "red_edge",
+        "source",
+        "verification_status"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/final_reading_relations.csv",
+          "sha256": "4369d999efa09e16f665f12ce8648edb7c898b5e2137f615de7012dacd005718"
+        }
+      ],
+      "url": "/atlas-data/4c2a500297a9291e0868.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "5e3d1fb8e3c4b45f45af",
+      "title": "final_reading_summary.csv",
+      "section": "01",
+      "role": "summary",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 8,
+      "columns": [
+        "section",
+        "metric",
+        "value",
+        "note"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/final_reading_summary.csv",
+          "sha256": "25a82d29be37c02657dfd160134d91504c1df49ffbf2b23f43644f38fc86b33b"
+        }
+      ],
+      "url": "/atlas-data/5e3d1fb8e3c4b45f45af.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "5c0e90d1f1972f29d920",
+      "title": "red_points.csv",
+      "section": "01",
+      "role": "red-points",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "freshwater-change"
+      ],
+      "mappingReason": "Source-defined red record; no transfer to another cohort or source series.",
+      "rowCount": 1,
+      "columns": [
+        "section",
+        "output",
+        "chart",
+        "iso3",
+        "country",
+        "selection_rule",
+        "x_variable",
+        "x_value",
+        "y_variable",
+        "y_value",
+        "extra_variable",
+        "extra_value",
+        "threshold_1_name",
+        "threshold_1_value",
+        "threshold_2_name",
+        "threshold_2_value",
+        "group_n"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/red_points.csv",
+          "sha256": "d5115d05e110b136a5766e2afec585653d276b93010a4c532fc917d134590644"
+        }
+      ],
+      "url": "/atlas-data/5c0e90d1f1972f29d920.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "9eaa9dcb4eb679f3b0c0",
+      "title": "final_reading_relations.csv",
+      "section": "02",
+      "role": "relations",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source-defined variable relations, not country-to-country edges.",
+      "rowCount": 6,
+      "columns": [
+        "section",
+        "node_a",
+        "node_b",
+        "spearman_rho",
+        "abs_rho",
+        "sign",
+        "red_edge",
+        "source",
+        "verification_status"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/final_reading_relations.csv",
+          "sha256": "b5cf06d38912025bfd3f3dc756f4e93bd7e3b7e6e5b79cab1f630cdb2af7aceb"
+        }
+      ],
+      "url": "/atlas-data/9eaa9dcb4eb679f3b0c0.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "83e98e0885a1a61bc671",
+      "title": "final_reading_summary.csv",
+      "section": "02",
+      "role": "summary",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 8,
+      "columns": [
+        "section",
+        "metric",
+        "value",
+        "note"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/final_reading_summary.csv",
+          "sha256": "bc47704239f186f7c43370e39258fdd43618b7b2f7a6ec29ee66b714a93f3e86"
+        }
+      ],
+      "url": "/atlas-data/83e98e0885a1a61bc671.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "498411dc54a4cf4229f6",
+      "title": "red_points.csv",
+      "section": "02",
+      "role": "red-points",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "land-system-change"
+      ],
+      "mappingReason": "Source-defined red record; no transfer to another cohort or source series.",
+      "rowCount": 3,
+      "columns": [
+        "section",
+        "output",
+        "chart",
+        "iso3",
+        "country",
+        "selection_rule",
+        "x_variable",
+        "x_value",
+        "y_variable",
+        "y_value",
+        "residual",
+        "residual_rank_desc"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/red_points.csv",
+          "sha256": "b955509b813b03d455422512795457ee33a50bc1c7e1503e8f813878c4365de6"
+        }
+      ],
+      "url": "/atlas-data/498411dc54a4cf4229f6.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "9db5142207e15201f49b",
+      "title": "final_reading_relations.csv",
+      "section": "03",
+      "role": "relations",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Source-defined variable relations, not country-to-country edges.",
+      "rowCount": 10,
+      "columns": [
+        "section",
+        "node_a",
+        "node_b",
+        "spearman_rho",
+        "abs_rho",
+        "sign",
+        "red_edge",
+        "source",
+        "verification_status"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/final_reading_relations.csv",
+          "sha256": "0eeeb8e800afed4ce6c4e982915384bf8243b2e4dc6cd9bfe316b0c82cc042ad"
+        }
+      ],
+      "url": "/atlas-data/9db5142207e15201f49b.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "6506e29360170bba4a1e",
+      "title": "final_reading_summary.csv",
+      "section": "03",
+      "role": "summary",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 6,
+      "columns": [
+        "section",
+        "metric",
+        "value",
+        "note"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/final_reading_summary.csv",
+          "sha256": "c64135fb8d754163a53f10c97d0ca1bd9c4efb0c8ca0572045cb38e839d252ee"
+        }
+      ],
+      "url": "/atlas-data/6506e29360170bba4a1e.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "389b6135fa38cfe9e867",
+      "title": "red_points.csv",
+      "section": "03",
+      "role": "red-points",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "freshwater-change",
+        "biogeochemical-flows",
+        "novel-entities"
+      ],
+      "mappingReason": "Source-defined red record; no transfer to another cohort or source series.",
+      "rowCount": 1,
+      "columns": [
+        "section",
+        "output",
+        "chart",
+        "iso3",
+        "country",
+        "selection_rule",
+        "water_pct_available",
+        "dmc_t_per_person",
+        "nitrogen_kg_ha",
+        "phosphate_kg_ha",
+        "pesticide_kg_ha",
+        "q75_water",
+        "q75_dmc",
+        "q75_nitrogen",
+        "q75_phosphate",
+        "q75_pesticide",
+        "intersection_n"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/red_points.csv",
+          "sha256": "6fb09d54631d86039c95ec5be8cbfcba542c28c2e9c29d31092a78bd298a1a8c"
+        }
+      ],
+      "url": "/atlas-data/389b6135fa38cfe9e867.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "1e64290b233788604401",
+      "title": "final_reading_relations.csv",
+      "section": "04",
+      "role": "relations",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source-defined variable relations, not country-to-country edges.",
+      "rowCount": 6,
+      "columns": [
+        "section",
+        "node_a",
+        "node_b",
+        "spearman_rho",
+        "abs_rho",
+        "sign",
+        "red_edge",
+        "source",
+        "verification_status"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/final_reading_relations.csv",
+          "sha256": "9b4259f32917ffc5a9c9f164a4e51958539b606add7b1d814a1827be11fd11c0"
+        }
+      ],
+      "url": "/atlas-data/1e64290b233788604401.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "7bd69c8f17707c65de3f",
+      "title": "final_reading_summary.csv",
+      "section": "04",
+      "role": "summary",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 4,
+      "columns": [
+        "section",
+        "metric",
+        "value",
+        "note"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/final_reading_summary.csv",
+          "sha256": "9356dcbdb7a2fa78cfa69982c61c6049a8f33dc4eebc26d43d8296c9e7d054fe"
+        }
+      ],
+      "url": "/atlas-data/7bd69c8f17707c65de3f.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "3959ca1c4c17645c8743",
+      "title": "red_points.csv",
+      "section": "04",
+      "role": "red-points",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "climate-change"
+      ],
+      "mappingReason": "Source-defined red record; no transfer to another cohort or source series.",
+      "rowCount": 3,
+      "columns": [
+        "section",
+        "output",
+        "chart",
+        "iso3",
+        "country",
+        "selection_rule",
+        "fossil_electricity_pct",
+        "emission_variable",
+        "emission_value",
+        "rank_residual",
+        "computed_max_target",
+        "sample_n"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/red_points.csv",
+          "sha256": "44b06877f5b50439bdb614de83127c11277021bad2ee4c75693fe78ce8458717"
+        }
+      ],
+      "url": "/atlas-data/3959ca1c4c17645c8743.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "e1da6643968c699276b8",
+      "title": "final_reading_relations.csv",
+      "section": "05",
+      "role": "relations",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "climate-change"
+      ],
+      "mappingReason": "Source-defined variable relations, not country-to-country edges.",
+      "rowCount": 6,
+      "columns": [
+        "section",
+        "node_a",
+        "node_b",
+        "spearman_rho",
+        "abs_rho",
+        "sign",
+        "red_edge",
+        "source",
+        "verification_status"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/final_reading_relations.csv",
+          "sha256": "6cbbfaed37a8f3a53dcdb419401b577ee55dddfc7486e88752701f5cd13cf218"
+        }
+      ],
+      "url": "/atlas-data/e1da6643968c699276b8.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "08ba2d3ab7fcebc6f661",
+      "title": "final_reading_summary.csv",
+      "section": "05",
+      "role": "summary",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "climate-change"
+      ],
+      "mappingReason": "Shared section analysis; not a planetary control variable.",
+      "rowCount": 3,
+      "columns": [
+        "section",
+        "metric",
+        "value",
+        "note"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/final_reading_summary.csv",
+          "sha256": "afea2d5e13bd5a01214716d23e8e05bc0000fa746d53870389ff8f941bb5e3ea"
+        }
+      ],
+      "url": "/atlas-data/08ba2d3ab7fcebc6f661.json",
+      "defaultMode": "linear"
+    },
+    {
+      "id": "8231f1c1ebf03aca3673",
+      "title": "red_points.csv",
+      "section": "05",
+      "role": "red-points",
+      "kind": "records",
+      "axes": [],
+      "boundaries": [
+        "biosphere-integrity",
+        "land-system-change",
+        "climate-change"
+      ],
+      "mappingReason": "Source-defined red record; no transfer to another cohort or source series.",
+      "rowCount": 1,
+      "columns": [
+        "section",
+        "output",
+        "chart",
+        "iso3",
+        "country",
+        "selection_rule",
+        "land_protection_pct",
+        "marine_protection_pct",
+        "marine_kba_pct",
+        "renewable_energy_pct",
+        "q75_land",
+        "q75_marine",
+        "q75_kba",
+        "q75_renewable",
+        "intersection_n"
+      ],
+      "sources": [
+        {
+          "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+          "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/red_points.csv",
+          "sha256": "647754cffd88348d2d4831f8d95c9907a977d0fcdf4be17b9a01b2e5a4896997"
+        }
+      ],
+      "url": "/atlas-data/8231f1c1ebf03aca3673.json",
+      "defaultMode": "linear"
+    }
+  ],
+  "boundaries": {
+    "climate-change": {
+      "datasets": [
+        "428159d8889295d2501e",
+        "89c76029c81182cb0a57",
+        "44cbc69fe0ff6ebb7a22",
+        "ce33283e213bdb768e72",
+        "442f33b247c5566d1137",
+        "0d0fb5a2b79fa7ee4d04",
+        "6af79a5fb0e404cc80a3",
+        "7fed0f4c2a222cd2332a",
+        "410debc8efa8704a7c79",
+        "4662f4da5d9370d783bf",
+        "1d6fb30337d9a1f2b7e5",
+        "f4dacfbfa5850d69447b",
+        "df26c0c84db1eb2a4d19",
+        "188d481de4af3df01577",
+        "db1ae8da7dc5ec5ee73b",
+        "2bd85b67e15860d8a17c",
+        "76c75fc3490e95c3d0dc",
+        "9a51f705b04357d19c64",
+        "cabdced8011a489dc19c",
+        "9040a2b99635af369e3f",
+        "612323e1d9cbd2a3ce00",
+        "4276bac8f5d1cf72d4e8",
+        "9007db6d66c870534308",
+        "1e64290b233788604401",
+        "7bd69c8f17707c65de3f",
+        "3959ca1c4c17645c8743",
+        "e1da6643968c699276b8",
+        "08ba2d3ab7fcebc6f661",
+        "8231f1c1ebf03aca3673"
+      ],
+      "default": "188d481de4af3df01577"
+    },
+    "biosphere-integrity": {
+      "datasets": [
+        "f4513000751f00b12a90",
+        "7d79605a10f8d91522b9",
+        "dfa8e5dceddea9cb6ceb",
+        "672f9f8cb1ec4016f4ca",
+        "4c882a273a43d5225ad5",
+        "5f1104bfb26c827636c2",
+        "978ce0d655f4459460ac",
+        "e2268e4f8bfa7aa0146c",
+        "d4bc07e12981402b6def",
+        "d66a58b63c516211b77e",
+        "44856bd836e19020eb8f",
+        "307e62ec6f9e15ffd7c2",
+        "645ef5ee99753e4f8589",
+        "0a5d960e3063f34dc855",
+        "612323e1d9cbd2a3ce00",
+        "4276bac8f5d1cf72d4e8",
+        "9007db6d66c870534308",
+        "4c2a500297a9291e0868",
+        "5e3d1fb8e3c4b45f45af",
+        "5c0e90d1f1972f29d920",
+        "e1da6643968c699276b8",
+        "08ba2d3ab7fcebc6f661",
+        "8231f1c1ebf03aca3673"
+      ],
+      "default": "dfa8e5dceddea9cb6ceb"
+    },
+    "land-system-change": {
+      "datasets": [
+        "cc56796f9ee91266a502",
+        "865d6d78398f50ff9621",
+        "dfa8e5dceddea9cb6ceb",
+        "672f9f8cb1ec4016f4ca",
+        "4c882a273a43d5225ad5",
+        "5f1104bfb26c827636c2",
+        "978ce0d655f4459460ac",
+        "2d2ef41680fd4b08eb18",
+        "e61977da5a5185db9722",
+        "0af63e14f7b5d6a0b77c",
+        "b12f88612680c9cd218d",
+        "4779653708333348e823",
+        "f7fe4072213e515e83e0",
+        "e131f8e0cdb9944e85ea",
+        "b3be43a24c8d343a8778",
+        "08e23869f8da2e3e0258",
+        "b40aafe947033b712a2d",
+        "c888509d56b033a7395c",
+        "507312544760135b44da",
+        "93ec15e3b0d287df6761",
+        "0cedfaa18f63bc38a678",
+        "94cdcfa48ce79f6650c3",
+        "3c845d5799da2c56f1b0",
+        "83006f5a80eecedc1237",
+        "b1a9983a44278ad0ce12",
+        "c4e95cb56c613a1ed595",
+        "e2268e4f8bfa7aa0146c",
+        "d4bc07e12981402b6def",
+        "0a5d960e3063f34dc855",
+        "612323e1d9cbd2a3ce00",
+        "4c2a500297a9291e0868",
+        "5e3d1fb8e3c4b45f45af",
+        "5c0e90d1f1972f29d920",
+        "9eaa9dcb4eb679f3b0c0",
+        "83e98e0885a1a61bc671",
+        "498411dc54a4cf4229f6",
+        "e1da6643968c699276b8",
+        "08ba2d3ab7fcebc6f661",
+        "8231f1c1ebf03aca3673"
+      ],
+      "default": "93ec15e3b0d287df6761"
+    },
+    "freshwater-change": {
+      "datasets": [
+        "68d8e3018500173f07ee",
+        "0ba1259449ea36756d02",
+        "dfa8e5dceddea9cb6ceb",
+        "672f9f8cb1ec4016f4ca",
+        "4c882a273a43d5225ad5",
+        "5f1104bfb26c827636c2",
+        "978ce0d655f4459460ac",
+        "e778d5da416900bcc341",
+        "ecb4c2fb93691e640781",
+        "f36a10df982cfe8f7c61",
+        "b15192540276e0f94e9f",
+        "3fb696dded750ba908fd",
+        "74791f81db7fdb5832d5",
+        "7f0848943c9639a05114",
+        "15d1ccae717c36635b42",
+        "a3f9cbbe3254d516a6ed",
+        "37013d1d2f95ffe064a7",
+        "4c2a500297a9291e0868",
+        "5e3d1fb8e3c4b45f45af",
+        "5c0e90d1f1972f29d920",
+        "9db5142207e15201f49b",
+        "6506e29360170bba4a1e",
+        "389b6135fa38cfe9e867"
+      ],
+      "default": "dfa8e5dceddea9cb6ceb"
+    },
+    "biogeochemical-flows": {
+      "datasets": [
+        "f5ac1c5aa8f781ea6b84",
+        "fde7978fcae145c08638",
+        "068fd5a51cdcecab7225",
+        "e82f7868c826ef122579",
+        "6adee430170bd77152a0",
+        "88f857abcd21575cb55f",
+        "0e9a56fee4a45b31d5b0",
+        "753889d2bb126dae9832",
+        "74791f81db7fdb5832d5",
+        "7f0848943c9639a05114",
+        "15d1ccae717c36635b42",
+        "37013d1d2f95ffe064a7",
+        "9db5142207e15201f49b",
+        "6506e29360170bba4a1e",
+        "389b6135fa38cfe9e867"
+      ],
+      "default": "6adee430170bd77152a0"
+    },
+    "novel-entities": {
+      "datasets": [
+        "ad8681dacfb65f4e766a",
+        "85702edec1b710e9b0b6",
+        "f36a10df982cfe8f7c61",
+        "b15192540276e0f94e9f",
+        "3fb696dded750ba908fd",
+        "6adee430170bd77152a0",
+        "0e9a56fee4a45b31d5b0",
+        "753889d2bb126dae9832",
+        "3e5d5de1fbf262706388",
+        "7f0848943c9639a05114",
+        "15d1ccae717c36635b42",
+        "37013d1d2f95ffe064a7",
+        "9db5142207e15201f49b",
+        "6506e29360170bba4a1e",
+        "389b6135fa38cfe9e867"
+      ],
+      "default": "6adee430170bd77152a0"
+    },
+    "ocean-acidification": {
+      "datasets": [],
+      "default": null,
+      "reason": "No directly corresponding local analysis in supplied archives. Global PB controls remain available."
+    },
+    "atmospheric-aerosol-loading": {
+      "datasets": [],
+      "default": null,
+      "reason": "No directly corresponding local analysis in supplied archives. Global PB controls remain available."
+    },
+    "stratospheric-ozone-depletion": {
+      "datasets": [],
+      "default": null,
+      "reason": "No directly corresponding local analysis in supplied archives. Global PB controls remain available."
+    }
+  },
+  "coverage": [
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/01_forest_cover/processed.csv",
+      "sha256": "7091b9796d3eb517ee1a66cda94990d16378609b0569b26256adb90d48f50b05",
+      "rows": 215,
+      "status": "included",
+      "dataset": "cc56796f9ee91266a502"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/01_forest_cover/source.csv",
+      "sha256": "e3fc91593bf3909357cdeac505b680483df08e45a63e6787d38f7578c74a9906",
+      "rows": 8078,
+      "status": "included",
+      "dataset": "865d6d78398f50ff9621"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/02_renewable_freshwater_resources/processed.csv",
+      "sha256": "261437de9adb1726ae2baddbeb4f427a61f17cd3848b6df2ec84ef34affbbf9b",
+      "rows": 181,
+      "status": "included",
+      "dataset": "68d8e3018500173f07ee"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/02_renewable_freshwater_resources/source.csv",
+      "sha256": "5b688a83691250907433624c04cea8d976941aff4fa7561244653b12a5e23bee",
+      "rows": 11213,
+      "status": "included",
+      "dataset": "0ba1259449ea36756d02"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/03_red_list_index/processed.csv",
+      "sha256": "6c37209b76e4cda260d19c88d4667a60426af8de82ee7ee5903f1cdb5aff788e",
+      "rows": 247,
+      "status": "included",
+      "dataset": "f4513000751f00b12a90"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/03_red_list_index/source.csv",
+      "sha256": "55c582fb6775ca0062f0baccae884a706733a115988f3d3ef708e4c543fee52d",
+      "rows": 12013,
+      "status": "included",
+      "dataset": "7d79605a10f8d91522b9"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/section_01_analysis/csv/raw_xyz.csv",
+      "sha256": "00c69aaf4267b8cac930a82137128edd1664c4a702ed7317b319ca68ef74ff2c",
+      "rows": 183,
+      "status": "included",
+      "dataset": "dfa8e5dceddea9cb6ceb"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/section_01_analysis/csv/stat_01_distribution.csv",
+      "sha256": "d90408a936d5209bb3c906ea8dc13b5e647dd37ecf8394eb96a5a05107042d29",
+      "rows": 15,
+      "status": "included",
+      "dataset": "672f9f8cb1ec4016f4ca"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/section_01_analysis/csv/stat_02_rank_extremes.csv",
+      "sha256": "a43670704b153445dbeb8143d7ff640f7589c68a92611ec56ff2fb4a5ec95ca2",
+      "rows": 60,
+      "status": "included",
+      "dataset": "4c882a273a43d5225ad5"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/section_01_analysis/csv/stat_03_association.csv",
+      "sha256": "0861c81ec33e30eab36f30a5e4e867e0a843a7b3d053e70abe1a419ad5f73061",
+      "rows": 3,
+      "status": "included",
+      "dataset": "5f1104bfb26c827636c2"
+    },
+    {
+      "archive": "01_maintaining_systems.zip",
+      "path": "01_maintaining_systems/section_01_analysis/csv/stat_04_synthesis.csv",
+      "sha256": "4155bbc642b891eceef80be42e5f93eb6a5bab738a4f1067dce2ffae5eaf2fde",
+      "rows": 8,
+      "status": "included",
+      "dataset": "978ce0d655f4459460ac"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/04_agricultural_land_share/processed.csv",
+      "sha256": "1b64df84cecd17dd206b2fd2c3a2eeb8361559f92b19c33f8b3a6390427fb554",
+      "rows": 209,
+      "status": "included",
+      "dataset": "2d2ef41680fd4b08eb18"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/04_agricultural_land_share/source.csv",
+      "sha256": "04390e1a03d4234257900f29994bde1fd996d359ef1952df3bf2bc777964af20",
+      "rows": 12940,
+      "status": "included",
+      "dataset": "e61977da5a5185db9722"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/05_arable_land_share/processed.csv",
+      "sha256": "29a897365bb97d575c44bf4347d3a6016634def1b06b96f3ae2cd80ef7b0827d",
+      "rows": 206,
+      "status": "included",
+      "dataset": "0af63e14f7b5d6a0b77c"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/05_arable_land_share/source.csv",
+      "sha256": "465c0ac27a138465f3630a800ee8b84e71992b141e5dc30872e51f18cf6d2e23",
+      "rows": 12690,
+      "status": "included",
+      "dataset": "b12f88612680c9cd218d"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/06_cereal_yield/processed.csv",
+      "sha256": "da9a09b630860e52f8d254cafdd3c92a4be1f759c2bcf62c2bb4479b35c0c838",
+      "rows": 177,
+      "status": "included",
+      "dataset": "4779653708333348e823"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/06_cereal_yield/source.csv",
+      "sha256": "52c445126fe3454891bf6199d94640629f3374f45bbf47f85d6f5e19209aedda",
+      "rows": 13488,
+      "status": "included",
+      "dataset": "f7fe4072213e515e83e0"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/07_forest_area_change_rate/processed.csv",
+      "sha256": "8acd665e8294d9c6a0b2e64df326c2319343d57e19f0897401a59e5b9439abcf",
+      "rows": 228,
+      "status": "included",
+      "dataset": "e131f8e0cdb9944e85ea"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/07_forest_area_change_rate/source.csv",
+      "sha256": "30b9f992edf42e1b2078cb7245c254b387c10c43aa7c5d57ad39bf9f1dd831b4",
+      "rows": 8435,
+      "status": "included",
+      "dataset": "b3be43a24c8d343a8778"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/projection_xy_agri_yield.csv",
+      "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902",
+      "rows": 180,
+      "status": "included",
+      "dataset": "08e23869f8da2e3e0258"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/projection_xz_agri_forest_change.csv",
+      "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346",
+      "rows": 180,
+      "status": "included",
+      "dataset": "b40aafe947033b712a2d"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/projection_yz_yield_forest_change.csv",
+      "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6",
+      "rows": 180,
+      "status": "included",
+      "dataset": "c888509d56b033a7395c"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/raw_xy_land_structure.csv",
+      "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067",
+      "rows": 180,
+      "status": "included",
+      "dataset": "507312544760135b44da"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/raw_xyz_land_production_forest.csv",
+      "sha256": "e2c958c22154ec1682ceaa54eb4bc36b36ac09e7a0dc242410bef36475d141f9",
+      "rows": 180,
+      "status": "included",
+      "dataset": "93ec15e3b0d287df6761"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/section02_main_01_xy_land_occupation_cultivation.csv",
+      "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "507312544760135b44da"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/section02_main_02_xy_land_occupation_productivity.csv",
+      "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "08e23869f8da2e3e0258"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/section02_main_03_xy_land_occupation_forest_change.csv",
+      "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "b40aafe947033b712a2d"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/section02_main_04_xy_productivity_forest_change.csv",
+      "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "c888509d56b033a7395c"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/stat_01_distribution.csv",
+      "sha256": "6ae57425dbb07515f31b86a27c466a4726136d3111faa838a880af7ca0d7b0e5",
+      "rows": 20,
+      "status": "included",
+      "dataset": "0cedfaa18f63bc38a678"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/stat_02_association.csv",
+      "sha256": "68395d7031804750a1711ffc0a19be51a48ab3e3816f0886390443636cd8011e",
+      "rows": 6,
+      "status": "included",
+      "dataset": "94cdcfa48ce79f6650c3"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/stat_03_forest_change_direction.csv",
+      "sha256": "3ebdc4ef05c7f24b2a6dd0aaca3d5931b8cd9d9f3729938c8d5860f1e6ee8ad2",
+      "rows": 3,
+      "status": "included",
+      "dataset": "3c845d5799da2c56f1b0"
+    },
+    {
+      "archive": "02_land_transformation.zip",
+      "path": "02_land_transformation/section_02_analysis/csv/stat_04_rank_extremes.csv",
+      "sha256": "4cc782324a9d2b91de26dfe89ea15169b6c6c55247b54a687f968da0b7256a5e",
+      "rows": 40,
+      "status": "included",
+      "dataset": "83006f5a80eecedc1237"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/08_freshwater_withdrawal_pressure/processed.csv",
+      "sha256": "e04a68aa8b3605ce21ca823ae026b202eff23802b7bb56011beecaa5b4f35d8e",
+      "rows": 182,
+      "status": "included",
+      "dataset": "e778d5da416900bcc341"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/08_freshwater_withdrawal_pressure/source.csv",
+      "sha256": "7e53ede8500f3ce06c98deae67d030e6581bfd34151db238e5504995196248a8",
+      "rows": 4583,
+      "status": "included",
+      "dataset": "ecb4c2fb93691e640781"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/09_nitrogen_fertilizer/processed.csv",
+      "sha256": "49facc80db0e4146f9a3d2bbe264da3dd858fc871fe7cf34bb5778323c5b5dc1",
+      "rows": 198,
+      "status": "included",
+      "dataset": "f5ac1c5aa8f781ea6b84"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/09_nitrogen_fertilizer/source.csv",
+      "sha256": "a45dcb40bb0e4a014d5eafcfe36aadf11854a3c47a95225d3739f4498e0feb61",
+      "rows": 12568,
+      "status": "included",
+      "dataset": "fde7978fcae145c08638"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/10_phosphate_fertilizer/processed.csv",
+      "sha256": "5fde646afd233c578571c880f4858b68baddb0294cf01e8ebc9c0aadaafd9d15",
+      "rows": 197,
+      "status": "included",
+      "dataset": "068fd5a51cdcecab7225"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/10_phosphate_fertilizer/source.csv",
+      "sha256": "b85b8fbd065982a0fc826bdca62cdfc8d86fe8ba12297957a997b0e55f1fc22a",
+      "rows": 12280,
+      "status": "included",
+      "dataset": "e82f7868c826ef122579"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/11_pesticide_use_per_hectare/processed.csv",
+      "sha256": "deab88e73e501006e9ff244b7ee2a6eaa23a895ed38edc41c1b0160a9c9e21d1",
+      "rows": 197,
+      "status": "included",
+      "dataset": "ad8681dacfb65f4e766a"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/11_pesticide_use_per_hectare/source.csv",
+      "sha256": "00aa68f2977de03f61f30cd7f8657ff808d0af72f8e24ee43d33d8d5fad183a7",
+      "rows": 7804,
+      "status": "included",
+      "dataset": "85702edec1b710e9b0b6"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/12_domestic_material_consumption/processed.csv",
+      "sha256": "3768de351d7b12fd8d73c4fa3b7f91b5cf186963cbb672d508812254acb723d8",
+      "rows": 226,
+      "status": "included",
+      "dataset": "f36a10df982cfe8f7c61"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/12_domestic_material_consumption/source.csv",
+      "sha256": "9b03569e2d23b1f98c826fdc2b78ba7b3a7bdd907ab7ef18d7b6af68ab457f50",
+      "rows": 6167,
+      "status": "included",
+      "dataset": "b15192540276e0f94e9f"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_01_xy_extraction_material_use.csv",
+      "sha256": "1a65afff9a0373ee6fa66f80465fc58a1d008579cc3ef7ad8af771bdce5845e0",
+      "rows": 166,
+      "status": "included",
+      "dataset": "3fb696dded750ba908fd"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_02_xyz_nutrient_chemical_input.csv",
+      "sha256": "415b9cfb8a1b93ccc953ddbe246af83a31778b50df3139fc9d59be2dc791a797",
+      "rows": 166,
+      "status": "included",
+      "dataset": "6adee430170bd77152a0"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_03_xy_nutrient_input_balance.csv",
+      "sha256": "6700d72b21718500c76d75f16f4dc361a44f3356cabb3b928092700fb076cab3",
+      "rows": 166,
+      "status": "included",
+      "dataset": "88f857abcd21575cb55f"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_04_xy_nutrient_chemical_pressure.csv",
+      "sha256": "d53a1775577f667b2dae31e6a0e48629eba1262945a0e3848c1033f45a451bb6",
+      "rows": 166,
+      "status": "included",
+      "dataset": "0e9a56fee4a45b31d5b0"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_05_xy_phosphate_chemical_pressure.csv",
+      "sha256": "daf1897c6db7fdc726dc03ce38e6c1127b1250692b51839a919ad03f9277bbab",
+      "rows": 166,
+      "status": "included",
+      "dataset": "753889d2bb126dae9832"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_06_xy_extraction_nutrient_input.csv",
+      "sha256": "7bfda10e0c843672f6e3223f7c597e78cd7ddc9b6a3f94920f3c8c13308480fa",
+      "rows": 166,
+      "status": "included",
+      "dataset": "74791f81db7fdb5832d5"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/section03_main_07_xy_material_chemical_pressure.csv",
+      "sha256": "a281f51bee7bf9f3518dee6ebb6e9c241e6121365fb328e45a9635ec32eb3d59",
+      "rows": 166,
+      "status": "included",
+      "dataset": "3e5d5de1fbf262706388"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/stat_01_distribution.csv",
+      "sha256": "692b200a7582d2a09cac1a9f8ef2091771534a3409a8662a63e82da0ccf2bac8",
+      "rows": 25,
+      "status": "included",
+      "dataset": "7f0848943c9639a05114"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/stat_02_association.csv",
+      "sha256": "13bdf32302be917d04e9faa07e1a9c74de737c74c026098ec6d211e16439bb38",
+      "rows": 10,
+      "status": "included",
+      "dataset": "15d1ccae717c36635b42"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/stat_03_water_stress_classes.csv",
+      "sha256": "ee6eb440b0829cfa2d5278647f75222ea8e1c2ecd7764ad21fbce5cd03223932",
+      "rows": 5,
+      "status": "included",
+      "dataset": "a3f9cbbe3254d516a6ed"
+    },
+    {
+      "archive": "03_resource_pressure.zip",
+      "path": "03_resource_pressure/section_03_analysis/csv/stat_04_rank_extremes.csv",
+      "sha256": "26e8b8b6a3d2efd4f8a3d4e0b214b3a1087dac22be8a20db9bdd24fb6a5f588a",
+      "rows": 50,
+      "status": "included",
+      "dataset": "37013d1d2f95ffe064a7"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/13_fossil_fuel_electricity_share/processed.csv",
+      "sha256": "d31d08fcb365afc381119391d4f067a168a62795b67570ea6ecc51a730a602f1",
+      "rows": 90,
+      "status": "included",
+      "dataset": "428159d8889295d2501e"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/13_fossil_fuel_electricity_share/source.csv",
+      "sha256": "f5bfd6c4ce2f87cd78001a26ab0e263edafe6b1cdd36b8c357a3a0bd873ccd07",
+      "rows": 7300,
+      "status": "included",
+      "dataset": "89c76029c81182cb0a57"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/14_co2_emissions_per_capita/processed.csv",
+      "sha256": "f57dfd155af4a6440af02180e02544acc16cad4c5af6fecc960e1effd3a2e18c",
+      "rows": 213,
+      "status": "included",
+      "dataset": "44cbc69fe0ff6ebb7a22"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/14_co2_emissions_per_capita/source.csv",
+      "sha256": "11a3a3531e4d814f96c5b6ce1ce4888be554cab5a48fe1394ba72f1b590e976e",
+      "rows": 26509,
+      "status": "included",
+      "dataset": "ce33283e213bdb768e72"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/15_methane_emissions/processed.csv",
+      "sha256": "df3b06cb76278dff96ddff9790e471e3d7509e15a9d30491ab92f06777f8058b",
+      "rows": 199,
+      "status": "included",
+      "dataset": "442f33b247c5566d1137"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/15_methane_emissions/source.csv",
+      "sha256": "5883255ad4e84ccd73f1259eb6bd7804d858dfac93d6cc0a2809527ad7b844d4",
+      "rows": 38150,
+      "status": "included",
+      "dataset": "0d0fb5a2b79fa7ee4d04"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/16_nitrous_oxide_emissions_per_capita/processed.csv",
+      "sha256": "fe504e311f74a5031b49138f4832683fafcf96da800d46b7acd09dd203f02632",
+      "rows": 201,
+      "status": "included",
+      "dataset": "6af79a5fb0e404cc80a3"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/16_nitrous_oxide_emissions_per_capita/source.csv",
+      "sha256": "fa9970a376a7f8c54f0749c02cc4e337bf2ed4847ac632a6c9bfdcb0447c1eea",
+      "rows": 36439,
+      "status": "included",
+      "dataset": "7fed0f4c2a222cd2332a"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_01_xy_energy_dependence_co2_output.csv",
+      "sha256": "e84576e4188d97d866c5b789d93e4312f513c878b25c0159012ceb82fe487791",
+      "rows": 120,
+      "status": "included",
+      "dataset": "410debc8efa8704a7c79"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_02_xy_co2_n2o_per_capita.csv",
+      "sha256": "9be869d70083741465e6ff857c7b9a7e8288faa5e3368e62869b925b3ddeddad",
+      "rows": 120,
+      "status": "included",
+      "dataset": "4662f4da5d9370d783bf"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_03_xy_energy_dependence_n2o_output.csv",
+      "sha256": "4649b721b083518e91a52d84411666b489a0b11439d68d91704697ba08f84f0c",
+      "rows": 120,
+      "status": "included",
+      "dataset": "1d6fb30337d9a1f2b7e5"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_04_xy_energy_dependence_methane_total.csv",
+      "sha256": "72efd414b8e7aa735c0a25c9b795f7a05dede86643190e2b6217fd9decdab098",
+      "rows": 120,
+      "status": "included",
+      "dataset": "f4dacfbfa5850d69447b"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_main_05_xy_co2_methane_total.csv",
+      "sha256": "6912c454107bb6feae53558a52619467800abc9687d95bcfaf77f99920a48956",
+      "rows": 120,
+      "status": "included",
+      "dataset": "df26c0c84db1eb2a4d19"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/section04_optional_xyz_energy_co2_n2o.csv",
+      "sha256": "ae9be18d9624d0af84d13bf06e36ba6da6963bc9e551c420a57a79d1e6cc18d2",
+      "rows": 120,
+      "status": "included",
+      "dataset": "188d481de4af3df01577"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_01_distribution.csv",
+      "sha256": "a7dfc712896284fb5eb67c1b09da984934894e695c8b930cba9d825b71b4f25a",
+      "rows": 20,
+      "status": "included",
+      "dataset": "db1ae8da7dc5ec5ee73b"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_02_association.csv",
+      "sha256": "a574463e8a3083f9074e558dd200c96ecdb00b971f923a4396891615e3869d4a",
+      "rows": 6,
+      "status": "included",
+      "dataset": "2bd85b67e15860d8a17c"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_03_fossil_dependence_classes.csv",
+      "sha256": "faf09ba4ed1ec1b915bd8b42d87e57cff30543cf439675a4d9a736e2f8385cd2",
+      "rows": 4,
+      "status": "included",
+      "dataset": "76c75fc3490e95c3d0dc"
+    },
+    {
+      "archive": "04_atmospheric_pressure.zip",
+      "path": "04_atmospheric_pressure/section_04_analysis/csv/stat_04_rank_extremes.csv",
+      "sha256": "739cb0bdaa1aea05eb75aa2ba6d5fb7ac4e6c7c81d822c2a7ecc37682eb67e8d",
+      "rows": 40,
+      "status": "included",
+      "dataset": "9a51f705b04357d19c64"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/17_sustainable_agricultural_land/processed.csv",
+      "sha256": "37d1ca256febc82edc2f524d0979bafb97fd291fc66c1a1aaf2cb03fa1e9524c",
+      "rows": 6,
+      "status": "included",
+      "dataset": "b1a9983a44278ad0ce12"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/17_sustainable_agricultural_land/source.csv",
+      "sha256": "485a566e66613d39066675b25f73f74b07b7455078f70cb2de0e170b50a31d69",
+      "rows": 20,
+      "status": "included",
+      "dataset": "c4e95cb56c613a1ed595"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/18_terrestrial_protected_areas/processed.csv",
+      "sha256": "59c81ede709316ae6fae8f880e3e6151102d190e7b64113b5bb3232ef7550198",
+      "rows": 213,
+      "status": "included",
+      "dataset": "e2268e4f8bfa7aa0146c"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/18_terrestrial_protected_areas/source.csv",
+      "sha256": "dd292d5368222bb367a28b60abf8bb7a8ff79ead9b1eddb4f8a83c5d685107c0",
+      "rows": 2915,
+      "status": "included",
+      "dataset": "d4bc07e12981402b6def"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/19_marine_protected_areas/processed.csv",
+      "sha256": "6d6bff4413134854c72dbcff1e01088d769924e1efdc540d93456076b31c2ac5",
+      "rows": 174,
+      "status": "included",
+      "dataset": "d66a58b63c516211b77e"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/19_marine_protected_areas/source.csv",
+      "sha256": "d91176831e2429a8241d42c38b6d7f7dc05eafec3ff0f859f5e42edc96f073ab",
+      "rows": 2392,
+      "status": "included",
+      "dataset": "44856bd836e19020eb8f"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/20_marine_kba_protected_coverage/processed.csv",
+      "sha256": "ef896d8f59d6970a3c8af180be6d2460c2fbb4dfadb4ab016f106dcae04f6601",
+      "rows": 190,
+      "status": "included",
+      "dataset": "307e62ec6f9e15ffd7c2"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/20_marine_kba_protected_coverage/source.csv",
+      "sha256": "f5e2b5ad1be96c6604e92de7faa052b0e5f63c9f369af9268970d49907e27513",
+      "rows": 5356,
+      "status": "included",
+      "dataset": "645ef5ee99753e4f8589"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/21_renewable_energy_share/processed.csv",
+      "sha256": "09854ba001a924ce3d3dae6d50fdb17c6887fcefbc02b8913517bbb95834e6ed",
+      "rows": 84,
+      "status": "included",
+      "dataset": "cabdced8011a489dc19c"
+    },
+    {
+      "archive": "05_maintenance_and_response.zip",
+      "path": "05_maintenance_and_response/21_renewable_energy_share/source.csv",
+      "sha256": "087ebaf0ace0fa40101728fe448d76ee2e294b491b5dcd386e2da32176c57191",
+      "rows": 8309,
+      "status": "included",
+      "dataset": "9040a2b99635af369e3f"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/01_maintaining_systems/raw_xyz.csv",
+      "sha256": "00c69aaf4267b8cac930a82137128edd1664c4a702ed7317b319ca68ef74ff2c",
+      "rows": 183,
+      "status": "duplicate",
+      "dataset": "dfa8e5dceddea9cb6ceb"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/01_maintaining_systems/stat_01_distribution.csv",
+      "sha256": "d90408a936d5209bb3c906ea8dc13b5e647dd37ecf8394eb96a5a05107042d29",
+      "rows": 15,
+      "status": "duplicate",
+      "dataset": "672f9f8cb1ec4016f4ca"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/01_maintaining_systems/stat_02_rank_extremes.csv",
+      "sha256": "a43670704b153445dbeb8143d7ff640f7589c68a92611ec56ff2fb4a5ec95ca2",
+      "rows": 60,
+      "status": "duplicate",
+      "dataset": "4c882a273a43d5225ad5"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/01_maintaining_systems/stat_03_association.csv",
+      "sha256": "0861c81ec33e30eab36f30a5e4e867e0a843a7b3d053e70abe1a419ad5f73061",
+      "rows": 3,
+      "status": "duplicate",
+      "dataset": "5f1104bfb26c827636c2"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/01_maintaining_systems/stat_04_synthesis.csv",
+      "sha256": "4155bbc642b891eceef80be42e5f93eb6a5bab738a4f1067dce2ffae5eaf2fde",
+      "rows": 8,
+      "status": "duplicate",
+      "dataset": "978ce0d655f4459460ac"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/section02_main_01_xy_land_occupation_cultivation.csv",
+      "sha256": "cf50c26d7af96556c35ccffa3a16028d795e6ec3f6bb1df9f69ae66cd0dab067",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "507312544760135b44da"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/section02_main_02_xy_land_occupation_productivity.csv",
+      "sha256": "fbd14fab392ececd20b7cd4f602b295825a9447549c0de8bff188faec8799902",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "08e23869f8da2e3e0258"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/section02_main_03_xy_land_occupation_forest_change.csv",
+      "sha256": "b0c36c95f6030df7d757dc3d00382f79924e5a4fc7a49de7dc5d6cba1ddd7346",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "b40aafe947033b712a2d"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/section02_main_04_xy_productivity_forest_change.csv",
+      "sha256": "77131e196cb8cb91f9de983591641675353c32f41544fc1bf32ed3b9fbf65ef6",
+      "rows": 180,
+      "status": "duplicate",
+      "dataset": "c888509d56b033a7395c"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/stat_01_distribution.csv",
+      "sha256": "6ae57425dbb07515f31b86a27c466a4726136d3111faa838a880af7ca0d7b0e5",
+      "rows": 20,
+      "status": "duplicate",
+      "dataset": "0cedfaa18f63bc38a678"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/stat_02_association.csv",
+      "sha256": "68395d7031804750a1711ffc0a19be51a48ab3e3816f0886390443636cd8011e",
+      "rows": 6,
+      "status": "duplicate",
+      "dataset": "94cdcfa48ce79f6650c3"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/stat_03_forest_change_direction.csv",
+      "sha256": "3ebdc4ef05c7f24b2a6dd0aaca3d5931b8cd9d9f3729938c8d5860f1e6ee8ad2",
+      "rows": 3,
+      "status": "duplicate",
+      "dataset": "3c845d5799da2c56f1b0"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/02_land_transformation/stat_04_rank_extremes.csv",
+      "sha256": "4cc782324a9d2b91de26dfe89ea15169b6c6c55247b54a687f968da0b7256a5e",
+      "rows": 40,
+      "status": "duplicate",
+      "dataset": "83006f5a80eecedc1237"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/section03_main_01_xy_extraction_material_use.csv",
+      "sha256": "1a65afff9a0373ee6fa66f80465fc58a1d008579cc3ef7ad8af771bdce5845e0",
+      "rows": 166,
+      "status": "duplicate",
+      "dataset": "3fb696dded750ba908fd"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/section03_main_02_xyz_nutrient_chemical_input.csv",
+      "sha256": "415b9cfb8a1b93ccc953ddbe246af83a31778b50df3139fc9d59be2dc791a797",
+      "rows": 166,
+      "status": "duplicate",
+      "dataset": "6adee430170bd77152a0"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/section03_main_03_xy_nutrient_input_balance.csv",
+      "sha256": "6700d72b21718500c76d75f16f4dc361a44f3356cabb3b928092700fb076cab3",
+      "rows": 166,
+      "status": "duplicate",
+      "dataset": "88f857abcd21575cb55f"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/section03_main_04_xy_nutrient_chemical_pressure.csv",
+      "sha256": "d53a1775577f667b2dae31e6a0e48629eba1262945a0e3848c1033f45a451bb6",
+      "rows": 166,
+      "status": "duplicate",
+      "dataset": "0e9a56fee4a45b31d5b0"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/section03_main_07_xy_material_chemical_pressure.csv",
+      "sha256": "a281f51bee7bf9f3518dee6ebb6e9c241e6121365fb328e45a9635ec32eb3d59",
+      "rows": 166,
+      "status": "duplicate",
+      "dataset": "3e5d5de1fbf262706388"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/stat_01_distribution.csv",
+      "sha256": "692b200a7582d2a09cac1a9f8ef2091771534a3409a8662a63e82da0ccf2bac8",
+      "rows": 25,
+      "status": "duplicate",
+      "dataset": "7f0848943c9639a05114"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/stat_02_association.csv",
+      "sha256": "13bdf32302be917d04e9faa07e1a9c74de737c74c026098ec6d211e16439bb38",
+      "rows": 10,
+      "status": "duplicate",
+      "dataset": "15d1ccae717c36635b42"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/stat_03_water_stress_classes.csv",
+      "sha256": "ee6eb440b0829cfa2d5278647f75222ea8e1c2ecd7764ad21fbce5cd03223932",
+      "rows": 5,
+      "status": "duplicate",
+      "dataset": "a3f9cbbe3254d516a6ed"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/03_resource_pressure/stat_04_rank_extremes.csv",
+      "sha256": "26e8b8b6a3d2efd4f8a3d4e0b214b3a1087dac22be8a20db9bdd24fb6a5f588a",
+      "rows": 50,
+      "status": "duplicate",
+      "dataset": "37013d1d2f95ffe064a7"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_01_xy_energy_dependence_co2_output.csv",
+      "sha256": "e84576e4188d97d866c5b789d93e4312f513c878b25c0159012ceb82fe487791",
+      "rows": 120,
+      "status": "duplicate",
+      "dataset": "410debc8efa8704a7c79"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_02_xy_co2_n2o_per_capita.csv",
+      "sha256": "9be869d70083741465e6ff857c7b9a7e8288faa5e3368e62869b925b3ddeddad",
+      "rows": 120,
+      "status": "duplicate",
+      "dataset": "4662f4da5d9370d783bf"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_03_xy_energy_dependence_n2o_output.csv",
+      "sha256": "4649b721b083518e91a52d84411666b489a0b11439d68d91704697ba08f84f0c",
+      "rows": 120,
+      "status": "duplicate",
+      "dataset": "1d6fb30337d9a1f2b7e5"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/section04_main_04_xy_energy_dependence_methane_total.csv",
+      "sha256": "72efd414b8e7aa735c0a25c9b795f7a05dede86643190e2b6217fd9decdab098",
+      "rows": 120,
+      "status": "duplicate",
+      "dataset": "f4dacfbfa5850d69447b"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/stat_01_distribution.csv",
+      "sha256": "a7dfc712896284fb5eb67c1b09da984934894e695c8b930cba9d825b71b4f25a",
+      "rows": 20,
+      "status": "duplicate",
+      "dataset": "db1ae8da7dc5ec5ee73b"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/stat_02_association.csv",
+      "sha256": "a574463e8a3083f9074e558dd200c96ecdb00b971f923a4396891615e3869d4a",
+      "rows": 6,
+      "status": "duplicate",
+      "dataset": "2bd85b67e15860d8a17c"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/stat_03_fossil_dependence_classes.csv",
+      "sha256": "faf09ba4ed1ec1b915bd8b42d87e57cff30543cf439675a4d9a736e2f8385cd2",
+      "rows": 4,
+      "status": "duplicate",
+      "dataset": "76c75fc3490e95c3d0dc"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/04_atmospheric_pressure/stat_04_rank_extremes.csv",
+      "sha256": "739cb0bdaa1aea05eb75aa2ba6d5fb7ac4e6c7c81d822c2a7ecc37682eb67e8d",
+      "rows": 40,
+      "status": "duplicate",
+      "dataset": "9a51f705b04357d19c64"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_01_land_marine_kba_XYZ.csv",
+      "sha256": "5e391c1c24e5eb617144b3a10e95cc6f0402f9268577ce0c827a0c2c2c33ff92",
+      "rows": 160,
+      "status": "included",
+      "dataset": "0a5d960e3063f34dc855"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_02_land_renewable_XY.csv",
+      "sha256": "9011e6cc992973c1547d53380b3acf5671963326e29a7e7d2a3fd4e747407246",
+      "rows": 160,
+      "status": "included",
+      "dataset": "612323e1d9cbd2a3ce00"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_03_marine_renewable_XY.csv",
+      "sha256": "675787df24d6164cada0d53c3dde1adf91e8d163ecf19bdb767d3a5f6c4f6353",
+      "rows": 160,
+      "status": "included",
+      "dataset": "4276bac8f5d1cf72d4e8"
+    },
+    {
+      "archive": "final_csv_bundle.zip",
+      "path": "final_csv_bundle/05_maintenance_and_response/OUTPUT_04_marine_kba_renewable_XY.csv",
+      "sha256": "f455a1b14fead8bfc36701b34595217d5d4854aa2f1b8210af80145d83528750",
+      "rows": 160,
+      "status": "included",
+      "dataset": "9007db6d66c870534308"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/final_reading_relations.csv",
+      "sha256": "4369d999efa09e16f665f12ce8648edb7c898b5e2137f615de7012dacd005718",
+      "rows": 6,
+      "status": "included",
+      "dataset": "4c2a500297a9291e0868"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/final_reading_summary.csv",
+      "sha256": "25a82d29be37c02657dfd160134d91504c1df49ffbf2b23f43644f38fc86b33b",
+      "rows": 8,
+      "status": "included",
+      "dataset": "5e3d1fb8e3c4b45f45af"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/01_maintaining_systems/red_points.csv",
+      "sha256": "d5115d05e110b136a5766e2afec585653d276b93010a4c532fc917d134590644",
+      "rows": 1,
+      "status": "included",
+      "dataset": "5c0e90d1f1972f29d920"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/final_reading_relations.csv",
+      "sha256": "b5cf06d38912025bfd3f3dc756f4e93bd7e3b7e6e5b79cab1f630cdb2af7aceb",
+      "rows": 6,
+      "status": "included",
+      "dataset": "9eaa9dcb4eb679f3b0c0"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/final_reading_summary.csv",
+      "sha256": "bc47704239f186f7c43370e39258fdd43618b7b2f7a6ec29ee66b714a93f3e86",
+      "rows": 8,
+      "status": "included",
+      "dataset": "83e98e0885a1a61bc671"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/02_land_transformation/red_points.csv",
+      "sha256": "b955509b813b03d455422512795457ee33a50bc1c7e1503e8f813878c4365de6",
+      "rows": 3,
+      "status": "included",
+      "dataset": "498411dc54a4cf4229f6"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/final_reading_relations.csv",
+      "sha256": "0eeeb8e800afed4ce6c4e982915384bf8243b2e4dc6cd9bfe316b0c82cc042ad",
+      "rows": 10,
+      "status": "included",
+      "dataset": "9db5142207e15201f49b"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/final_reading_summary.csv",
+      "sha256": "c64135fb8d754163a53f10c97d0ca1bd9c4efb0c8ca0572045cb38e839d252ee",
+      "rows": 6,
+      "status": "included",
+      "dataset": "6506e29360170bba4a1e"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/03_resource_pressure/red_points.csv",
+      "sha256": "6fb09d54631d86039c95ec5be8cbfcba542c28c2e9c29d31092a78bd298a1a8c",
+      "rows": 1,
+      "status": "included",
+      "dataset": "389b6135fa38cfe9e867"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/final_reading_relations.csv",
+      "sha256": "9b4259f32917ffc5a9c9f164a4e51958539b606add7b1d814a1827be11fd11c0",
+      "rows": 6,
+      "status": "included",
+      "dataset": "1e64290b233788604401"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/final_reading_summary.csv",
+      "sha256": "9356dcbdb7a2fa78cfa69982c61c6049a8f33dc4eebc26d43d8296c9e7d054fe",
+      "rows": 4,
+      "status": "included",
+      "dataset": "7bd69c8f17707c65de3f"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/04_atmospheric_pressure/red_points.csv",
+      "sha256": "44b06877f5b50439bdb614de83127c11277021bad2ee4c75693fe78ce8458717",
+      "rows": 3,
+      "status": "included",
+      "dataset": "3959ca1c4c17645c8743"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/final_reading_relations.csv",
+      "sha256": "6cbbfaed37a8f3a53dcdb419401b577ee55dddfc7486e88752701f5cd13cf218",
+      "rows": 6,
+      "status": "included",
+      "dataset": "e1da6643968c699276b8"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/final_reading_summary.csv",
+      "sha256": "afea2d5e13bd5a01214716d23e8e05bc0000fa746d53870389ff8f941bb5e3ea",
+      "rows": 3,
+      "status": "included",
+      "dataset": "08ba2d3ab7fcebc6f661"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/05_maintenance_and_response/red_points.csv",
+      "sha256": "647754cffd88348d2d4831f8d95c9907a977d0fcdf4be17b9a01b2e5a4896997",
+      "rows": 1,
+      "status": "included",
+      "dataset": "8231f1c1ebf03aca3673"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/ALL_final_reading_relations.csv",
+      "sha256": "93f7ee40876500880ffb00a2c9089b440a682f4115b7ca5b11c146f50018872b",
+      "rows": 34,
+      "status": "union index; section files retained separately"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/ALL_final_reading_summary.csv",
+      "sha256": "7561fe3a593a28fe202cfdcb132f607dc476734151412d0506805c43416be93e",
+      "rows": 29,
+      "status": "union index; section files retained separately"
+    },
+    {
+      "archive": "planetary_boundaries_redpoints_finalreading_bundle.zip",
+      "path": "planetary_boundaries_redpoints_finalreading_bundle/ALL_red_points.csv",
+      "sha256": "b6d6be2183ac5646522754d6d3d6c337bc6327616900644802223d2b1e695267",
+      "rows": 9,
+      "status": "union index; section files retained separately"
+    }
+  ],
+  "archiveHashes": {
+    "01_maintaining_systems.zip": "34b17b1bec8c076f398992e9de2e9aa183b8dc0c41f8425e24e092f1c7d85ecb",
+    "02_land_transformation.zip": "dd5f4ccdf518fb915e7515de7582af23c928eb82f11cbd33977d0d8577359677",
+    "03_resource_pressure.zip": "cbc6ecc6d285e80be93cfff92b31023e2573c237bba5afdf7d2d8e013957a637",
+    "04_atmospheric_pressure.zip": "2a32facd787472a8bb57283dc151181939bb71d1d6eb80fb2f3e352d1c311faf",
+    "05_maintenance_and_response.zip": "bb60bf6e4af72b2137c6de21a431742ac1bee816172c2060dd534d6715ea5890",
+    "final_csv_bundle.zip": "035561c830fd35296d5da093d4f64938b32cfcf41d578a8dd585575e3b28ad27",
+    "planetary_boundaries_redpoints_finalreading_bundle.zip": "f9125eceee4bf25b03a63c61a36ade7b5e6cb2857f83142e4a277fe879c7aee5"
+  },
+  "counts": {
+    "csvFiles": 133,
+    "uniqueDatasets": 96,
+    "uniqueFileRows": 257474
+  }
+}
