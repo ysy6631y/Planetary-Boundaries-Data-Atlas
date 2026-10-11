@@ -40,7 +40,9 @@ export function createClimateLayer(data, direction, scene, labelHost) {
         float radius = length(gl_PointCoord - vec2(0.5)) * 2.0;
         if (radius > 1.0) discard;
         float disc = 1.0 - smoothstep(0.62, 0.86, radius);
-        vec3 color = mix(vec3(0.70, 0.91, 0.94), vec3(0.78, 0.80, 0.79), overview);
+        // Keep source observations in the same warm white language as the
+        // atlas nodes; reserve color for the selected signal and axis guide.
+        vec3 color = mix(vec3(0.93, 0.92, 0.88), vec3(0.78, 0.80, 0.79), overview);
         color = mix(color, vec3(1.0, 0.30, 0.23), selectedPoint);
         gl_FragColor = vec4(color, disc * depthLight * opacity * mix(1.0, 0.85, overview));
       }`,
