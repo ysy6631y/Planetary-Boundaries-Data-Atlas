@@ -14,11 +14,12 @@ export function createClimateLayer(data, direction, scene, labelHost) {
   scene.add(root);
   const material = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { opacity: { value: 0 }, pixelRatio: { value: 1 }, selected: { value: -1 }, overview: { value: 0 } },
+    uniforms: { opacity: { value: 0 }, pixelRatio: { value: 1 }, selected: { value: -1 }, hovered: { value: -1 }, overview: { value: 0 } },
     vertexShader: `
       attribute float observationIndex;
       uniform float pixelRatio;
       uniform float selected;
+      uniform float hovered;
       uniform float overview;
       varying float selectedPoint;
       varying float depthLight;
@@ -26,7 +27,8 @@ export function createClimateLayer(data, direction, scene, labelHost) {
         vec4 view = modelViewMatrix * vec4(position, 1.0);
         selectedPoint = abs(observationIndex - selected) < 0.1 ? 1.0 : 0.0;
         depthLight = clamp(16.0 / max(1.0, -view.z), 0.4, 1.0);
-        float detailSize = clamp(50.0 / max(1.0, -view.z), 2.1, 3.4) + selectedPoint * 1.4;
+        float hoverPoint = abs(observationIndex - hovered) < 0.1 ? 1.0 : 0.0;
+        float detailSize = clamp(50.0 / max(1.0, -view.z), 2.1, 3.4) + selectedPoint * 1.4 + hoverPoint * 0.7;
         float overviewSize = clamp(32.0 / max(1.0, -view.z), 1.4, 2.2);
         gl_PointSize = mix(detailSize, overviewSize, overview) * pixelRatio;
         gl_Position = projectionMatrix * view;
@@ -145,7 +147,8 @@ export function createClimateLayer(data, direction, scene, labelHost) {
     get data() { return data; },
     get canSurface() { return canSurface; },
     setData(next, nextDirection, title) {
-      chosen = -1; material.uniforms.selected.value = -1;
+      chosen = -1; material.uniforms.selected.value = -1; material.uniforms.hovered.value = -1;
+      alpha = 0;
       data = next; boundaryTitle = title;
       root.position.fromArray(nextDirection).multiplyScalar(3.5);
       axisLabels.forEach((el, index) => { el.title = data.axes[index] ?? ''; });
@@ -157,6 +160,7 @@ export function createClimateLayer(data, direction, scene, labelHost) {
     get positions() { return layout.positions; },
     activate(value) { active = value; envelope.visible = active && surface && canSurface; axisGuide.visible = active; if (!value) this.select(-1); },
     select(index) { chosen = index; material.uniforms.selected.value = index; },
+    hover(index) { material.uniforms.hovered.value = index; },
     setSurface(value) { surface = value; envelope.visible = active && surface && canSurface; },
     pick(x, y, camera, width, height) {
       if (!active || alpha < 0.2) return null;
