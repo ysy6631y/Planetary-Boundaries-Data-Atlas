@@ -82,3 +82,21 @@ datasets are absent; the unavailable states were tested. Validation uses local
 Chrome; exhibition hardware, other browser engines and screen readers were not
 tested. Desktop 16:9 screens are the verified target; smaller layouts have CSS
 fallbacks but are not claimed to have the same exhibition validation.
+
+## Layout polish after checkpoint 83e0c90
+
+- Saved the preceding UI implementation as commit `83e0c90`.
+- Updated `index.html` and `src/style.css`: consistent left vertical datum for
+  fixed UI, smaller observation distance without CAMERA TO TARGET, separated
+  toolbar and layer legend, restrained layer indicators, and header/control/meta
+  grouping in the bottom panel.
+- Kept all tool IDs and handlers. BOUNDARY, ALIGN AXIS and SAVE PNG are now in
+  READOUT; VIEW and FOCUS remain in the upper toolbar.
+- Preserved the distance output's accessible description as camera-to-target
+  distance in scene units.
+- Repeated the production build and UI browser regression suite successfully.
+  All four desktop sizes passed bounds/overlap checks, including open READOUT.
+  Browser error collection remains empty.
+- Reviewed the updated 1920×1080 capture in `validation/ui-layout-record.png`;
+  overview and analysis captures use the same `ui-layout-` prefix.
+- This layout polish is a separate, uncommitted change after the checkpoint.

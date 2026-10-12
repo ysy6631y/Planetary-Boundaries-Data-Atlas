@@ -19,18 +19,21 @@
       <div id="scene"></div><div id="labels"></div>
       <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false"><i data-lucide="eye-off"></i><i data-lucide="eye"></i></button>
       <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span><div class="tools" aria-label="View commands">
-        <button id="fit" title="Full view" aria-label="Full view"><i data-lucide="maximize"></i></button>
-        <button id="save-image" title="Save current view as 4K PNG (no interface)" aria-label="Save 4K PNG"><i data-lucide="download"></i></button>
-        <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i></button>
-        <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><i data-lucide="crosshair"></i></button>
-        <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i></button>
+        <button id="fit" title="Full view" aria-label="Full view"><i data-lucide="maximize"></i><span class="tool-name">VIEW</span></button>
+        <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><i data-lucide="crosshair"></i><span class="tool-name">FOCUS</span></button>
       </div></div>
       <div class="legend">
         <span><b class="origin-key"></b>BASELINE <strong>R=0</strong></span>
         <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>BOUNDARY <strong>R=1</strong></label>
         <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH RISK <strong>R=2</strong></label>
       </div>
-      <div class="scene-bottom"><div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance">-</output><small>CAMERA TO TARGET</small></div><div id="observer-controls" class="observer-controls" hidden><div class="projection-status" aria-label="Projected view readout">
+      <div class="scene-bottom"><div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance" aria-label="Camera to target distance in scene units">-</output></div><div id="observer-controls" class="observer-controls" hidden>
+        <div class="readout-tools"><span class="eyebrow">VIEW TOOLS</span><div class="tools" aria-label="Additional view commands">
+          <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i><span class="tool-name">BOUNDARY</span></button>
+          <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i><span class="tool-name">ALIGN AXIS</span></button>
+          <button id="save-image" title="Save current view as 4K PNG (no interface)" aria-label="Save 4K PNG"><i data-lucide="download"></i><span class="tool-name">SAVE PNG</span></button>
+        </div></div>
+        <div class="projection-status" aria-label="Projected view readout">
         <span>FRAME <output id="observer-frame">GROUP AXIS</output></span>
         <span>BEARING <output id="observer-bearing">--</output></span>
         <span>ELEVATION <output id="observer-elevation">--</output></span>
@@ -44,11 +47,15 @@
       <div id="local-field" class="local-field" hidden role="region" aria-label="Analysis controls">
         <div class="analysis-head"><div><span class="eyebrow">ANALYSIS CONTROL</span><strong id="local-title">CLIMATE</strong></div><button id="analysis-toggle" class="panel-toggle" type="button" aria-label="Collapse analysis controls" aria-expanded="true" aria-controls="analysis-body" title="Collapse analysis controls">−</button></div>
         <div id="analysis-body" class="analysis-body">
+        <div class="analysis-controls">
         <label class="dataset-picker">DATA <select id="dataset-select" aria-label="Boundary dataset"></select></label>
-        <div class="dataset-summary"><span id="dataset-format"></span><span id="local-count" role="status" aria-live="polite">READING DATA...</span></div>
         <div class="record-tools"><label>ENTITY <select id="entity-filter" aria-label="Filter source entity"><option value="">ALL ENTITIES</option></select></label><label>CSV ROW <input id="source-record" type="number" min="2" step="1" value="2" aria-label="Inspect original CSV row"></label></div>
         <div class="climate-settings"><label>AXES <select id="climate-scale" aria-label="Local analysis axis scale"><option value="linear">LINEAR</option><option value="log" selected>LOG Y / Z</option></select></label><label title="Convex envelope of displayed observations; not a correlation or risk surface"><input type="checkbox" id="climate-surface">EXTENT</label></div>
+        </div>
+        <div class="analysis-meta">
+        <div class="dataset-summary"><span id="dataset-format"></span><span id="local-count" role="status" aria-live="polite">READING DATA...</span></div>
         <small id="local-axes"></small><details class="source-details"><summary>DATA CONTEXT & SOURCE</summary><small id="local-shared"></small><small id="local-source"></small></details>
+        </div>
         </div>
       </div>
       <div id="risk-ruler" class="risk-ruler" hidden><strong id="risk-value"></strong><div class="risk-scale"><div id="risk-stem"></div><i style="bottom:0">0</i><i style="bottom:24px">1 / BOUNDARY</i><i style="bottom:48px">2 / HIGH RISK</i><b id="risk-mark"></b></div></div>
