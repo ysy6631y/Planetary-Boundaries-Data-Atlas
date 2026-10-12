@@ -31,7 +31,7 @@ export function prepareDataset(meta, payload) {
 
 export async function loadDataset(meta) {
   if (!cache.has(meta.id)) {
-    cache.set(meta.id, fetch(meta.url).then((response) => {
+    cache.set(meta.id, fetch(`${import.meta.env.BASE_URL}${meta.url.replace(/^\//, '')}`).then((response) => {
       if (!response.ok) throw new Error(`Cannot load ${meta.title} (${response.status})`);
       return response.json();
     }).then((payload) => prepareDataset(meta, payload)).catch((error) => { cache.delete(meta.id); throw error; }));

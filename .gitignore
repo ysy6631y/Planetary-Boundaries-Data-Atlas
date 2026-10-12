@@ -10,3 +10,13 @@ checkpoints/
 # Generated validation captures/reports are reproducible and can be large.
 validation/*.png
 validation/*.json
+
+# Local working notes and review tools are not site source.
+*.md
+exports/
+scripts/
+tests/
+audit/INVENTORY.md
+audit/generate.source.js.txt
+audit/inventory.json
+audit/summary.json

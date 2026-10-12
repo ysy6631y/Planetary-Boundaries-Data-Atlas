@@ -4,11 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "data:atlas": "python3 scripts/build-atlas-data.py",
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build",
-    "test": "node --test tests/*.test.js",
-    "validate": "node scripts/validate.mjs"
+    "build": "vite build"
   },
   "devDependencies": {
     "playwright": "1.63.0",
