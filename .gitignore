@@ -14,6 +14,7 @@ validation/*.json
 # Local working notes and review tools are not site source.
 *.md
 exports/
+research/
 scripts/
 tests/
 audit/INVENTORY.md
