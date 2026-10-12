@@ -16,5 +16,6 @@ try {
   await page.screenshot({ path: `validation/${prefix}-analysis.png` });
   await page.locator('#source-record').fill('2');
   await page.locator('#source-record').dispatchEvent('change');
+  await page.waitForTimeout(400);
   await page.screenshot({ path: `validation/${prefix}-record.png` });
 } finally { await browser.close(); }

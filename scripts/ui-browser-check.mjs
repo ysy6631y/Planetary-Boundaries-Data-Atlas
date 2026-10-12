@@ -131,7 +131,7 @@ try {
   await dataset(xy.id);
   assert.equal(await page.locator('#climate-surface').isDisabled(), true);
   assert.ok((await page.evaluate(() => window.__PB_DEBUG__.climate().positions)).every((position) => position[2] === 0));
-  await page.waitForTimeout(500);
+  await page.waitForFunction(() => window.__PB_DEBUG__.motion().projection === 1);
   const candidate = await page.evaluate(() => window.__PB_DEBUG__.climate().projected.find((p) => p.visible && p.x > 400 && p.x < 1350 && p.y > 230 && p.y < 650));
   assert.ok(candidate); await page.mouse.click(candidate.x, candidate.y);
   assert.equal(await page.locator('#inspector').isVisible(), true);
@@ -145,7 +145,7 @@ try {
   const final = await snapshot();
   assert.deepEqual(stable(final), stable(initial)); assert.equal(final.failed, 0); assert.equal(final.stateUnchanged, true);
   report.checks.push('Analysis fold, XY planar handling, observation picking, drag, wheel and immutable 11 control points/orbits');
-  report.autoRotation = 'Not present in baseline code; no automatic motion added';
+  report.autoRotation = 'Overview observation rotation; manual input suspends it until explicit overview return';
   assert.deepEqual(report.errors, []);
   report.status = 'PASS';
 } catch (error) {

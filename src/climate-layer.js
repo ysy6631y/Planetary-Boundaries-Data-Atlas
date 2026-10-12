@@ -7,6 +7,9 @@ export function createClimateLayer(data, direction, scene, labelHost) {
   let projectionCache = null;
   let geometryVersion = 0;
   let canSurface = false;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let projectionStarted = performance.now();
+  let fadingAt = null;
   const root = new THREE.Group();
   // Keep the country field near the climate chapter, without assigning it a PB risk radius.
   root.position.fromArray(direction).multiplyScalar(3.5);
@@ -14,23 +17,36 @@ export function createClimateLayer(data, direction, scene, labelHost) {
   scene.add(root);
   const material = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { opacity: { value: 0 }, pixelRatio: { value: 1 }, selected: { value: -1 }, hovered: { value: -1 }, overview: { value: 0 } },
+    uniforms: { opacity: { value: 0 }, pixelRatio: { value: 1 }, selected: { value: -1 }, hovered: { value: -1 }, overview: { value: 0 }, projection: { value: 1 }, observationCount: { value: data.observations.length }, clock: { value: 0 }, idle: { value: 0 } },
     vertexShader: `
       attribute float observationIndex;
       uniform float pixelRatio;
       uniform float selected;
       uniform float hovered;
       uniform float overview;
+      uniform float projection;
+      uniform float observationCount;
+      uniform float clock;
+      uniform float idle;
+      varying float reveal;
+      varying float scan;
+      varying float hoverLight;
       varying float selectedPoint;
       varying float depthLight;
       void main() {
         vec4 view = modelViewMatrix * vec4(position, 1.0);
         selectedPoint = abs(observationIndex - selected) < 0.1 ? 1.0 : 0.0;
+        float order = observationIndex / max(1.0, observationCount - 1.0);
+        reveal = max(selectedPoint, smoothstep(order * 0.72, order * 0.72 + 0.28, projection));
+        float cycle = mod(clock, 8.0);
+        float scanned = mod(floor(clock / 8.0) * 17.0, max(1.0, observationCount));
+        scan = idle * (abs(observationIndex - scanned) < 0.1 ? 1.0 : 0.0) * sin(clamp(cycle / 1.2, 0.0, 1.0) * 3.14159265);
         depthLight = clamp(16.0 / max(1.0, -view.z), 0.4, 1.0);
         float hoverPoint = abs(observationIndex - hovered) < 0.1 ? 1.0 : 0.0;
+        hoverLight = hoverPoint;
         float detailSize = clamp(50.0 / max(1.0, -view.z), 2.1, 3.4) + selectedPoint * 1.4 + hoverPoint * 0.7;
         float overviewSize = clamp(32.0 / max(1.0, -view.z), 1.4, 2.2);
-        gl_PointSize = mix(detailSize, overviewSize, overview) * pixelRatio;
+        gl_PointSize = mix(detailSize, overviewSize, overview) * pixelRatio * mix(0.9, 1.0, reveal);
         gl_Position = projectionMatrix * view;
       }`,
     fragmentShader: `
@@ -38,6 +54,9 @@ export function createClimateLayer(data, direction, scene, labelHost) {
       uniform float overview;
       varying float selectedPoint;
       varying float depthLight;
+      varying float reveal;
+      varying float scan;
+      varying float hoverLight;
       void main() {
         float radius = length(gl_PointCoord - vec2(0.5)) * 2.0;
         if (radius > 1.0) discard;
@@ -46,7 +65,8 @@ export function createClimateLayer(data, direction, scene, labelHost) {
         // atlas nodes; reserve color for the selected signal and axis guide.
         vec3 color = mix(vec3(0.93, 0.92, 0.88), vec3(0.78, 0.80, 0.79), overview);
         color = mix(color, vec3(1.0, 0.30, 0.23), selectedPoint);
-        gl_FragColor = vec4(color, disc * depthLight * opacity * mix(1.0, 0.85, overview));
+        color = mix(color, vec3(1.0), max(scan * 0.35, hoverLight * 0.3));
+        gl_FragColor = vec4(color, disc * depthLight * opacity * reveal * mix(1.0, 0.85, overview));
       }`,
   });
   const points = new THREE.Points(new THREE.BufferGeometry(), material);
@@ -149,6 +169,9 @@ export function createClimateLayer(data, direction, scene, labelHost) {
     setData(next, nextDirection, title) {
       chosen = -1; material.uniforms.selected.value = -1; material.uniforms.hovered.value = -1;
       alpha = 0;
+      projectionStarted = performance.now(); fadingAt = null;
+      material.uniforms.projection.value = reducedMotion.matches ? 1 : 0;
+      material.uniforms.observationCount.value = next.observations.length;
       data = next; boundaryTitle = title;
       root.position.fromArray(nextDirection).multiplyScalar(3.5);
       axisLabels.forEach((el, index) => { el.title = data.axes[index] ?? ''; });
@@ -158,26 +181,31 @@ export function createClimateLayer(data, direction, scene, labelHost) {
     get mode() { return layout.mode; },
     get selectedIndex() { return chosen; },
     get positions() { return layout.positions; },
+    get projectionProgress() { return material.uniforms.projection.value; },
+    fadeOut() { fadingAt = performance.now(); envelope.visible = false; this.select(-1); },
     activate(value) { active = value; envelope.visible = active && surface && canSurface; axisGuide.visible = active; if (!value) this.select(-1); },
     select(index) { chosen = index; material.uniforms.selected.value = index; },
     hover(index) { material.uniforms.hovered.value = index; },
     setSurface(value) { surface = value; envelope.visible = active && surface && canSurface; },
     pick(x, y, camera, width, height) {
-      if (!active || alpha < 0.2) return null;
-      return projected(camera, width, height).filter((p) => p.visible && Math.hypot(x - p.x, y - p.y) < 8)
+      if (!active || alpha < 0.2 || fadingAt !== null) return null;
+      return projected(camera, width, height).filter((p) => p.visible && material.uniforms.projection.value >= p.index / Math.max(1, data.observations.length - 1) * .72 + .28 && Math.hypot(x - p.x, y - p.y) < 8)
         .sort((a, b) => Math.hypot(x - a.x, y - a.y) - Math.hypot(x - b.x, y - b.y))[0] ?? null;
     },
     update(now, camera, width, height, pixelRatio, rightLimit) {
-      axisGuide.visible = active && !this.overview;
+      axisGuide.visible = active && !this.overview && fadingAt === null;
       const dt = Math.min(0.1, (now - (lastTime ?? now)) / 1000); lastTime = now;
-      alpha = THREE.MathUtils.damp(alpha, active ? 1 : 0.025, 4, dt);
-      material.uniforms.opacity.value = alpha;
+      alpha = reducedMotion.matches ? (active ? 1 : .025) : THREE.MathUtils.damp(alpha, active ? 1 : 0.025, 8, dt);
+      material.uniforms.opacity.value = alpha * (fadingAt === null ? 1 : reducedMotion.matches ? 0 : Math.max(0, 1 - (now - fadingAt) / 120));
+      material.uniforms.projection.value = reducedMotion.matches ? 1 : Math.min(1, Math.max(0, (now - projectionStarted) / 640));
+      material.uniforms.clock.value = now / 1000 + direction[0] * 2 + direction[1] * 3;
+      material.uniforms.idle.value = this.overview && !reducedMotion.matches ? 1 : 0;
       material.uniforms.pixelRatio.value = pixelRatio;
       material.uniforms.overview.value = this.overview ? 1 : 0;
       labels.forEach((el) => { el.hidden = true; });
       axisLabels.forEach((el) => { el.hidden = true; });
       fieldLabel.hidden = true;
-      if (!active || alpha < 0.6 || this.overview) return;
+      if (!active || alpha < 0.6 || this.overview || fadingAt !== null) return;
       camera.updateMatrixWorld(); root.updateMatrixWorld();
       const projectLocal = (local) => {
         const p = root.localToWorld(local.clone()).project(camera);
@@ -194,7 +222,7 @@ export function createClimateLayer(data, direction, scene, labelHost) {
         label.hidden = false;
         reserved.push({ x: p.x + 7, y: p.y - 4, w: 16, h: 14 });
       });
-      const projectedPoints = projected(camera, width, height).filter((p) => p.visible);
+      const projectedPoints = projected(camera, width, height).filter((p) => p.visible && (p.index === chosen || material.uniforms.projection.value >= p.index / Math.max(1, data.observations.length - 1) * .72 + .28));
       if (projectedPoints.length) {
         const x = Math.min(...projectedPoints.map((p) => p.x));
         const y = Math.min(...projectedPoints.map((p) => p.y));

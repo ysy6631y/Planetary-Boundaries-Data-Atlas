@@ -114,3 +114,103 @@ fallbacks but are not claimed to have the same exhibition validation.
 - Production build and UI browser regression pass; all four desktop sizes have
   no panel clipping/overlap and browser errors are empty. Captures use
   `validation/ui-lines-` prefix. These latest changes remain uncommitted.
+
+## Final surface and toolbar pass after checkpoint 336ffd5
+
+- Saved the selected-label rule and preceding changes as `336ffd5`.
+- Compared black opacity pairs 90%/92%, 92%/94%, and 94%/96% on the same
+  1920×1080 selected-observation view. Chose 92% bottom and 94% right: faint
+  underlying orbits remain visible without becoming competing rules under text.
+  No blur, gradients, rounded panels or shadows were added.
+- Unified VIEW, FOCUS and UI into one 30px-high text toolbar. Camera commands use
+  `aria-current` for current framing, while the existing UI toggle retains
+  `aria-pressed`; white thin underlines distinguish states without risk red.
+- Reduced legend typography from 10px to 8px and line samples from 15px to 12px.
+  Kept 28px-high click rows, original layer inputs and handlers; removed duplicate
+  R values. Removed the distance anchor while preserving its numeric output.
+- Kept left rules on both analysis panels and the selected floating analysis
+  label. Standardized analysis input heights at 32px.
+- Files: `index.html`, `src/style.css`, `src/main.js`,
+  `scripts/ui-surface-check.mjs`, this report. No camera mathematics, CSV data,
+  spatial positions or orbit geometry were changed.
+- Production build, full UI browser regression and the added surface/toolbar
+  check pass. Four desktop 16:9 sizes pass panel bounds/overlap checks. Dropdown
+  keyboard, ENTITY, AXES, EXTENT, source readout, folding, node picking, drag and
+  wheel pass; console error list is empty. Toolbar alignment, layer toggles and
+  UI hide/restore were additionally checked. Existing bundle-size warning remains.
+- Reviewed comparison captures `validation/ui-surface-{lighter,balanced,denser}.png`.
+  Final captures use `validation/ui-final-` prefix.
+- Automatic orbiting is absent from the inspected baseline, so cannot be
+  verified; no motion was added. Exhibition hardware and other browsers remain
+  untested. This final pass is uncommitted after the requested checkpoint.
+
+## Observation motion implementation
+
+This pass adds observation motion explicitly requested after the UI finish.
+The earlier baseline had no automatic rotation. The new overview rotation moves
+the observer camera around the fixed atlas; node coordinates, radii and orbit
+geometry remain unchanged. Source CSVs and display transforms remain unchanged.
+
+### Behavior
+
+- Overview rotates at OrbitControls speed 0.12, with delta-time updates. Drag or
+  wheel stops automatic rotation until the user explicitly returns with VIEW.
+  Active analysis, focus transitions, hidden documents and reduced motion do not
+  auto-rotate. There is no inactivity timer or automatic selection reset.
+- One primary node per 7-second interval receives at most 0.08 additional
+  opacity; each overview observation layer has one staggered brief white scan.
+  Scan changes brightness only and adds no risk interpretation or new values.
+- Existing immediate target/related-line emphasis and 950ms camera interpolation
+  are preserved. Manual canvas input interrupts focus. Repeated focus requests
+  restart from the actual current camera pose.
+- Dataset replacement fades the old points over 120ms and reveals the new
+  points by source observation index over 640ms. Only opacity and screen-space
+  point size change. All source observations remain in the geometry. Hidden
+  observations cannot be picked; explicit source-row selections appear at once.
+- Actual fetch state uses READING DATA. Once the fetch resolves, DATASET LOADED
+  replaces it even if the remaining visual fade is still running; exact counts
+  and axes appear with the newly bound data. No live-data claims/counters added.
+- Existing request tokens guard both fetch and visual wait completion. Dataset
+  replacement never calls camera focus. Record-only and absent-CSV states retain
+  their existing behavior.
+- Panel rules, headings and content fade in over short overlapping 140–360ms
+  intervals. Available controls are never hidden by a fake loading sequence.
+  Folding uses a 160ms height/opacity transition; overview return uses a 750ms
+  camera transition and a 100ms panel exit, with outgoing controls inert.
+- Dropdown opening uses a 120ms fade/3px translation. Hover feedback remains
+  restrained. Existing layer checkboxes still directly control their 3D layers.
+- Reduced motion removes automatic rotation/scans, sequential projection, menu
+  and panel effects; focus reaches its destination immediately. Preference
+  changes cancel current panel effects and finish camera interpolation.
+
+### Files and validation
+
+Motion changes: `src/main.js`, `src/climate-layer.js`, `src/style.css`.
+Regression updates: `scripts/ui-browser-check.mjs`; new coverage:
+`scripts/ui-motion-check.mjs`. Earlier uncommitted toolbar/legend work remains
+in place. No animation library was added.
+
+- `npm test`: 15/15 pass; `npm run validate`: 11/11 pass.
+- Production build passes with the preexisting bundle-size warning.
+- UI browser suite passes at all four 16:9 desktop sizes, including original
+  dropdown keyboard, filtering, axes/extent, folding, picking and camera input.
+- Existing atlas browser suite passes all nine boundaries, 38,150-row history,
+  original source readout and stale asynchronous request protection.
+- Motion suite covers normal/reduced environments, idle camera rotation,
+  manual suspension, sequential projection, exact point counts, camera retention,
+  latest-request precedence, focus interruption/overview return during a dataset
+  switch, and unchanged planetary coordinates/radii.
+- Latest serial headless Chrome measurement on the 1920×1080 analysis view:
+  median frame interval 16.7ms, p95 16.8ms (68 sampled intervals); reduced motion
+  median 16.7ms, p95 33.2ms (65 intervals). Earlier
+  concurrent browser runs measured about 33ms; these are short local samples,
+  not an exhibition-hardware performance guarantee.
+- Browser JavaScript/shader error collection is empty. Source payload, manifest,
+  data parser, spatial mapping and observation math show no changes from
+  checkpoint `336ffd5`.
+- Captures: `validation/ui-observation-*.png`, `validation/ui-motion-*.png`.
+  Machine-readable report: `validation/ui-motion-check.json`.
+
+Exhibition hardware, prolonged GPU performance and other browser engines have
+not been tested. Existing three boundaries without source CSVs remain accurately
+unavailable. Changes are uncommitted.

@@ -17,15 +17,16 @@
     </nav>
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
-      <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false">UI ON</button>
-      <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span><div class="tools" aria-label="View commands">
+      <div class="observation-toolbar tools" role="toolbar" aria-label="View and interface commands">
         <button id="fit" title="Full view" aria-label="Full view"><span class="tool-name">VIEW</span></button>
         <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><span class="tool-name">FOCUS</span></button>
-      </div></div>
+        <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false">UI ON</button>
+      </div>
+      <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span></div>
       <div class="legend">
-        <span><b class="origin-key"></b>BASELINE <strong>R=0</strong></span>
-        <label><input id="pb-toggle" type="checkbox" checked><b class="pb-key"></b>BOUNDARY <strong>R=1</strong></label>
-        <label><input id="hr-toggle" type="checkbox" checked><b class="hr-key"></b>HIGH RISK <strong>R=2</strong></label>
+        <div class="legend-row"><i class="legend-dot" aria-hidden="true"></i><b class="origin-key" aria-hidden="true"></b><span>BASELINE</span></div>
+        <label class="legend-row"><input id="pb-toggle" type="checkbox" checked><b class="pb-key" aria-hidden="true"></b><span>BOUNDARY</span></label>
+        <label class="legend-row"><input id="hr-toggle" type="checkbox" checked><b class="hr-key" aria-hidden="true"></b><span>HIGH RISK</span></label>
       </div>
       <div class="scene-bottom"><div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance" aria-label="Camera to target distance in scene units">-</output></div><div id="observer-controls" class="observer-controls" hidden>
         <div class="readout-tools"><span class="eyebrow">VIEW TOOLS</span><div class="tools" aria-label="Additional view commands">

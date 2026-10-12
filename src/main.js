@@ -16,6 +16,41 @@ import { datasetPresentation, axisLabel } from './dataset-presentation.js';
 import { enhanceSelect, closeSelects } from './select-control.js';
 import './style.css';
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let manualObservation = false;
+let lastMotionTime = null;
+const panelAnimations = new WeakMap();
+function revealPanel(panel) {
+  panelAnimations.get(panel)?.forEach(animation => animation.cancel());
+  panel.inert = false;
+  if (reducedMotion.matches) return;
+  const animations = [panel.animate([{ borderLeftColor: 'transparent' }, { borderLeftColor: '#62645e' }], { duration: 140 })];
+  for (const [selector, delay] of panel.id === 'local-field'
+    ? [['.analysis-head', 40], ['.analysis-controls', 100], ['.analysis-meta', 150]]
+    : [['.panel-head', 40], ['.instrument-tabs', 80], ['#reference-content', 110], ['#observer-content', 150], ['#relation-content', 180]]) {
+    const element = panel.querySelector(selector);
+    if (element) animations.push(element.animate([{ opacity: .6 }, { opacity: 1 }], { duration: 180, delay }));
+  }
+  panelAnimations.set(panel, animations);
+}
+function concealPanel(panel) {
+  panelAnimations.get(panel)?.forEach(animation => animation.cancel());
+  if (panel.hidden || reducedMotion.matches) { panel.hidden = true; return; }
+  panel.inert = true;
+  const animation = panel.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100 });
+  const token = [animation]; panelAnimations.set(panel, token);
+  animation.onfinish = () => { if (panelAnimations.get(panel) === token) { panel.hidden = true; panel.inert = false; } };
+}
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches) {
+    for (const id of ['local-field', 'inspector', 'analysis-body']) {
+      const panel = document.getElementById(id);
+      if (panel?.inert) { panel.hidden = true; panel.inert = false; }
+      panel?.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
+    }
+  }
+});
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => n === null || n === undefined ? 'NOT QUANTIFIED' : String(Number(Number(n).toPrecision(10)));
 const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -76,6 +111,7 @@ renderer.domElement.addEventListener('wheel', (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
   cancelFocus();
+  manualObservation = true; orbit.autoRotate = false;
   const current = orbit.getDistance();
   const next = wheelDistance(current, event.deltaY, event.deltaMode, renderer.domElement.clientHeight, orbit.minDistance, orbit.maxDistance);
   if (next < current) orbit.dollyIn(next / current);
@@ -503,9 +539,10 @@ function refreshField(data) {
 
 async function openDataset(id) {
   const request = ++datasetRequest;
+  const fadeStarted = performance.now();
   const groupId = selectedGroup.id;
   inspectedRecord = null; datasetError = null; datasetFull = null;
-  climate.activate(false); climate.root.visible = false; climateChapterLink.visible = false;
+  climate.fadeOut(); climateChapterLink.visible = false;
   $('local-count').textContent = 'READING DATA...';
   $('local-field').classList.add('loading');
   $('local-field').classList.remove('load-error');
@@ -519,6 +556,11 @@ async function openDataset(id) {
   $('inspector').hidden = true;
   try {
     const data = await loadDataset(metadataById.get(id));
+    if (request !== datasetRequest || selectedGroup.id !== groupId) return;
+    $('local-count').textContent = 'DATASET LOADED';
+    $('local-field').setAttribute('aria-busy', 'false');
+    const remainingFade = reducedMotion.matches ? 0 : Math.max(0, 120 - (performance.now() - fadeStarted));
+    if (remainingFade) await new Promise(resolve => setTimeout(resolve, remainingFade));
     if (request !== datasetRequest || selectedGroup.id !== groupId) return;
     datasetFull = data;
     datasetMemory.set(groupId, id);
@@ -535,6 +577,7 @@ async function openDataset(id) {
   } catch (error) {
     if (request !== datasetRequest) return;
     datasetError = error.message;
+    climate.activate(false); climate.root.visible = false;
     $('local-count').textContent = `LOAD FAILED / ${error.message}`;
     $('local-field').classList.remove('loading'); $('local-field').classList.add('load-error');
     $('local-field').setAttribute('aria-busy', 'false');
@@ -547,6 +590,7 @@ function openBoundary(group) {
   climate.activate(false); climate.root.visible = false; climate.root.position.fromArray(group.direction).multiplyScalar(3.5);
   climateChapterLink.visible = false;
   $('local-field').hidden = false;
+  revealPanel($('local-field'));
   $('local-title').textContent = `${String(group.order).padStart(2, '0')} / ${shortNames[group.order - 1]}`;
   const boundary = atlasManifest.boundaries[group.id];
   $('dataset-select').replaceChildren();
@@ -585,6 +629,7 @@ function select(control, group, { openPanel = true } = {}) {
   setHoveredControl(null);
   setActiveTool(null);
   overview = false;
+  orbit.autoRotate = false;
   for (const layer of overviewLayers.values()) layer.root.visible = false;
   $('align-group').disabled = false;
   selected = control; selectedGroup = group;
@@ -668,6 +713,7 @@ const maxRadius = Math.max(...quantitative.map((c) => c.r));
 const overviewDirection = new THREE.Vector3(1.3, 0.8, 1.2).normalize();
 let focusTransition = null;
 function fit(radius = maxRadius) {
+  const fromPosition = camera.position.clone(), fromTarget = orbit.target.clone();
   if (climate.active) $('inspector').hidden = true;
   focusTransition = null;
   orbit.enabled = true;
@@ -686,16 +732,24 @@ function fit(radius = maxRadius) {
     }));
   }
   camera.position.copy(overviewDirection).multiplyScalar(Math.min(85, distance));
+  const toPosition = camera.position.clone();
   orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
+  if (!reducedMotion.matches) {
+    focusTransition = { startedAt: performance.now(), duration: 750, fromPosition, fromTarget, toPosition, toTarget: new THREE.Vector3() };
+    camera.position.copy(fromPosition); orbit.target.copy(fromTarget);
+    orbit.enabled = false;
+  }
 }
 async function enterOverview() {
   setHoveredControl(null);
   setActiveTool('fit');
   overview = true; selected = null;
+  manualObservation = false;
   ++datasetRequest; clearTimeout(readTimer);
   datasetFull = null; inspectedRecord = null;
   climate.activate(false); climate.root.visible = false; climateChapterLink.visible = false;
-  for (const id of ['inspector', 'local-field', 'risk-ruler', 'hover-label']) $(id).hidden = true;
+  for (const id of ['inspector', 'local-field']) concealPanel($(id));
+  for (const id of ['risk-ruler', 'hover-label']) $(id).hidden = true;
   closeIndex();
   $('focus').disabled = true; $('align-group').disabled = true;
   $('scene-selection').textContent = 'SYSTEM OVERVIEW';
@@ -777,7 +831,7 @@ function focusAt(target, distance = 2.5) {
   const direction = camera.position.clone().sub(orbit.target).normalize();
   focusTransition = {
     startedAt: performance.now(),
-    duration: 950,
+    duration: reducedMotion.matches ? 1 : 950,
     fromPosition: camera.position.clone(),
     fromTarget: orbit.target.clone(),
     toPosition: target.clone().addScaledVector(direction, distance),
@@ -862,6 +916,7 @@ function inspectCountry(record = null) {
   $('distance-count').textContent = `${climateField.records.length.toLocaleString('en')} SOURCE ROWS`;
   $('inspect-content').innerHTML = `${fields([['DATASET', presentation.name], ['FORMAT', presentation.format], ['SOURCE ROW', row.sourceRow], ['ORIGINAL LABEL', row.label], ['ARCHIVE / FILE', climateField.source], ['MAPPING', climateField.mappingReason], ['DISPLAY TRANSFORM', row.plotted ? climate.mode === 'log' ? 'X linear; positive Y/Z log10; local extent' : 'Linear local extent; categorical X is layout only where labeled' : 'NOT SPATIALIZED'], ['XY PLANE', climateField.axes.length === 2 ? 'Display Z=0 only; no third measured variable' : 'N/A'], ['ATLAS ANCHOR', 'Layout only; not a risk distance'], ['EXTENT', 'Convex envelope; not a correlation or risk surface']])}<details class="source-details"><summary>ORIGINAL CSV ROW / ${row.sourceRow}</summary>${rawFields}</details>`;
   syncSelects();
+  revealPanel($('inspector'));
 }
 function setHoveredControl(control) {
   if (hoveredControl === control?.id) return;
@@ -964,17 +1019,28 @@ document.querySelectorAll('[data-readout-tab]').forEach((button) => {
 });
 showReadoutTab('reference');
 function setActiveTool(id) {
-  for (const tool of ['fit', 'reference-view', 'focus', 'align-group']) $(tool).setAttribute('aria-pressed', String(tool === id));
+  for (const tool of ['fit', 'reference-view', 'focus', 'align-group']) {
+    $(tool).removeAttribute('aria-pressed');
+    if (tool === id) $(tool).setAttribute('aria-current', 'true');
+    else $(tool).removeAttribute('aria-current');
+  }
 }
 document.querySelectorAll('.tools button').forEach((button) => { button.dataset.tooltip = button.title; });
-orbit.addEventListener('start', () => { setActiveTool(null); setHoveredControl(null); });
+orbit.addEventListener('start', () => { manualObservation = true; setActiveTool(null); setHoveredControl(null); });
 $('analysis-toggle').addEventListener('click', () => {
+  const beforeHeight = $('local-field').getBoundingClientRect().height;
   const collapsed = !$('analysis-body').hidden;
   closeSelects(); $('analysis-body').hidden = collapsed;
+  if (!collapsed && !reducedMotion.matches) $('analysis-body').animate([{ opacity: .5 }, { opacity: 1 }], { duration: 160 });
   $('analysis-toggle').setAttribute('aria-expanded', String(!collapsed));
   $('analysis-toggle').textContent = collapsed ? '+' : '−';
   $('analysis-toggle').title = collapsed ? 'Expand analysis controls' : 'Collapse analysis controls';
   $('analysis-toggle').setAttribute('aria-label', $('analysis-toggle').title);
+  if (!reducedMotion.matches) {
+    const panel = $('local-field');
+    panel.getAnimations().forEach(animation => animation.cancel());
+    panel.animate([{ height: `${beforeHeight}px` }, { height: `${panel.getBoundingClientRect().height}px` }], { duration: 160, easing: 'ease-out' });
+  }
 });
 $('close-inspector').addEventListener('click', () => { $('inspector').hidden = true; });
 const uiToggle = $('ui-toggle');
@@ -1048,7 +1114,7 @@ function positionLabels() {
   }
 }
 
-function positionSignalLights() {
+function positionSignalLights(now = performance.now()) {
   const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
   const pixelsPerUnitAtDepth = height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
   for (const [id, point] of meshes) {
@@ -1056,6 +1122,14 @@ function positionSignalLights() {
     const distance = Math.max(0.01, point.getWorldPosition(new THREE.Vector3()).distanceTo(cameraPosition));
     const active = id === selected?.id;
     const baseOpacity = signal.userData.baseOpacity;
+    if (overview) {
+      const index = quantitative.findIndex(control => control.id === id);
+      const cycle = now / 1000 % 7;
+      const scanIndex = Math.floor(now / 7000) % quantitative.length;
+      const scanned = !reducedMotion.matches && index === scanIndex ? Math.sin(Math.min(1, cycle / 1.1) * Math.PI) : 0;
+      const exceeded = controlsData.find(control => control.id === id).r > 1;
+      signal.material.opacity = Math.min(1, (exceeded ? .86 : .52) + scanned * .08 + (id === hoveredControl ? .14 : 0));
+    }
     const targetPixels = (active ? 16 : overview ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9) + (id === hoveredControl ? 2 : 0);
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
     signal.scale.set(worldSize, worldSize, 1);
@@ -1074,6 +1148,7 @@ function updateProjectionReadout() {
 }
 
 window.__PB_DEBUG__ = {
+  motion: () => ({ overview, manualObservation, autoRotate: orbit.autoRotate, reduced: reducedMotion.matches, focusing: !!focusTransition, projection: climate.projectionProgress, points: climate.positions.length }),
   overview: () => ({ active: overview, ready: overviewReady, error: overviewError, fields: [...overviewLayers].map(([boundary, layer]) => ({ boundary, dataset: layer.data.id, observations: layer.data.observations.length, visible: layer.root.visible, sources: layer.data.sources })) }),
   atlas: () => ({ dataset: datasetFull?.id ?? null, error: datasetError, sourceRows: datasetFull?.records.length ?? 0, displayed: datasetFull ? climateField.observations.length : 0, boundary: selectedGroup.id, available: atlasManifest.boundaries[selectedGroup.id].datasets, canSurface: climate.canSurface, kind: datasetFull?.kind ?? null }),
   climate: () => ({ active: climate.active, mode: climate.mode, selected: climate.selectedIndex, positions: climate.positions, projected: climate.projected(camera, width, height) }),
@@ -1098,7 +1173,7 @@ window.__PB_DEBUG__ = {
 let lastValidation = -Infinity;
 function updateFocusTransition(now) {
   if (!focusTransition) return;
-  const t = Math.min(1, (now - focusTransition.startedAt) / focusTransition.duration);
+  const t = reducedMotion.matches ? 1 : Math.min(1, (now - focusTransition.startedAt) / focusTransition.duration);
   const step = t * t * (3 - 2 * t);
   camera.position.lerpVectors(focusTransition.fromPosition, focusTransition.toPosition, step);
   orbit.target.lerpVectors(focusTransition.fromTarget, focusTransition.toTarget, step);
@@ -1109,9 +1184,13 @@ function updateFocusTransition(now) {
   }
 }
 renderer.setAnimationLoop((now) => {
+  const dt = Math.min(.05, Math.max(0, (now - (lastMotionTime ?? now)) / 1000));
+  lastMotionTime = now;
+  orbit.autoRotate = overview && !manualObservation && !focusTransition && !reducedMotion.matches && !document.hidden;
+  orbit.autoRotateSpeed = .12;
   for (const layer of overviewLayers.values()) if (layer.root.visible) layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
-  updateFocusTransition(now); orbit.update(); renderer.render(scene, camera); positionSignalLights(); positionLabels(); updateProjectionReadout();
+  updateFocusTransition(now); orbit.update(dt); positionSignalLights(now); renderer.render(scene, camera); positionLabels(); updateProjectionReadout();
   $('camera-distance').textContent = orbit.getDistance().toFixed(3);
   if (now - lastValidation > 500) {
     const report = liveValidation();
