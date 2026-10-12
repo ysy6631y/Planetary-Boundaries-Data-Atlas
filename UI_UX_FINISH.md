@@ -100,3 +100,17 @@ fallbacks but are not claimed to have the same exhibition validation.
 - Reviewed the updated 1920×1080 capture in `validation/ui-layout-record.png`;
   overview and analysis captures use the same `ui-layout-` prefix.
 - This layout polish is a separate, uncommitted change after the checkpoint.
+
+## Line hierarchy after checkpoint 324188a
+
+- Committed the previous layout polish as `324188a`.
+- Kept structural left rules on ANALYSIS CONTROL, LOCAL ANALYSIS and the
+  expanded READOUT panel; removed them from the toolbar, legend, readout trigger,
+  floating labels and outer risk block. The actual R scale is retained.
+- Reduced the distance anchor to a faint rule.
+- Replaced the eye icon with UI ON / UI OFF text; VIEW and FOCUS now use text.
+  Existing button IDs, camera handlers and interface shortcut remain unchanged.
+- Changed files: `index.html`, `src/style.css`, `src/main.js`, this report.
+- Production build and UI browser regression pass; all four desktop sizes have
+  no panel clipping/overlap and browser errors are empty. Captures use
+  `validation/ui-lines-` prefix. These latest changes remain uncommitted.

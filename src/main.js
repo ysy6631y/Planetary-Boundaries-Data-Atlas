@@ -981,6 +981,7 @@ const uiToggle = $('ui-toggle');
 function setUiHidden(hidden) {
   document.body.classList.toggle('ui-hidden', hidden);
   uiToggle.setAttribute('aria-pressed', String(hidden));
+  uiToggle.textContent = hidden ? 'UI OFF' : 'UI ON';
   uiToggle.setAttribute('aria-label', hidden ? 'Show interface' : 'Hide interface');
   uiToggle.title = hidden ? 'Show interface' : 'Hide interface';
   if (hidden) closeIndex();
