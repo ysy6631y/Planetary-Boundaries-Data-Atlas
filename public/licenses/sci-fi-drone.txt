@@ -1,0 +1,6 @@
+Sci-Fi Drone
+Creator: Jason Dagenet (jdagenet)
+Source: https://opengameart.org/content/sci-fi-drone-loop
+License: Creative Commons Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/)
+
+The source author describes this as a low sci-fi drone and a computer hum, and says it loops seamlessly.

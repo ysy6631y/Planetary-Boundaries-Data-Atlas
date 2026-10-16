@@ -22,29 +22,16 @@
         <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><span class="tool-name">FOCUS</span></button>
         <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false">UI ON</button>
       </div>
+      <audio id="ambient-track" src="/sci-fi-drone.wav" loop preload="auto" aria-hidden="true"></audio>
       <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span></div>
       <div class="legend">
         <div class="legend-row"><i class="legend-dot" aria-hidden="true"></i><b class="origin-key" aria-hidden="true"></b><span>BASELINE</span></div>
         <label class="legend-row"><input id="pb-toggle" type="checkbox" checked><b class="pb-key" aria-hidden="true"></b><span>BOUNDARY</span></label>
         <label class="legend-row"><input id="hr-toggle" type="checkbox" checked><b class="hr-key" aria-hidden="true"></b><span>HIGH RISK</span></label>
       </div>
-      <div class="scene-bottom"><div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance" aria-label="Camera to target distance in scene units">-</output></div><div id="observer-controls" class="observer-controls" hidden>
-        <div class="readout-tools"><span class="eyebrow">VIEW TOOLS</span><div class="tools" aria-label="Additional view commands">
-          <button id="reference-view" title="Frame reference shells" aria-label="Frame reference shells"><i data-lucide="scan"></i><span class="tool-name">BOUNDARY</span></button>
-          <button id="align-group" title="Observe from selected group direction; pivot at origin" aria-label="Align group direction"><i data-lucide="compass"></i><span class="tool-name">ALIGN AXIS</span></button>
-          <button id="save-image" title="Save current view as 4K PNG (no interface)" aria-label="Save 4K PNG"><i data-lucide="download"></i><span class="tool-name">SAVE PNG</span></button>
-        </div></div>
-        <div class="projection-status" aria-label="Projected view readout">
-        <span>FRAME <output id="observer-frame">GROUP AXIS</output></span>
-        <span>BEARING <output id="observer-bearing">--</output></span>
-        <span>ELEVATION <output id="observer-elevation">--</output></span>
-        <span>DEPTH <output id="observer-depth">--</output></span>
-      </div><div class="toggles">
-        <label><input id="lines-toggle" type="checkbox" checked>MEASUREMENT</label>
-        <label><input id="guides-toggle" type="checkbox" checked>R ORBITS</label>
-        <label><input id="labels-toggle" type="checkbox" checked>LABELS</label>
-        <label><input id="damping-toggle" type="checkbox" checked>DAMPING</label>
-      </div><div class="readout-actions"><output id="validation-status">VALIDATING</output><button id="export" title="Download validation JSON" aria-label="Download validation JSON"><i data-lucide="download"></i> OUTPUT</button></div></div><button id="readout-trigger" class="readout-trigger" aria-expanded="false" aria-controls="observer-controls">READOUT <span aria-hidden="true">+</span></button></div>
+      <div class="scene-bottom">
+      <div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance" aria-label="Camera to target distance in scene units">-</output></div>
+      </div>
       <div id="local-field" class="local-field" hidden role="region" aria-label="Analysis controls">
         <div class="analysis-head"><div><span class="eyebrow">ANALYSIS CONTROL</span><strong id="local-title">CLIMATE</strong></div><button id="analysis-toggle" class="panel-toggle" type="button" aria-label="Collapse analysis controls" aria-expanded="true" aria-controls="analysis-body" title="Collapse analysis controls">−</button></div>
         <div id="analysis-body" class="analysis-body">

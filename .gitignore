@@ -21,3 +21,11 @@ audit/INVENTORY.md
 audit/generate.source.js.txt
 audit/inventory.json
 audit/summary.json
+
+# Keep reproducible sound asset tooling and its design record with this change.
+!scripts/
+scripts/*
+!scripts/prepare-signal-samples.py
+!scripts/analyze-signal-audio.mjs
+!scripts/check-sound-system.mjs
+!audit/sound-design.md

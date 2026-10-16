@@ -14,6 +14,7 @@ import { spatialize, validatePosition, GPU_TOLERANCE } from './spatial.js';
 import { deepFreeze, observe, wheelDistance, MIN_OBSERVATION_DISTANCE, MAX_OBSERVATION_DISTANCE } from './observation.js';
 import { datasetPresentation, axisLabel } from './dataset-presentation.js';
 import { enhanceSelect, closeSelects } from './select-control.js';
+import { createSoundSystem } from './sound-system.js';
 import './style.css';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,6 +53,9 @@ reducedMotion.addEventListener('change', () => {
 });
 
 const $ = (id) => document.getElementById(id);
+const sound = createSoundSystem($('ambient-track'));
+window.__PB_AUDIO__ = sound;
+if (import.meta.hot) import.meta.hot.dispose(() => sound.dispose());
 const fmt = (n) => n === null || n === undefined ? 'NOT QUANTIFIED' : String(Number(Number(n).toPrecision(10)));
 const escape = (text) => String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const shortNames = ['CLIMATE', 'BIOSPHERE', 'LAND SYSTEM', 'FRESHWATER', 'BIOGEOCHEMICAL', 'OCEAN', 'AEROSOLS', 'OZONE', 'NOVEL ENTITIES'];
@@ -66,7 +70,7 @@ const controlsData = groups.flatMap((group) => group.controls);
 const selectControls = new Map(['dataset-select', 'entity-filter', 'climate-scale'].map((id) => [id, enhanceSelect($(id))]));
 const syncSelects = () => selectControls.forEach((control) => control.sync());
 const quantitative = controlsData.filter((control) => control.r !== null);
-const EXHIBITION_MOTION_SPEED = 1.06;
+const EXHIBITION_MOTION_SPEED = 1.09;
 const sortedRiskScores = quantitative.map((control) => control.r).sort((a, b) => a - b);
 const riskPercentile = (control) => sortedRiskScores.length < 2 ? 0.5
   : sortedRiskScores.indexOf(control.r) / (sortedRiskScores.length - 1);
@@ -101,13 +105,21 @@ try {
 } catch (error) {
   $('webgl-error').hidden = false;
   $('webgl-error').textContent = `WebGL unavailable: ${error.message}`;
-  $('validation-status').textContent = 'RENDERER ERROR';
   throw error;
 }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.domElement.setAttribute('aria-label', 'Planetary boundary quantitative points and reference shells');
 $('scene').append(renderer.domElement);
 const orbit = new OrbitControls(camera, renderer.domElement);
+let soundInputActive = false;
+let soundInputUntil = 0;
+let soundPointerTravel = 0;
+let soundPointerPrevious = null;
+const soundPreviousQuaternion = camera.quaternion.clone();
+const soundPreviousTarget = orbit.target.clone();
+let soundPreviousDistance = orbit.getDistance();
+orbit.addEventListener('start', () => { soundInputActive = true; });
+orbit.addEventListener('end', () => { soundInputActive = false; soundInputUntil = performance.now() + 350; });
 orbit.enableDamping = true;
 orbit.dampingFactor = 0.07;
 orbit.enablePan = false;
@@ -124,6 +136,7 @@ renderer.domElement.addEventListener('wheel', (event) => {
   event.stopImmediatePropagation();
   cancelFocus();
   manualObservation = true; orbit.autoRotate = false;
+  soundInputUntil = performance.now() + 350;
   const current = orbit.getDistance();
   const next = wheelDistance(current, event.deltaY, event.deltaMode, renderer.domElement.clientHeight, orbit.minDistance, orbit.maxDistance);
   if (next < current) orbit.dollyIn(next / current);
@@ -417,12 +430,6 @@ indexNav.addEventListener('mouseleave', () => {
   if (!indexNav.matches(':focus-within')) closeIndex();
 });
 document.querySelectorAll('.group-title').forEach((button) => button.addEventListener('click', closeIndex));
-const readoutTrigger = $('readout-trigger');
-readoutTrigger.addEventListener('click', () => {
-  const open = $('observer-controls').hidden;
-  $('observer-controls').hidden = !open;
-  readoutTrigger.setAttribute('aria-expanded', String(open));
-});
 const pointLabel = document.createElement('div');
 pointLabel.className = 'point-label';
 $('labels').append(pointLabel);
@@ -690,7 +697,6 @@ function select(control, group, { openPanel = true } = {}) {
   motionPaused = Boolean(control);
   orbit.autoRotate = false;
   for (const layer of overviewLayers.values()) layer.root.visible = false;
-  $('align-group').disabled = false;
   selected = control; selectedGroup = group;
   if (openPanel) openBoundary(group);
   climate.select(-1);
@@ -798,7 +804,7 @@ function fit(radius = maxRadius) {
   }
   camera.position.copy(overviewDirection).multiplyScalar(Math.min(85, distance));
   const toPosition = camera.position.clone();
-  orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
+  orbit.update(); orbit.enableDamping = true;
   if (!reducedMotion.matches) {
     focusTransition = { startedAt: performance.now(), duration: 750, fromPosition, fromTarget, toPosition, toTarget: new THREE.Vector3() };
     camera.position.copy(fromPosition); orbit.target.copy(fromTarget);
@@ -817,7 +823,7 @@ async function enterOverview() {
   for (const id of ['inspector', 'local-field']) concealPanel($(id));
   for (const id of ['risk-ruler', 'hover-label']) $(id).hidden = true;
   closeIndex();
-  $('focus').disabled = true; $('align-group').disabled = true;
+  $('focus').disabled = true;
   $('scene-selection').textContent = 'SYSTEM OVERVIEW';
   document.querySelectorAll('[data-control], [data-group]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
   for (const label of groupLabels.values()) label.classList.remove('selected');
@@ -859,24 +865,6 @@ async function enterOverview() {
   }
 }
 $('fit').addEventListener('click', () => void enterOverview());
-$('save-image').addEventListener('click', () => {
-  const ratio = renderer.getPixelRatio();
-  const exportRatio = 3840 / width;
-  try {
-    renderer.setPixelRatio(exportRatio);
-    climate.update(performance.now(), camera, width, height, exportRatio, width);
-    for (const layer of overviewLayers.values()) layer.update(performance.now(), camera, width, height, exportRatio, width);
-    positionSignalLights(); renderer.render(scene, camera);
-    const link = document.createElement('a');
-    link.download = 'planetary-data-atlas-4k.png';
-    link.href = renderer.domElement.toDataURL('image/png'); link.click();
-  } finally {
-    renderer.setPixelRatio(ratio);
-    climate.update(performance.now(), camera, width, height, ratio, width);
-    for (const layer of overviewLayers.values()) layer.update(performance.now(), camera, width, height, ratio, width);
-  }
-});
-$('reference-view').addEventListener('click', () => { fit(2.7); setActiveTool('reference-view'); });
 function focusSelected() {
   anchorLocalField();
   if (hasLocalData(selectedGroup)) { focusAt(climate.root.position.clone(), 6.8); return; }
@@ -938,25 +926,8 @@ $('source-record').addEventListener('change', (event) => {
   climate.select(climateField.observations.findIndex((entry) => entry.sourceRow === row.sourceRow));
   $('inspector').hidden = false; inspectCountry(row);
 });
-$('align-group').addEventListener('click', () => {
-  setActiveTool('align-group');
-  const distance = orbit.getDistance();
-  orbit.enableDamping = false; orbit.update();
-  orbit.target.set(0, 0, 0);
-  camera.position.fromArray(selectedGroup.direction).multiplyScalar(distance);
-  orbit.update(); orbit.enableDamping = $('damping-toggle').checked;
-});
 $('pb-toggle').addEventListener('change', (e) => { pbShell.visible = e.target.checked; });
 $('hr-toggle').addEventListener('change', (e) => { hrShell.visible = e.target.checked; });
-$('lines-toggle').addEventListener('change', (e) => { linesRoot.visible = e.target.checked; });
-$('guides-toggle').addEventListener('change', (e) => { riskOrbitsRoot.visible = e.target.checked; });
-$('damping-toggle').addEventListener('change', (e) => { orbit.enableDamping = e.target.checked; });
-$('export').addEventListener('click', () => {
-  const report = { createdAt: new Date().toISOString(), normalization: 'Original numeric riskScore, full precision; SVG rounding parity checked', layout: 'Fixed Fibonacci group directions; paired controls +/-3 degrees', ...liveValidation(), observer: observationReport() };
-  const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = 'planetary-boundaries-validation.json'; link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
 
 const raycaster = new THREE.Raycaster();
 let down = null;
@@ -964,7 +935,7 @@ function cancelFocus() {
   if (!focusTransition) return;
   focusTransition = null;
   orbit.enabled = true;
-  orbit.enableDamping = $('damping-toggle').checked;
+  orbit.enableDamping = true;
 }
 function climateAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
@@ -1034,6 +1005,11 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   }
 });
 renderer.domElement.addEventListener('pointermove', (event) => {
+  if (soundPointerPrevious) {
+    const distance = Math.hypot(event.clientX - soundPointerPrevious.x, event.clientY - soundPointerPrevious.y);
+    if (distance > 1) soundPointerTravel += Math.min(.1, distance / Math.max(1, renderer.domElement.clientWidth));
+  }
+  soundPointerPrevious = { x: event.clientX, y: event.clientY };
   if (event.buttons) { setHoveredControl(null); climate.hover(-1); $('hover-label').hidden = true; return; }
   const local = climateAtPointer(event);
   if (local) {
@@ -1059,6 +1035,7 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   $('hover-label').textContent = `${codeFor(control)} / R ${instrumentNumber(control.r)}`;
 });
 renderer.domElement.addEventListener('pointerleave', () => { setHoveredControl(null); climate.hover(-1); $('hover-label').hidden = true; renderer.domElement.style.cursor = 'default'; });
+renderer.domElement.addEventListener('pointerleave', () => { soundPointerPrevious = null; });
 renderer.domElement.addEventListener('dblclick', (event) => {
   if (event.button !== 0) return;
   const local = climateAtPointer(event);
@@ -1098,7 +1075,7 @@ document.querySelectorAll('[data-readout-tab]').forEach((button) => {
 });
 showReadoutTab('reference');
 function setActiveTool(id) {
-  for (const tool of ['fit', 'reference-view', 'focus', 'align-group']) {
+  for (const tool of ['fit', 'focus']) {
     $(tool).removeAttribute('aria-pressed');
     if (tool === id) $(tool).setAttribute('aria-current', 'true');
     else $(tool).removeAttribute('aria-current');
@@ -1159,7 +1136,7 @@ function observationReport() {
 // HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
 function positionLabels() {
   const occupied = [];
-  for (const element of [document.querySelector('.legend'), $('local-field'), $('inspector')]) {
+  for (const element of [document.querySelector('.scene-bottom'), document.querySelector('.legend'), $('risk-ruler'), $('local-field'), $('inspector')]) {
     if (element.hidden || !element.getClientRects().length) continue;
     const rect = element.getBoundingClientRect();
     occupied.push({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, w: rect.width, h: rect.height });
@@ -1180,7 +1157,7 @@ function positionLabels() {
   }
   for (const group of [selectedGroup, ...groups.filter((g) => g.id !== selectedGroup.id)]) {
     const label = groupLabels.get(group.id);
-    label.hidden = !$('labels-toggle').checked || climate.active;
+    label.hidden = climate.active;
     if (label.hidden) continue;
     const groupDirection = groupWorldDirection(group);
     const v = groupDirection.multiplyScalar(3.25).project(camera);
@@ -1228,12 +1205,8 @@ function positionSignalLights(now = performance.now()) {
 }
 
 function updateProjectionReadout() {
-  if (overview) { $('observer-frame').textContent = 'SYSTEM'; return; }
+  if (overview) return;
   const { point } = selectedObservation();
-  $('observer-frame').textContent = shortNames[selectedGroup.order - 1];
-  $('observer-bearing').textContent = angleNumber(point?.bearing);
-  $('observer-elevation').textContent = angleNumber(point?.elevation);
-  $('observer-depth').textContent = observerValue(point?.projection?.depth);
   if (!$('inspector').hidden && !inspectedRecord) $('observer-content').innerHTML = observerRows({ point, report: observationReport() });
 }
 
@@ -1309,7 +1282,7 @@ function updateFocusTransition(now) {
   if (t === 1) {
     focusTransition = null;
     orbit.enabled = true;
-    orbit.enableDamping = $('damping-toggle').checked;
+    orbit.enableDamping = true;
   }
 }
 renderer.setAnimationLoop((now) => {
@@ -1321,11 +1294,20 @@ renderer.setAnimationLoop((now) => {
   for (const layer of overviewLayers.values()) if (layer.root.visible) layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(dt); positionSignalLights(now); renderer.render(scene, camera); positionLabels(); updateProjectionReadout();
-  $('camera-distance').textContent = orbit.getDistance().toFixed(3);
+  const soundDistance = Math.max(.001, orbit.getDistance());
+  const cameraChange = soundPreviousQuaternion.angleTo(camera.quaternion)
+    + Math.abs(Math.log(soundDistance / Math.max(.001, soundPreviousDistance))) * .7
+    + soundPreviousTarget.distanceTo(orbit.target) / soundDistance * .3;
+  const userMotion = !focusTransition && (soundInputActive || now < soundInputUntil);
+  const activitySpeed = dt > 0 ? Math.max(userMotion ? cameraChange / dt : 0, soundPointerTravel / dt) : 0;
+  sound.update(now, dt, activitySpeed);
+  soundPointerTravel = 0;
+  soundPreviousQuaternion.copy(camera.quaternion);
+  soundPreviousTarget.copy(orbit.target);
+  soundPreviousDistance = soundDistance;
+  $('camera-distance').textContent = soundDistance.toFixed(3);
   if (now - lastValidation > 500) {
     const report = liveValidation();
-    $('validation-status').textContent = report.failed || !report.stateUnchanged ? 'DATA VALIDATION ERROR' : `${report.passed}/11 RADIUS CHECKS PASS`;
-    $('validation-status').classList.toggle('fail', report.failed > 0 || !report.stateUnchanged);
     if (report.failed) inspect();
     lastValidation = now;
   }
