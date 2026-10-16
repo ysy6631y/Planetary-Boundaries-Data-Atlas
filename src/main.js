@@ -66,12 +66,24 @@ const controlsData = groups.flatMap((group) => group.controls);
 const selectControls = new Map(['dataset-select', 'entity-filter', 'climate-scale'].map((id) => [id, enhanceSelect($(id))]));
 const syncSelects = () => selectControls.forEach((control) => control.sync());
 const quantitative = controlsData.filter((control) => control.r !== null);
+const EXHIBITION_MOTION_SPEED = 1.06;
+const sortedRiskScores = quantitative.map((control) => control.r).sort((a, b) => a - b);
+const riskPercentile = (control) => sortedRiskScores.length < 2 ? 0.5
+  : sortedRiskScores.indexOf(control.r) / (sortedRiskScores.length - 1);
+const boundaryRiskPercentiles = new Map(groups.map((group) => {
+  const quantified = group.controls.filter((control) => control.r !== null);
+  const mean = quantified.length
+    ? quantified.reduce((sum, control) => sum + riskPercentile(control), 0) / quantified.length
+    : 0.5;
+  return [group.id, mean];
+}));
 for (const control of quantitative) {
   const recorded = existingAudit.controls.find((entry) => entry.chapter_id === control.groupId && entry.source_variable.id === control.id);
   if (control.r.toFixed(4) !== recorded?.existing_svg_marker?.score_text) throw new Error(`${control.id}: source score mismatch`);
 }
 
 let selected = quantitative[0];
+let motionPaused = false;
 let overview = false;
 let overviewReady = false;
 let overviewError = null;
@@ -117,8 +129,12 @@ renderer.domElement.addEventListener('wheel', (event) => {
   if (next < current) orbit.dollyIn(next / current);
   else if (next > current) orbit.dollyOut(current / next);
 }, { capture: true, passive: false });
+// The camera remains under direct user control. The origin stays fixed as the
+// sun while each quantified signal moves on its own orbit below.
+const planetarySystemRoot = new THREE.Group();
+scene.add(planetarySystemRoot);
 const dataRoot = new THREE.Group();
-scene.add(dataRoot);
+planetarySystemRoot.add(dataRoot);
 const linesRoot = new THREE.Group();
 dataRoot.add(linesRoot);
 let climateField = climateSeed;
@@ -217,7 +233,7 @@ for (const group of groups) {
   const link = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0xf05a4d, transparent: true, opacity: .82, depthWrite: false }));
   link.visible = false;
   link.renderOrder = 5;
-  scene.add(link);
+  planetarySystemRoot.add(link);
   relatedLinks.set(group.id, link);
 }
 const climateMembers = groups[0].controls.filter((control) => control.position);
@@ -234,7 +250,7 @@ scene.add(climateChapterLink);
 // actual unified distance. Angle zero is the node itself, so the circle passes
 // exactly through the rendered data position.
 const riskOrbitsRoot = new THREE.Group();
-scene.add(riskOrbitsRoot);
+planetarySystemRoot.add(riskOrbitsRoot);
 const riskOrbits = new Map();
 for (const control of quantitative) {
   const direction = new THREE.Vector3(...control.position).normalize();
@@ -253,10 +269,31 @@ for (const control of quantitative) {
   orbitLine.userData.controlId = control.id;
   orbitLine.userData.groupId = control.groupId;
   orbitLine.userData.r = control.r;
+  // Motion encodes the empirical distribution of the existing unified risk
+  // scores. Higher-risk boundaries complete an orbit sooner. All members
+  // share a direction so each boundary reads as one coherent system.
+  const percentile = riskPercentile(control);
+  orbitLine.userData.direction = direction;
+  orbitLine.userData.tangent = tangent;
+  orbitLine.userData.percentile = percentile;
+  orbitLine.userData.boundaryPercentile = boundaryRiskPercentiles.get(control.groupId);
+  orbitLine.userData.angle = percentile * Math.PI * 2;
+  orbitLine.userData.period = (420 - orbitLine.userData.boundaryPercentile * 180) * 8.8;
+  orbitLine.userData.orbitDirection = 1;
   orbitLine.renderOrder = 1;
   riskOrbitsRoot.add(orbitLine);
   riskOrbits.set(control.id, orbitLine);
 }
+const boundaryOrbitMotion = new Map(groups.map((group) => {
+  const percentile = boundaryRiskPercentiles.get(group.id);
+  return [group.id, {
+    angle: 0,
+    direction: 1,
+    period: (2100 - percentile * 900) * 8.8,
+    axis: new THREE.Vector3(group.direction[0] * .22, 1, group.direction[2] * .22).normalize(),
+    quaternion: new THREE.Quaternion(),
+  }];
+}));
 
 // These are navigation references only. They carry no environmental values.
 const referencePlane = new THREE.GridHelper(7, 14, 0x4b3935, 0x241816);
@@ -354,6 +391,7 @@ for (const [index, group] of groups.entries()) {
   const label = document.createElement('button');
   const nq = group.controls.filter((control) => control.r === null).length;
   label.className = `group-label ${nq ? 'nq' : ''}`;
+  label.dataset.groupLabel = group.id;
   label.title = 'Boundary direction label; layout anchor only, no representative data radius';
   label.innerHTML = `${String(group.order).padStart(2, '0')} ${shortNames[index]}${nq ? `<small>${nq} NOT QUANTIFIED</small>` : ''}`;
   label.addEventListener('click', () => { select(null, group); focusGroup(group); });
@@ -490,16 +528,21 @@ function inspect() {
   const raw = selected.raw;
   const quantitativeState = selected.r !== null;
   const row = liveValidation().points.find((p) => p.id === selected.id);
+  const selectedOrbit = quantitativeState ? riskOrbits.get(selected.id) : null;
   $('inspect-content').innerHTML = `<div class="state ${quantitativeState ? '' : 'nq'}">${escape(selected.state)}</div><h3>${escape(raw.control_label)}</h3><div class="big-value ${quantitativeState ? '' : 'nq'}">${quantitativeState ? selected.r.toFixed(6) : 'NOT QUANTIFIED'}</div><div class="value-caption">${quantitativeState ? 'DATA DISTANCE / UNIFIED RISK SCORE' : escape(raw.label)}</div>${fields([
     ['BOUNDARY', selectedGroup.name], ['INDICATOR', raw.control_label], ['RAW VALUE', raw.current],
     ['UNIT', raw.unit], ['BASELINE', raw.baseline], ['PLANETARY BOUNDARY', raw.boundary], ['HIGH RISK', raw.high_risk],
     ['RISK DIRECTION', raw.direction === 'higher_is_worse' ? 'increase-is-risk' : 'decrease-is-risk'],
+    ['RISK PERCENTILE', selectedOrbit ? `${(selectedOrbit.userData.percentile * 100).toFixed(0)}% OF QUANTIFIED CONTROLS` : 'NOT QUANTIFIED'],
+    ['BOUNDARY MEAN PERCENTILE', selectedOrbit ? `${(selectedOrbit.userData.boundaryPercentile * 100).toFixed(0)}%` : 'NOT QUANTIFIED'],
+    ['ORBIT PERIOD', selectedOrbit ? `${(selectedOrbit.userData.period / EXHIBITION_MOTION_SPEED).toFixed(1)} SEC` : 'NOT QUANTIFIED'],
+    ['ORBIT DIRECTION', selectedOrbit ? (selectedOrbit.userData.orbitDirection > 0 ? 'POSITIVE' : 'NEGATIVE') : 'NOT QUANTIFIED'],
     ['UNIFIED DISTANCE', fmt(selected.r)], ['R', fmt(selected.r)], ['THETA (rad)', fmt(selected.theta)],
     ['PHI (rad)', fmt(selected.phi)], ['X', fmt(selected.position?.[0])], ['Y', fmt(selected.position?.[1])], ['Z', fmt(selected.position?.[2])],
     ['ANGLE MEANING', 'SPATIAL LAYOUT ONLY'], ['OFFSET (degrees)', (selected.offset * 180 / Math.PI).toFixed(1)],
     ['R ORBIT RADIUS', quantitativeState ? fmt(selected.r) : 'NOT QUANTIFIED / ABSENT'],
     ['DATA STATUS', raw.data_status],
-  ])}<div id="point-check" class="check ${quantitativeState ? '' : 'nq'} ${row?.status === 'FAIL' ? 'fail' : ''}">${quantitativeState ? `WORLD |position| = ${fmt(row.length)}<br>POINT ERROR = ${row.error.toExponential(3)}<br>ORBIT RADIUS ERROR = ${row.orbitRadiusError.toExponential(3)}<br>ORBIT/NODE ERROR = ${row.orbitNodeError.toExponential(3)}<br>${row.status} / POINT + LINE + ORBIT` : 'NOT QUANTIFIED<br>R / XYZ / measurement line / orbit: absent'}</div>${!quantitativeState ? `<div class="note">${raw.qualitative_position ? 'Beyond high risk is qualitative. The legacy category marker 3 is not used as a radius.' : 'Current and high-risk threshold are unresolved. No numerical position is assigned.'}</div>` : ''}<div class="sources">${raw.source_ids.map((id) => {
+  ])}<div id="point-check" class="check ${quantitativeState ? '' : 'nq'} ${row?.status === 'FAIL' ? 'fail' : ''}">${quantitativeState ? `WORLD |position| = ${fmt(row.length)}<br>POINT ERROR = ${row.error.toExponential(3)}<br>ORBIT RADIUS ERROR = ${row.orbitRadiusError.toExponential(3)}<br>ORBIT/NODE ERROR = ${row.orbitNodeError.toExponential(3)}<br>${row.status} / POINT + LINE + ORBIT` : 'NOT QUANTIFIED<br>R / XYZ / measurement line / orbit: absent'}</div>${quantitativeState ? '<div class="note">Orbit speed is a visual encoding of the unified-risk percentile, not an observed time-series rate.</div>' : `<div class="note">${raw.qualitative_position ? 'Beyond high risk is qualitative. The legacy category marker 3 is not used as a radius.' : 'Current and high-risk threshold are unresolved. No numerical position is assigned.'}</div>`}<div class="sources">${raw.source_ids.map((id) => {
     const item = source.meta.sources.find((s) => s.id === id);
     return `<a href="${escape(item.url)}" target="_blank" rel="noreferrer">${escape(id)}</a>`;
   }).join('')}</div>`;
@@ -507,9 +550,24 @@ function inspect() {
 
 function hasLocalData(group) { return Boolean(atlasManifest.boundaries[group.id]?.datasets.length); }
 
+function groupWorldDirection(group) {
+  scene.updateMatrixWorld(true);
+  const positions = group.controls.filter((control) => control.position)
+    .map((control) => meshes.get(control.id).getWorldPosition(new THREE.Vector3()));
+  if (!positions.length) return new THREE.Vector3(...group.direction).normalize();
+  const direction = positions.reduce((sum, position) => sum.add(position), new THREE.Vector3());
+  return direction.lengthSq() > 1e-12 ? direction.normalize() : new THREE.Vector3(...group.direction).normalize();
+}
+
+function groupWorldTarget(group, radius = 3.5) {
+  return groupWorldDirection(group).multiplyScalar(radius);
+}
+
 function refreshField(data) {
   climateField = data;
   climate.setData(data, selectedGroup.direction, shortNames[selectedGroup.order - 1]);
+  if (selected?.position) anchorLocalField();
+  else climate.root.position.copy(groupWorldTarget(selectedGroup));
   climate.root.visible = data.observations.length > 0;
   climate.activate(data.observations.length > 0);
   $('climate-scale').value = data.defaultMode;
@@ -587,7 +645,7 @@ async function openDataset(id) {
 function openBoundary(group) {
   ++datasetRequest;
   datasetFull = null; inspectedRecord = null; datasetError = null;
-  climate.activate(false); climate.root.visible = false; climate.root.position.fromArray(group.direction).multiplyScalar(3.5);
+  climate.activate(false); climate.root.visible = false; climate.root.position.copy(groupWorldTarget(group));
   climateChapterLink.visible = false;
   $('local-field').hidden = false;
   revealPanel($('local-field'));
@@ -629,6 +687,7 @@ function select(control, group, { openPanel = true } = {}) {
   setHoveredControl(null);
   setActiveTool(null);
   overview = false;
+  motionPaused = Boolean(control);
   orbit.autoRotate = false;
   for (const layer of overviewLayers.values()) layer.root.visible = false;
   $('align-group').disabled = false;
@@ -682,21 +741,27 @@ function liveValidation() {
     if (control.r === null) return { id: control.id, groupId: control.groupId, r: null, position: null, status: 'NOT QUANTIFIED' };
     const world = meshes.get(control.id).getWorldPosition(new THREE.Vector3()).sub(originPosition);
     const cpu = validatePosition(world.toArray(), control.r);
-    const fixedCoordinateError = world.distanceTo(new THREE.Vector3(...control.position));
+    const orbitLine = riskOrbits.get(control.id);
+    const expectedWorld = orbitLine.userData.direction.clone().multiplyScalar(Math.cos(orbitLine.userData.angle))
+      .addScaledVector(orbitLine.userData.tangent, Math.sin(orbitLine.userData.angle)).multiplyScalar(control.r)
+      .applyQuaternion(boundaryOrbitMotion.get(control.groupId).quaternion)
+      .applyQuaternion(planetarySystemRoot.quaternion);
+    const fixedCoordinateError = world.distanceTo(expectedWorld);
     const line = lines.get(control.id);
     const attribute = line.geometry.getAttribute('position');
     const start = new THREE.Vector3().fromBufferAttribute(attribute, 0).applyMatrix4(line.matrixWorld).sub(originPosition);
     const endpoint = new THREE.Vector3().fromBufferAttribute(attribute, 1).applyMatrix4(line.matrixWorld).sub(originPosition);
     const gpu = validatePosition(endpoint.toArray(), control.r, GPU_TOLERANCE);
     const endpointError = endpoint.distanceTo(world);
-    const orbitLine = riskOrbits.get(control.id);
     const orbitAttribute = orbitLine.geometry.getAttribute('position');
     let orbitRadiusError = 0;
-    let orbitNodeError = Infinity;
+    const orbitNormal = new THREE.Vector3().crossVectors(orbitLine.userData.direction, orbitLine.userData.tangent).normalize()
+      .applyQuaternion(boundaryOrbitMotion.get(control.groupId).quaternion)
+      .applyQuaternion(planetarySystemRoot.quaternion);
+    const orbitNodeError = Math.hypot(Math.abs(world.length() - control.r), Math.abs(world.dot(orbitNormal)));
     for (let i = 0; i < orbitAttribute.count; i++) {
       const orbitPoint = new THREE.Vector3().fromBufferAttribute(orbitAttribute, i).applyMatrix4(orbitLine.matrixWorld).sub(originPosition);
       orbitRadiusError = Math.max(orbitRadiusError, Math.abs(orbitPoint.length() - control.r));
-      if (i === 0) orbitNodeError = orbitPoint.distanceTo(world);
     }
     return { id: control.id, groupId: control.groupId, r: control.r, theta: control.theta, phi: control.phi, position: world.toArray(), ...cpu,
       gpuError: gpu.error, endpointError, fixedCoordinateError, orbitRadiusError, orbitNodeError, gpuTolerance: gpu.tolerance,
@@ -744,6 +809,7 @@ async function enterOverview() {
   setHoveredControl(null);
   setActiveTool('fit');
   overview = true; selected = null;
+  motionPaused = false;
   manualObservation = false;
   ++datasetRequest; clearTimeout(readTimer);
   datasetFull = null; inspectedRecord = null;
@@ -812,17 +878,30 @@ $('save-image').addEventListener('click', () => {
 });
 $('reference-view').addEventListener('click', () => { fit(2.7); setActiveTool('reference-view'); });
 function focusSelected() {
+  anchorLocalField();
   if (hasLocalData(selectedGroup)) { focusAt(climate.root.position.clone(), 6.8); return; }
   if (!selected || selected.r === null) return;
   if (climate.active) { focusAt(climate.root.position.clone(), 6.8); return; }
-  focusAt(new THREE.Vector3(...selected.position));
+  focusAt(meshes.get(selected.id).getWorldPosition(new THREE.Vector3()));
+}
+function anchorLocalField() {
+  if (!selected?.position) return;
+  scene.updateMatrixWorld(true);
+  const anchor = meshes.get(selected.id).getWorldPosition(new THREE.Vector3());
+  climate.root.position.copy(anchor);
+  const attribute = climateChapterLink.geometry.getAttribute('position');
+  attribute.setXYZ(0, anchor.x, anchor.y, anchor.z);
+  attribute.setXYZ(1, anchor.x, anchor.y, anchor.z);
+  attribute.needsUpdate = true;
+  climateChapterLink.computeLineDistances();
 }
 function focusGroup(group) {
-  if (hasLocalData(group)) { focusAt(climate.root.position.clone(), 6.8); return; }
-  const points = group.controls.filter((control) => control.position);
-  if (!points.length) return;
-  const center = points.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(points.length);
-  focusAt(center, Math.max(3.2, ...points.map((control) => new THREE.Vector3(...control.position).distanceTo(center) * 3.2)));
+  const points = group.controls.filter((control) => control.position)
+    .map((control) => meshes.get(control.id).getWorldPosition(new THREE.Vector3()));
+  const target = groupWorldTarget(group);
+  if (hasLocalData(group)) { climate.root.position.copy(target); focusAt(target, 6.8); return; }
+  if (!points.length) { focusAt(target, 3.2); return; }
+  focusAt(target, Math.max(3.2, ...points.map((point) => point.distanceTo(target) * 3.2)));
 }
 function focusAt(target, distance = 2.5) {
   setActiveTool('focus');
@@ -1063,9 +1142,18 @@ createIcons({ icons: { Maximize, Scan, Crosshair, Download, Compass, Eye, EyeOff
 
 function observationReport() {
   const axisId = selectedGroup.id;
+  const observedPoints = controlsData.map((control) => control.position ? {
+    ...control,
+    position: meshes.get(control.id).getWorldPosition(new THREE.Vector3()).toArray(),
+  } : control);
+  const groupPoints = selectedGroup.controls.filter((control) => control.position)
+    .map((control) => meshes.get(control.id).getWorldPosition(new THREE.Vector3()));
+  const observedAxis = groupPoints.length
+    ? groupPoints.reduce((sum, point) => sum.add(point), new THREE.Vector3()).normalize().toArray()
+    : selectedGroup.direction;
   return { selectedId: selected?.id ?? null, selectedGroup: selectedGroup.id, referenceAxisId: axisId,
-    ...observe({ points: controlsData, camera, target: orbit.target,
-      axis: selectedGroup.direction, width, height }) };
+    ...observe({ points: observedPoints, camera, target: orbit.target,
+      axis: observedAxis, width, height }) };
 }
 
 // HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
@@ -1079,8 +1167,9 @@ function positionLabels() {
   selectionRing.visible = false;
   pointLabel.hidden = true;
   if (selected?.r !== null && selected?.position) {
-    selectionRing.position.fromArray(selected.position); selectionRing.quaternion.copy(camera.quaternion);
-    const p = new THREE.Vector3(...selected.position).project(camera);
+    const selectedWorldPosition = meshes.get(selected.id).getWorldPosition(new THREE.Vector3());
+    selectionRing.position.copy(selectedWorldPosition); selectionRing.quaternion.copy(camera.quaternion);
+    const p = selectedWorldPosition.clone().project(camera);
     if (p.z > -1 && p.z < 1 && Math.abs(p.x) < 0.86 && Math.abs(p.y) < 0.65) {
       pointLabel.hidden = false;
       const x = (p.x * .5 + .5) * width, y = (-p.y * .5 + .5) * height;
@@ -1093,7 +1182,8 @@ function positionLabels() {
     const label = groupLabels.get(group.id);
     label.hidden = !$('labels-toggle').checked || climate.active;
     if (label.hidden) continue;
-    const v = new THREE.Vector3(...group.direction).multiplyScalar(3.25).project(camera);
+    const groupDirection = groupWorldDirection(group);
+    const v = groupDirection.multiplyScalar(3.25).project(camera);
     if (v.z < -1 || v.z > 1) { label.hidden = true; continue; }
     const labelWidth = label.offsetWidth, labelHeight = label.offsetHeight;
     let x = THREE.MathUtils.clamp((v.x * 0.5 + 0.5) * width, labelWidth / 2 + 10, width - labelWidth / 2 - 10);
@@ -1148,7 +1238,7 @@ function updateProjectionReadout() {
 }
 
 window.__PB_DEBUG__ = {
-  motion: () => ({ overview, manualObservation, autoRotate: orbit.autoRotate, reduced: reducedMotion.matches, focusing: !!focusTransition, projection: climate.projectionProgress, points: climate.positions.length }),
+  motion: () => ({ overview, motionPaused, manualObservation, autoRotate: orbit.autoRotate, boundaryAngles: [...boundaryOrbitMotion].map(([id, motion]) => ({ id, angle: motion.angle })), orbitAngles: [...riskOrbits.values()].map((line) => line.userData.angle), reduced: reducedMotion.matches, focusing: !!focusTransition, projection: climate.projectionProgress, points: climate.positions.length }),
   overview: () => ({ active: overview, ready: overviewReady, error: overviewError, fields: [...overviewLayers].map(([boundary, layer]) => ({ boundary, dataset: layer.data.id, observations: layer.data.observations.length, visible: layer.root.visible, sources: layer.data.sources })) }),
   atlas: () => ({ dataset: datasetFull?.id ?? null, error: datasetError, sourceRows: datasetFull?.records.length ?? 0, displayed: datasetFull ? climateField.observations.length : 0, boundary: selectedGroup.id, available: atlasManifest.boundaries[selectedGroup.id].datasets, canSurface: climate.canSurface, kind: datasetFull?.kind ?? null }),
   climate: () => ({ active: climate.active, mode: climate.mode, selected: climate.selectedIndex, positions: climate.positions, projected: climate.projected(camera, width, height) }),
@@ -1171,6 +1261,45 @@ window.__PB_DEBUG__ = {
 };
 
 let lastValidation = -Infinity;
+const SYSTEM_ROTATION_PERIOD = 9600;
+let systemRotationAngle = 0;
+// Nearly match the camera's 0.02 auto-rotation (~50 min per turn), leaving
+// only a small parallax drift so foreground and background feel coupled.
+const STARFIELD_ROTATION_PERIOD = 2405;
+let starfieldAngle = 0;
+function updatePlanetaryOrbits(dt) {
+  const motionDt = dt * EXHIBITION_MOTION_SPEED;
+  starfieldAngle = (starfieldAngle + Math.PI * 2 / STARFIELD_ROTATION_PERIOD * motionDt) % (Math.PI * 2);
+  starField.rotation.y = starfieldAngle;
+  if (motionPaused) return;
+  systemRotationAngle = (systemRotationAngle + Math.PI * 2 / SYSTEM_ROTATION_PERIOD * motionDt) % (Math.PI * 2);
+  planetarySystemRoot.rotation.y = systemRotationAngle;
+  for (const motion of boundaryOrbitMotion.values()) {
+    motion.angle = (motion.angle + motion.direction * Math.PI * 2 / motion.period * motionDt + Math.PI * 2) % (Math.PI * 2);
+    motion.quaternion.setFromAxisAngle(motion.axis, motion.angle);
+  }
+  for (const control of quantitative) {
+    const orbitLine = riskOrbits.get(control.id);
+    const boundaryMotion = boundaryOrbitMotion.get(control.groupId);
+    orbitLine.userData.angle = (orbitLine.userData.angle + orbitLine.userData.orbitDirection * Math.PI * 2 / orbitLine.userData.period * motionDt + Math.PI * 2) % (Math.PI * 2);
+    const position = orbitLine.userData.direction.clone().multiplyScalar(Math.cos(orbitLine.userData.angle))
+      .addScaledVector(orbitLine.userData.tangent, Math.sin(orbitLine.userData.angle)).multiplyScalar(control.r)
+      .applyQuaternion(boundaryMotion.quaternion);
+    const point = meshes.get(control.id);
+    point.position.copy(position);
+    orbitLine.quaternion.copy(boundaryMotion.quaternion);
+    const linePosition = lines.get(control.id).geometry.getAttribute('position');
+    linePosition.setXYZ(1, position.x, position.y, position.z);
+    linePosition.needsUpdate = true;
+  }
+  for (const group of groups) {
+    const link = relatedLinks.get(group.id);
+    if (!link) continue;
+    const positions = group.controls.filter((control) => control.position)
+      .map((control) => meshes.get(control.id).position);
+    link.geometry.setFromPoints(positions);
+  }
+}
 function updateFocusTransition(now) {
   if (!focusTransition) return;
   const t = reducedMotion.matches ? 1 : Math.min(1, (now - focusTransition.startedAt) / focusTransition.duration);
@@ -1186,8 +1315,9 @@ function updateFocusTransition(now) {
 renderer.setAnimationLoop((now) => {
   const dt = Math.min(.05, Math.max(0, (now - (lastMotionTime ?? now)) / 1000));
   lastMotionTime = now;
-  orbit.autoRotate = overview && !manualObservation && !focusTransition && !reducedMotion.matches && !document.hidden;
-  orbit.autoRotateSpeed = .12;
+  orbit.autoRotate = !motionPaused && overview && !manualObservation && !focusTransition && !reducedMotion.matches && !document.hidden;
+  orbit.autoRotateSpeed = .01 * EXHIBITION_MOTION_SPEED;
+  if (!reducedMotion.matches && !document.hidden) updatePlanetaryOrbits(dt);
   for (const layer of overviewLayers.values()) if (layer.root.visible) layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(dt); positionSignalLights(now); renderer.render(scene, camera); positionLabels(); updateProjectionReadout();
