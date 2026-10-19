@@ -1173,7 +1173,6 @@ function setActiveTool(id) {
     else $(tool).removeAttribute('aria-current');
   }
 }
-document.querySelectorAll('.tools button').forEach((button) => { button.dataset.tooltip = button.title; });
 orbit.addEventListener('start', () => { manualObservation = true; setActiveTool(null); setHoveredControl(null); });
 function setAnalysisExpanded(expanded) {
   closeSelects();
@@ -1197,6 +1196,15 @@ function setUiHidden(hidden) {
   if (hidden) closeSelects();
 }
 uiToggle.addEventListener('click', () => setUiHidden(!document.body.classList.contains('ui-hidden')));
+const soundToggle = $('sound-toggle');
+soundToggle.addEventListener('click', () => {
+  const enabled = soundToggle.getAttribute('aria-pressed') !== 'true';
+  sound.setEnabled(enabled);
+  soundToggle.setAttribute('aria-pressed', String(enabled));
+  soundToggle.textContent = enabled ? 'SOUND ON' : 'SOUND OFF';
+  soundToggle.setAttribute('aria-label', enabled ? 'Turn sound off' : 'Turn sound on');
+  soundToggle.title = enabled ? 'Turn sound off' : 'Turn sound on';
+});
 window.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') $('inspector').hidden = true;
   if (event.key.toLowerCase() === 'h' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName) && document.activeElement?.getAttribute('role') !== 'combobox') setUiHidden(!document.body.classList.contains('ui-hidden'));
