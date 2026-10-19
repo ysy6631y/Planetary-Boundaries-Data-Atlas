@@ -18,7 +18,7 @@
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
       <div class="observation-toolbar tools" role="toolbar" aria-label="View and interface commands">
-        <button id="fit" title="Full view" aria-label="Full view"><span class="tool-name">VIEW</span></button>
+        <button id="fit" title="Return to overview" aria-label="Return to overview" hidden><span class="tool-name">← OVERVIEW</span></button>
         <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><span class="tool-name">FOCUS</span></button>
         <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false">UI ON</button>
       </div>
@@ -30,7 +30,8 @@
         <label class="legend-row"><input id="hr-toggle" type="checkbox" checked><b class="hr-key" aria-hidden="true"></b><span>HIGH RISK</span></label>
       </div>
       <div class="scene-bottom">
-      <div class="observation-distance"><span>OBSERVATION DISTANCE</span><output id="camera-distance" aria-label="Camera to target distance in scene units">-</output></div>
+      <div id="risk-ruler" class="risk-ruler" hidden><strong id="risk-value"></strong><div class="risk-scale" role="meter" aria-label="Selected observation unified risk distance" aria-valuemin="0"><div id="risk-stem"></div><i data-risk-tick="0">0</i><i data-risk-tick="1">1 / BOUNDARY</i><i data-risk-tick="2">2 / HIGH RISK</i></div></div>
+      <div class="observation-distance"><span>VIEW DISTANCE</span><output id="camera-distance" aria-label="Camera distance to observation target in scene units">-</output></div>
       </div>
       <div id="local-field" class="local-field" hidden role="region" aria-label="Analysis controls">
         <div class="analysis-head"><div><span class="eyebrow">ANALYSIS CONTROL</span><strong id="local-title">CLIMATE</strong></div><button id="analysis-toggle" class="panel-toggle" type="button" aria-label="Collapse analysis controls" aria-expanded="true" aria-controls="analysis-body" title="Collapse analysis controls">−</button></div>
@@ -46,7 +47,6 @@
         </div>
         </div>
       </div>
-      <div id="risk-ruler" class="risk-ruler" hidden><strong id="risk-value"></strong><div class="risk-scale"><div id="risk-stem"></div><i style="bottom:0">0</i><i style="bottom:24px">1 / BOUNDARY</i><i style="bottom:48px">2 / HIGH RISK</i><b id="risk-mark"></b></div></div>
       <div id="hover-label" class="hover-label" hidden></div>
       <div id="webgl-error" role="alert" hidden></div>
     </section>

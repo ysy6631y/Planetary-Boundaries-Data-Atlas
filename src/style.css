@@ -276,7 +276,6 @@ dd { margin: 0; color: #aeb0ad; font: 8px/1.4 var(--mono); overflow-wrap: anywhe
 .risk-scale i { position: absolute; left: 0; padding-left: 12px; font: 8px/1 var(--mono); white-space: nowrap; transform: translateY(50%); }
 .risk-scale i::before { content: ''; position: absolute; top: 50%; left: 0; width: 5px; border-top: 1px solid #aaa; }
 #risk-stem { position: absolute; left: -1px; bottom: 0; border-left: 1px solid var(--signal); }
-#risk-mark { position: absolute; left: -4px; width: 7px; height: 3px; background: var(--signal); }
 .hover-label { position: absolute; z-index: 20; padding: 3px 5px; border-left: 1px solid var(--signal); background: #000; color: #fff; font: 8px/1.2 var(--mono); pointer-events: none; text-transform: uppercase; }
 
 #webgl-error { position: absolute; z-index: 40; top: 100px; left: 248px; right: 20px; padding: 12px; border: 1px solid var(--signal); background: #090000; color: #d8a29e; font: 9px/1.5 var(--mono); }
@@ -493,6 +492,10 @@ aside { background: rgba(0,0,0,.94); }
 }
 #webgl-error { background-color: rgba(9, 0, 0, .65); }
 .scene-bottom { position: absolute; z-index: 8; left: 24px; bottom: 24px; display: grid; gap: 16px; pointer-events: none; }
+.scene-bottom .risk-ruler { position: absolute; left: 0; bottom: calc(100% + 24px); }
+#risk-stem { height: 0; transition: height 600ms cubic-bezier(.22, 1, .36, 1); }
+.observation-toolbar #fit { width: 96px; }
+.observation-toolbar #fit[hidden] { display: none; }
 .observation-distance { width: 188px; display: grid; gap: 7px; white-space: nowrap; font-family: var(--mono); }
 .observation-distance > span { font-size: 9px; color: #989b98; }
 .observation-distance output { color: #f0f1ed; font-size: 23px; font-weight: 400; font-variant-numeric: tabular-nums; }
@@ -501,4 +504,5 @@ aside { background: rgba(0,0,0,.94); }
 @media (max-width: 1200px) { .observation-toolbar { right: 18px; } }
 @media (max-width: 600px) {
   .scene-top .tools button { width: 58px; }
+  .scene-bottom .risk-ruler { position: fixed; top: 120px; left: 18px; bottom: auto; }
 }

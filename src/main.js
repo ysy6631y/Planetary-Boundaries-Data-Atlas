@@ -53,6 +53,7 @@ reducedMotion.addEventListener('change', () => {
 });
 
 const $ = (id) => document.getElementById(id);
+const viewDistanceOutput = $('camera-distance');
 const sound = createSoundSystem($('ambient-track'));
 window.__PB_AUDIO__ = sound;
 if (import.meta.hot) import.meta.hot.dispose(() => sound.dispose());
@@ -70,6 +71,38 @@ const controlsData = groups.flatMap((group) => group.controls);
 const selectControls = new Map(['dataset-select', 'entity-filter', 'climate-scale'].map((id) => [id, enhanceSelect($(id))]));
 const syncSelects = () => selectControls.forEach((control) => control.sync());
 const quantitative = controlsData.filter((control) => control.r !== null);
+// Keep the original 24 CSS pixels per risk unit, extending the ruler once for
+// the complete source dataset so selection never changes the threshold scale.
+const riskScaleMax = Math.max(2, 120 / 24, ...quantitative.map(control => control.r));
+const riskScale = document.querySelector('.risk-scale');
+riskScale.style.height = `${riskScaleMax * 24}px`;
+riskScale.setAttribute('aria-valuemax', String(riskScaleMax));
+document.querySelectorAll('[data-risk-tick]').forEach(tick => {
+  tick.style.bottom = `${Number(tick.dataset.riskTick) / riskScaleMax * 100}%`;
+});
+
+function updateDataR(control = null) {
+  const quantified = control?.r != null;
+  const ruler = $('risk-ruler');
+  const stem = $('risk-stem');
+  if (!quantified) {
+    ruler.hidden = true;
+    stem.style.height = '0%';
+    riskScale.removeAttribute('aria-valuenow');
+    riskScale.removeAttribute('aria-valuetext');
+    return;
+  }
+  $('risk-value').textContent = `DATA R / ${control.r.toFixed(3)}`;
+  riskScale.setAttribute('aria-valuenow', String(control.r));
+  riskScale.setAttribute('aria-valuetext', `${control.r.toFixed(3)}; boundary 1; high risk 2`);
+  if (ruler.hidden) {
+    ruler.hidden = false;
+    // Establish zero height on reveal; subsequent selections transition from
+    // the current height without restarting the animation.
+    stem.getBoundingClientRect();
+  }
+  stem.style.height = `${control.r / riskScaleMax * 100}%`;
+}
 const EXHIBITION_MOTION_SPEED = 1.09;
 const sortedRiskScores = quantitative.map((control) => control.r).sort((a, b) => a - b);
 const riskPercentile = (control) => sortedRiskScores.length < 2 ? 0.5
@@ -390,7 +423,7 @@ for (const [index, group] of groups.entries()) {
   title.className = 'group-title';
   title.dataset.group = group.id;
   title.innerHTML = `<span class="number">${String(group.order).padStart(2, '0')}</span><span>${escape(group.name)}</span>`;
-  title.addEventListener('click', () => { select(null, group); focusGroup(group); });
+  title.addEventListener('click', () => selectBoundary(group));
   wrapper.append(title);
   for (const control of group.controls) {
     const button = document.createElement('button');
@@ -407,7 +440,7 @@ for (const [index, group] of groups.entries()) {
   label.dataset.groupLabel = group.id;
   label.title = 'Boundary direction label; layout anchor only, no representative data radius';
   label.innerHTML = `${String(group.order).padStart(2, '0')} ${shortNames[index]}${nq ? `<small>${nq} NOT QUANTIFIED</small>` : ''}`;
-  label.addEventListener('click', () => { select(null, group); focusGroup(group); });
+  label.addEventListener('click', () => selectBoundary(group));
   $('labels').append(label);
   groupLabels.set(group.id, label);
 }
@@ -690,6 +723,18 @@ function openBoundary(group) {
   syncSelects();
 }
 
+function selectBoundary(group) {
+  // Open the first quantified source indicator in INDEX order, retaining a
+  // user's indicator when returning to the same boundary. No group mean or
+  // synthetic risk value is assigned to a navigation label.
+  const control = selected?.groupId === group.id ? selected
+    : group.controls.find(control => control.r !== null) ?? group.controls[0];
+  select(control, group);
+  if (control.r !== null) focusSelected();
+  else focusGroup(group);
+  closeIndex();
+}
+
 function select(control, group, { openPanel = true } = {}) {
   setHoveredControl(null);
   setActiveTool(null);
@@ -700,13 +745,8 @@ function select(control, group, { openPanel = true } = {}) {
   selected = control; selectedGroup = group;
   if (openPanel) openBoundary(group);
   climate.select(-1);
-  $('risk-ruler').hidden = !hasLocalData(group) || control?.r == null;
-  if (hasLocalData(group) && control?.r != null) {
-    $('risk-value').textContent = `${codeFor(control)} / R ${control.r.toFixed(3)}`;
-    $('risk-mark').style.bottom = `${control.r * 24}px`;
-    $('risk-stem').style.height = `${control.r * 24}px`;
-    document.querySelector('.risk-scale').style.height = `${Math.max(120, control.r * 24)}px`;
-  }
+  $('fit').hidden = false;
+  updateDataR(control);
   if (openPanel) $('inspector').hidden = hasLocalData(group);
   $('hover-label').hidden = true;
   document.querySelectorAll('[data-control]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.control === selected?.id)));
@@ -815,13 +855,15 @@ async function enterOverview() {
   setHoveredControl(null);
   setActiveTool('fit');
   overview = true; selected = null;
+  $('fit').hidden = true;
+  updateDataR();
   motionPaused = false;
   manualObservation = false;
   ++datasetRequest; clearTimeout(readTimer);
   datasetFull = null; inspectedRecord = null;
   climate.activate(false); climate.root.visible = false; climateChapterLink.visible = false;
   for (const id of ['inspector', 'local-field']) concealPanel($(id));
-  for (const id of ['risk-ruler', 'hover-label']) $(id).hidden = true;
+  $('hover-label').hidden = true;
   closeIndex();
   $('focus').disabled = true;
   $('scene-selection').textContent = 'SYSTEM OVERVIEW';
@@ -981,8 +1023,18 @@ function setHoveredControl(control) {
 function controlAtPointer(event) {
   const bounds = renderer.domElement.getBoundingClientRect();
   raycaster.setFromCamera(new THREE.Vector2((event.clientX - bounds.left) / bounds.width * 2 - 1, -(event.clientY - bounds.top) / bounds.height * 2 + 1), camera);
-  const hit = raycaster.intersectObjects([...meshes.values()])[0];
-  return hit ? controlsData.find((control) => control.id === hit.object.userData.controlId) : null;
+  // Glow sprites are children of the point, including transparent sprites.
+  // They must not intercept a hit and return an undefined control ID.
+  const hit = raycaster.intersectObjects([...meshes.values()], false)[0];
+  if (hit) return controlsData.find((control) => control.id === hit.object.userData.controlId);
+  // Match the visible screen-space signals, rather than requiring a hit on
+  // the tiny world-space sphere at the centre of each signal.
+  const x = event.clientX - bounds.left, y = event.clientY - bounds.top;
+  return quantitative.map(control => {
+    const point = meshes.get(control.id).getWorldPosition(new THREE.Vector3()).project(camera);
+    return { control, point, distance: Math.hypot((point.x + 1) * bounds.width / 2 - x, (1 - point.y) * bounds.height / 2 - y) };
+  }).filter(hit => hit.point.z > -1 && hit.point.z < 1 && hit.distance <= 14)
+    .sort((a, b) => a.distance - b.distance)[0]?.control ?? null;
 }
 renderer.domElement.addEventListener('pointerdown', cancelFocus, { capture: true });
 renderer.domElement.addEventListener('pointerdown', (event) => { down = { x: event.clientX, y: event.clientY, button: event.button }; });
@@ -990,6 +1042,12 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   const press = down;
   down = null;
   if (!press || press.button !== 0 || event.button !== 0 || Math.hypot(event.clientX - press.x, event.clientY - press.y) > 5) return;
+  const control = controlAtPointer(event);
+  if (control) {
+    select(control, groups.find((g) => g.id === control.groupId));
+    focusSelected();
+    return;
+  }
   const local = climateAtPointer(event);
   if (local) {
     clearTimeout(readTimer);
@@ -997,11 +1055,6 @@ renderer.domElement.addEventListener('pointerup', (event) => {
     $('inspector').hidden = false;
     showReadoutTab('reference'); inspectCountry();
     return;
-  }
-  const control = controlAtPointer(event);
-  if (control) {
-    select(control, groups.find((g) => g.id === control.groupId));
-    focusSelected();
   }
 });
 renderer.domElement.addEventListener('pointermove', (event) => {
@@ -1011,7 +1064,8 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   soundPointerPrevious = { x: event.clientX, y: event.clientY };
   if (event.buttons) { setHoveredControl(null); climate.hover(-1); $('hover-label').hidden = true; return; }
-  const local = climateAtPointer(event);
+  const control = controlAtPointer(event);
+  const local = control ? null : climateAtPointer(event);
   if (local) {
     setHoveredControl(null); climate.hover(local.index);
     const row = climateField.observations[local.index];
@@ -1024,7 +1078,6 @@ renderer.domElement.addEventListener('pointermove', (event) => {
   }
   renderer.domElement.style.cursor = 'default';
   climate.hover(-1);
-  const control = controlAtPointer(event);
   setHoveredControl(control);
   if (!control) { $('hover-label').hidden = true; return; }
   renderer.domElement.style.cursor = 'pointer';
@@ -1038,12 +1091,14 @@ renderer.domElement.addEventListener('pointerleave', () => { setHoveredControl(n
 renderer.domElement.addEventListener('pointerleave', () => { soundPointerPrevious = null; });
 renderer.domElement.addEventListener('dblclick', (event) => {
   if (event.button !== 0) return;
-  const local = climateAtPointer(event);
-  if (local) { focusAt(climate.worldPosition(local.index), 5); return; }
   const control = controlAtPointer(event);
-  if (!control) return;
-  select(control, groups.find((group) => group.id === control.groupId));
-  focusSelected();
+  if (control) {
+    select(control, groups.find((group) => group.id === control.groupId));
+    focusSelected();
+    return;
+  }
+  const local = climateAtPointer(event);
+  if (local) focusAt(climate.worldPosition(local.index), 5);
 });
 
 let width = 1, height = 1;
@@ -1295,6 +1350,10 @@ renderer.setAnimationLoop((now) => {
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(dt); positionSignalLights(now); renderer.render(scene, camera); positionLabels(); updateProjectionReadout();
   const soundDistance = Math.max(.001, orbit.getDistance());
+  // Restore the original camera-to-observation-target distance independently
+  // of the selected source risk score, reusing the frame's existing reading.
+  const viewDistanceText = soundDistance.toFixed(3);
+  if (viewDistanceOutput.textContent !== viewDistanceText) viewDistanceOutput.textContent = viewDistanceText;
   const cameraChange = soundPreviousQuaternion.angleTo(camera.quaternion)
     + Math.abs(Math.log(soundDistance / Math.max(.001, soundPreviousDistance))) * .7
     + soundPreviousTarget.distanceTo(orbit.target) / soundDistance * .3;
@@ -1305,7 +1364,6 @@ renderer.setAnimationLoop((now) => {
   soundPreviousQuaternion.copy(camera.quaternion);
   soundPreviousTarget.copy(orbit.target);
   soundPreviousDistance = soundDistance;
-  $('camera-distance').textContent = soundDistance.toFixed(3);
   if (now - lastValidation > 500) {
     const report = liveValidation();
     if (report.failed) inspect();
