@@ -16,6 +16,9 @@ import { datasetPresentation, axisLabel } from './dataset-presentation.js';
 import { enhanceSelect, closeSelects } from './select-control.js';
 import { createSoundSystem } from './sound-system.js';
 import './style.css';
+import { createDataProcess } from './data-process.js';
+const dataProcess = createDataProcess();
+const afterSceneFrame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let manualObservation = false;
@@ -71,11 +74,11 @@ const controlsData = groups.flatMap((group) => group.controls);
 const selectControls = new Map(['dataset-select', 'entity-filter', 'climate-scale'].map((id) => [id, enhanceSelect($(id))]));
 const syncSelects = () => selectControls.forEach((control) => control.sync());
 const quantitative = controlsData.filter((control) => control.r !== null);
-// Keep the original 24 CSS pixels per risk unit, extending the ruler once for
-// the complete source dataset so selection never changes the threshold scale.
+// Use one full-source domain for the compact 180px ruler. Selection never
+// changes the scale or the existing boundary (1) / high-risk (2) thresholds.
 const riskScaleMax = Math.max(2, 120 / 24, ...quantitative.map(control => control.r));
 const riskScale = document.querySelector('.risk-scale');
-riskScale.style.height = `${riskScaleMax * 24}px`;
+riskScale.style.height = '180px';
 riskScale.setAttribute('aria-valuemax', String(riskScaleMax));
 document.querySelectorAll('[data-risk-tick]').forEach(tick => {
   tick.style.bottom = `${Number(tick.dataset.riskTick) / riskScaleMax * 100}%`;
@@ -86,12 +89,18 @@ function updateDataR(control = null) {
   const ruler = $('risk-ruler');
   const stem = $('risk-stem');
   if (!quantified) {
-    ruler.hidden = true;
-    stem.style.height = '0%';
+    ruler.getAnimations().forEach(animation => animation.cancel());
+    if (!ruler.hidden && !reducedMotion.matches) {
+      const fade = ruler.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160 });
+      fade.onfinish = () => { ruler.hidden = true; stem.style.height = '0%'; };
+    } else { ruler.hidden = true; stem.style.height = '0%'; }
     riskScale.removeAttribute('aria-valuenow');
     riskScale.removeAttribute('aria-valuetext');
     return;
   }
+  ruler.getAnimations().forEach(animation => animation.cancel());
+  ruler.title = `PLANETARY REFERENCE / ${control.raw.control_label}; not an individual CSV row value`;
+  stem.style.transitionDuration = ruler.hidden ? '550ms' : '400ms';
   $('risk-value').textContent = `DATA R / ${control.r.toFixed(3)}`;
   riskScale.setAttribute('aria-valuenow', String(control.r));
   riskScale.setAttribute('aria-valuetext', `${control.r.toFixed(3)}; boundary 1; high risk 2`);
@@ -636,6 +645,13 @@ function refreshField(data) {
 }
 
 async function openDataset(id) {
+  closeSelects();
+  const datasetName = datasetPresentation(metadataById.get(id)).name;
+  $('scene-selection').textContent = datasetName;
+  $('scene-selection').title = datasetName;
+  $('local-title').textContent = datasetName;
+  $('local-title').title = datasetName;
+  const process = dataProcess.begin(datasetName);
   const request = ++datasetRequest;
   const fadeStarted = performance.now();
   const groupId = selectedGroup.id;
@@ -653,7 +669,7 @@ async function openDataset(id) {
   $('climate-scale').disabled = true; $('climate-surface').disabled = true;
   $('inspector').hidden = true;
   try {
-    const data = await loadDataset(metadataById.get(id));
+    const data = await loadDataset(metadataById.get(id), process);
     if (request !== datasetRequest || selectedGroup.id !== groupId) return;
     $('local-count').textContent = 'DATASET LOADED';
     $('local-field').setAttribute('aria-busy', 'false');
@@ -667,13 +683,18 @@ async function openDataset(id) {
     $('entity-filter').disabled = data.kind === 'records';
     $('source-record').disabled = !data.records.length;
     $('source-record').min = '2'; $('source-record').max = String(data.records.length + 1); $('source-record').value = '2';
+    process('RENDERING', data.records.length);
     refreshField(data);
+    await afterSceneFrame();
+    if (request !== datasetRequest || selectedGroup.id !== groupId) return;
+    process('READY', data.records.length);
     if (data.kind === 'records' && data.records.length) {
       clearTimeout(readTimer);
       inspectedRecord = data.records[0]; $('inspector').hidden = false; inspectCountry(inspectedRecord);
     }
   } catch (error) {
     if (request !== datasetRequest) return;
+    process('ERROR', null, error.message);
     datasetError = error.message;
     climate.activate(false); climate.root.visible = false;
     $('local-count').textContent = `LOAD FAILED / ${error.message}`;
@@ -683,6 +704,8 @@ async function openDataset(id) {
 }
 
 function openBoundary(group) {
+  dataProcess.reset();
+  setAnalysisExpanded(false);
   ++datasetRequest;
   datasetFull = null; inspectedRecord = null; datasetError = null;
   climate.activate(false); climate.root.visible = false; climate.root.position.copy(groupWorldTarget(group));
@@ -700,6 +723,7 @@ function openBoundary(group) {
   $('local-field').classList.remove('loading', 'load-error');
   $('local-field').setAttribute('aria-busy', 'false');
   $('dataset-select').disabled = !boundary.datasets.length;
+  if (!boundary.datasets.length) dataProcess.begin('PLANETARY REFERENCE')('NO LOCAL DATA');
   $('entity-filter').replaceChildren(new Option('ALL ENTITIES', ''));
   for (const id of ['entity-filter', 'source-record', 'climate-scale', 'climate-surface']) $(id).disabled = true;
   const roles = ['analysis', 'processed', 'history', 'statistics', 'red-points', 'relations', 'summary'];
@@ -776,7 +800,7 @@ function select(control, group, { openPanel = true } = {}) {
   climateChapterLink.visible = climate.active;
   for (const [id, label] of groupLabels) label.classList.toggle('selected', id === group.id);
   $('focus').disabled = !hasLocalData(group) && (!control || control.r === null);
-  $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
+  if (!hasLocalData(group)) $('scene-selection').textContent = control ? `${control.raw.control_label.toUpperCase()}${control.r === null ? ' / NOT QUANTIFIED' : ''}` : `${shortNames[group.order - 1]} / GROUP DIRECTION`;
   scheduleInstrumentRead();
 }
 
@@ -854,6 +878,10 @@ function fit(radius = maxRadius) {
 async function enterOverview() {
   setHoveredControl(null);
   setActiveTool('fit');
+  dataProcess.reset();
+  const process = dataProcess.begin('ATLAS INITIALIZATION', 'SYSTEM');
+  if (overviewReady) process('READY');
+  const initializationCurrent = () => overview && !overviewReady;
   overview = true; selected = null;
   $('fit').hidden = true;
   updateDataR();
@@ -866,7 +894,7 @@ async function enterOverview() {
   $('hover-label').hidden = true;
   closeIndex();
   $('focus').disabled = true;
-  $('scene-selection').textContent = 'SYSTEM OVERVIEW';
+  $('scene-selection').textContent = '';
   document.querySelectorAll('[data-control], [data-group]').forEach((el) => el.setAttribute('aria-pressed', 'false'));
   for (const label of groupLabels.values()) label.classList.remove('selected');
   for (const link of relatedLinks.values()) link.visible = false;
@@ -890,7 +918,8 @@ async function enterOverview() {
       const id = atlasManifest.boundaries[group.id].default;
       if (!id) continue;
       if (!overviewLayers.has(group.id)) {
-        const data = await loadDataset(metadataById.get(id));
+        const data = await loadDataset(metadataById.get(id), (stage) => { if (initializationCurrent()) process?.(stage); });
+        if (initializationCurrent()) process?.('RENDERING', data.records.length);
         if (!overviewLayers.has(group.id)) {
           const layer = createClimateLayer(data, group.direction, scene, document.createDocumentFragment());
           layer.setData(data, group.direction, shortNames[group.order - 1]);
@@ -900,8 +929,11 @@ async function enterOverview() {
       }
       overviewLayers.get(group.id).root.visible = overview;
     }
+    await afterSceneFrame();
+    if (overview) process?.('READY', [...overviewLayers.values()].reduce((total, layer) => total + layer.data.records.length, 0));
     overviewReady = true; overviewError = null;
   } catch (error) {
+    if (overview) process?.('ERROR', null, error.message);
     overviewError = error.message;
     if (overview) $('scene-selection').textContent = `OVERVIEW LOAD FAILED / ${error.message}`;
   }
@@ -984,6 +1016,8 @@ function climateAtPointer(event) {
   return climate.pick(event.clientX - bounds.left, event.clientY - bounds.top, camera, bounds.width, bounds.height);
 }
 function inspectCountry(record = null) {
+  const previousValues = [...$('reference-content').querySelectorAll('dd')].map(el => el.textContent);
+  const wasOpen = !$('inspector').hidden;
   const row = record ?? climateField.observations[climate.selectedIndex];
   if (!row) return;
   inspectedRecord = row;
@@ -1008,7 +1042,10 @@ function inspectCountry(record = null) {
   $('distance-count').textContent = `${climateField.records.length.toLocaleString('en')} SOURCE ROWS`;
   $('inspect-content').innerHTML = `${fields([['DATASET', presentation.name], ['FORMAT', presentation.format], ['SOURCE ROW', row.sourceRow], ['ORIGINAL LABEL', row.label], ['ARCHIVE / FILE', climateField.source], ['MAPPING', climateField.mappingReason], ['DISPLAY TRANSFORM', row.plotted ? climate.mode === 'log' ? 'X linear; positive Y/Z log10; local extent' : 'Linear local extent; categorical X is layout only where labeled' : 'NOT SPATIALIZED'], ['XY PLANE', climateField.axes.length === 2 ? 'Display Z=0 only; no third measured variable' : 'N/A'], ['ATLAS ANCHOR', 'Layout only; not a risk distance'], ['EXTENT', 'Convex envelope; not a correlation or risk surface']])}<details class="source-details"><summary>ORIGINAL CSV ROW / ${row.sourceRow}</summary>${rawFields}</details>`;
   syncSelects();
-  revealPanel($('inspector'));
+  if (!wasOpen || $('inspector').inert) revealPanel($('inspector'));
+  if (!reducedMotion.matches) $('reference-content').querySelectorAll('dd').forEach((el, i) => {
+    if (el.textContent !== previousValues[i]) el.animate([{ opacity: .5 }, { opacity: 1 }], { duration: 150 });
+  });
 }
 function setHoveredControl(control) {
   if (hoveredControl === control?.id) return;
@@ -1138,21 +1175,16 @@ function setActiveTool(id) {
 }
 document.querySelectorAll('.tools button').forEach((button) => { button.dataset.tooltip = button.title; });
 orbit.addEventListener('start', () => { manualObservation = true; setActiveTool(null); setHoveredControl(null); });
-$('analysis-toggle').addEventListener('click', () => {
-  const beforeHeight = $('local-field').getBoundingClientRect().height;
-  const collapsed = !$('analysis-body').hidden;
-  closeSelects(); $('analysis-body').hidden = collapsed;
-  if (!collapsed && !reducedMotion.matches) $('analysis-body').animate([{ opacity: .5 }, { opacity: 1 }], { duration: 160 });
-  $('analysis-toggle').setAttribute('aria-expanded', String(!collapsed));
-  $('analysis-toggle').textContent = collapsed ? '+' : '−';
-  $('analysis-toggle').title = collapsed ? 'Expand analysis controls' : 'Collapse analysis controls';
+function setAnalysisExpanded(expanded) {
+  closeSelects();
+  $('analysis-body').hidden = !expanded;
+  $('analysis-toggle').setAttribute('aria-expanded', String(expanded));
+  $('analysis-toggle').textContent = expanded ? '−' : '+';
+  $('analysis-toggle').title = expanded ? 'Collapse analysis controls' : 'Expand analysis controls';
   $('analysis-toggle').setAttribute('aria-label', $('analysis-toggle').title);
-  if (!reducedMotion.matches) {
-    const panel = $('local-field');
-    panel.getAnimations().forEach(animation => animation.cancel());
-    panel.animate([{ height: `${beforeHeight}px` }, { height: `${panel.getBoundingClientRect().height}px` }], { duration: 160, easing: 'ease-out' });
-  }
-});
+  if (expanded && !reducedMotion.matches) $('analysis-body').animate([{ opacity: .5 }, { opacity: 1 }], { duration: 160 });
+}
+$('analysis-toggle').addEventListener('click', () => setAnalysisExpanded($('analysis-body').hidden));
 $('close-inspector').addEventListener('click', () => { $('inspector').hidden = true; });
 const uiToggle = $('ui-toggle');
 function setUiHidden(hidden) {

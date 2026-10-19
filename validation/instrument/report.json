@@ -1,0 +1,181 @@
+{
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "rects": [
+        {
+          "id": ".legend",
+          "visible": true,
+          "x": 1154.984375,
+          "y": 110,
+          "right": 1416,
+          "bottom": 124
+        },
+        {
+          "id": ".observation-toolbar",
+          "visible": true,
+          "x": 1176,
+          "y": 58,
+          "right": 1416,
+          "bottom": 88
+        },
+        {
+          "id": "#local-field",
+          "visible": true,
+          "x": 245,
+          "y": 575.9375,
+          "right": 925,
+          "bottom": 876
+        },
+        {
+          "id": "#inspector",
+          "visible": true,
+          "x": 1066,
+          "y": 238,
+          "right": 1416,
+          "bottom": 812
+        },
+        {
+          "id": "#risk-ruler",
+          "visible": true,
+          "x": 24,
+          "y": 583,
+          "right": 126.609375,
+          "bottom": 804
+        },
+        {
+          "id": ".observation-distance",
+          "visible": true,
+          "x": 24,
+          "y": 828,
+          "right": 212,
+          "bottom": 876
+        }
+      ],
+      "overlaps": []
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "rects": [
+        {
+          "id": ".legend",
+          "visible": true,
+          "x": 1634.984375,
+          "y": 110,
+          "right": 1896,
+          "bottom": 124
+        },
+        {
+          "id": ".observation-toolbar",
+          "visible": true,
+          "x": 1656,
+          "y": 58,
+          "right": 1896,
+          "bottom": 88
+        },
+        {
+          "id": "#local-field",
+          "visible": true,
+          "x": 245,
+          "y": 755.9375,
+          "right": 925,
+          "bottom": 1056
+        },
+        {
+          "id": "#inspector",
+          "visible": true,
+          "x": 1546,
+          "y": 238,
+          "right": 1896,
+          "bottom": 992
+        },
+        {
+          "id": "#risk-ruler",
+          "visible": true,
+          "x": 24,
+          "y": 763,
+          "right": 126.609375,
+          "bottom": 984
+        },
+        {
+          "id": ".observation-distance",
+          "visible": true,
+          "x": 24,
+          "y": 1008,
+          "right": 212,
+          "bottom": 1056
+        }
+      ],
+      "overlaps": []
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "rects": [
+        {
+          "id": ".legend",
+          "visible": true,
+          "x": 994.984375,
+          "y": 110,
+          "right": 1256,
+          "bottom": 124
+        },
+        {
+          "id": ".observation-toolbar",
+          "visible": true,
+          "x": 1016,
+          "y": 58,
+          "right": 1256,
+          "bottom": 88
+        },
+        {
+          "id": "#local-field",
+          "visible": true,
+          "x": 245,
+          "y": 475.9375,
+          "right": 875,
+          "bottom": 776
+        },
+        {
+          "id": "#inspector",
+          "visible": true,
+          "x": 906,
+          "y": 238,
+          "right": 1256,
+          "bottom": 712
+        },
+        {
+          "id": "#risk-ruler",
+          "visible": true,
+          "x": 24,
+          "y": 483,
+          "right": 126.609375,
+          "bottom": 704
+        },
+        {
+          "id": ".observation-distance",
+          "visible": true,
+          "x": 24,
+          "y": 728,
+          "right": 212,
+          "bottom": 776
+        }
+      ],
+      "overlaps": []
+    }
+  ],
+  "checks": [
+    "overview",
+    "focus",
+    "dropdown",
+    "real loading",
+    "source row inspection",
+    "distance independent of R",
+    "three viewport layouts",
+    "return overview",
+    "persistent HTTP 503 error"
+  ],
+  "errors": []
+}

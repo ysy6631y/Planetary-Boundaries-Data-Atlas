@@ -1,0 +1,165 @@
+{
+  "layouts": [
+    {
+      "width": 1440,
+      "height": 900,
+      "rects": [
+        {
+          "s": "#data-process",
+          "x": 506,
+          "y": 67.703125,
+          "right": 734,
+          "bottom": 80.296875
+        },
+        {
+          "s": "#scene-selection",
+          "x": 146,
+          "y": 67,
+          "right": 496,
+          "bottom": 81
+        },
+        {
+          "s": ".observation-toolbar",
+          "x": 1176,
+          "y": 58,
+          "right": 1416,
+          "bottom": 90
+        },
+        {
+          "s": ".legend",
+          "x": 1154.984375,
+          "y": 110,
+          "right": 1416,
+          "bottom": 124
+        },
+        {
+          "s": "#local-field",
+          "x": 245,
+          "y": 590.21875,
+          "right": 705,
+          "bottom": 876
+        },
+        {
+          "s": "#inspector",
+          "x": 1066,
+          "y": 238,
+          "right": 1416,
+          "bottom": 812
+        },
+        {
+          "s": ".scene-bottom",
+          "x": 24,
+          "y": 828,
+          "right": 212,
+          "bottom": 876
+        }
+      ],
+      "overlaps": [],
+      "backgrounds": [
+        [
+          "#local-field",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          "#inspector",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          ".index-sheet",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          ".select-menu",
+          "rgb(0, 0, 0)"
+        ]
+      ]
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "rects": [
+        {
+          "s": "#data-process",
+          "x": 506,
+          "y": 67.703125,
+          "right": 734,
+          "bottom": 80.296875
+        },
+        {
+          "s": "#scene-selection",
+          "x": 146,
+          "y": 67,
+          "right": 496,
+          "bottom": 81
+        },
+        {
+          "s": ".observation-toolbar",
+          "x": 1656,
+          "y": 58,
+          "right": 1896,
+          "bottom": 90
+        },
+        {
+          "s": ".legend",
+          "x": 1634.984375,
+          "y": 110,
+          "right": 1896,
+          "bottom": 124
+        },
+        {
+          "s": "#local-field",
+          "x": 245,
+          "y": 770.21875,
+          "right": 705,
+          "bottom": 1056
+        },
+        {
+          "s": "#inspector",
+          "x": 1546,
+          "y": 238,
+          "right": 1896,
+          "bottom": 992
+        },
+        {
+          "s": ".scene-bottom",
+          "x": 24,
+          "y": 1008,
+          "right": 212,
+          "bottom": 1056
+        }
+      ],
+      "overlaps": [],
+      "backgrounds": [
+        [
+          "#local-field",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          "#inspector",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          ".index-sheet",
+          "rgb(0, 0, 0)"
+        ],
+        [
+          ".select-menu",
+          "rgb(0, 0, 0)"
+        ]
+      ]
+    }
+  ],
+  "checks": [
+    "INDEX open/close: identical canvas bounds, camera position, target, FOV and zoom limits (reduced motion isolates normal idle rotation)",
+    "persistent READY with real source-row count",
+    "40px default collapsed controls",
+    "fixed bottom header on expansion; max 35vh",
+    "dropdown constrained to trigger width and 260px",
+    "keyboard dataset selection and 3D dataset update",
+    "local CSV row inspection",
+    "collapse preserves selected dataset",
+    "RETURN clears selection, closes panels and restores SYSTEM READY",
+    "real delayed fetch shows READING; HTTP 503 stays ERROR; RETURN clears stale error"
+  ],
+  "errors": []
+}

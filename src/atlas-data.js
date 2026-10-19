@@ -29,12 +29,16 @@ export function prepareDataset(meta, payload) {
   };
 }
 
-export async function loadDataset(meta) {
+export async function loadDataset(meta, onStage = () => {}) {
+  onStage('READING');
   if (!cache.has(meta.id)) {
-    cache.set(meta.id, fetch(`${import.meta.env.BASE_URL}${meta.url.replace(/^\//, '')}`).then((response) => {
+    cache.set(meta.id, fetch(`${import.meta.env.BASE_URL}${meta.url.replace(/^\//, '')}`).then(async (response) => {
       if (!response.ok) throw new Error(`Cannot load ${meta.title} (${response.status})`);
-      return response.json();
-    }).then((payload) => prepareDataset(meta, payload)).catch((error) => { cache.delete(meta.id); throw error; }));
+      const text = await response.text();
+      onStage('PARSING');
+      const payload = JSON.parse(text);
+      return prepareDataset(meta, payload);
+    }).catch((error) => { cache.delete(meta.id); throw error; }));
   }
   return cache.get(meta.id);
 }

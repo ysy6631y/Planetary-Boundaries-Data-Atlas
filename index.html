@@ -18,24 +18,24 @@
     <section id="viewport" aria-label="3D risk space">
       <div id="scene"></div><div id="labels"></div>
       <div class="observation-toolbar tools" role="toolbar" aria-label="View and interface commands">
-        <button id="fit" title="Return to overview" aria-label="Return to overview" hidden><span class="tool-name">← OVERVIEW</span></button>
+        <button id="fit" title="Return to overview" aria-label="Return to overview" hidden><span class="tool-name">← RETURN</span></button>
         <button id="focus" title="Focus active analysis or selected control" aria-label="Focus active analysis or selected control"><span class="tool-name">FOCUS</span></button>
         <button id="ui-toggle" class="ui-toggle" type="button" aria-label="Hide interface" title="Hide interface" aria-pressed="false">UI ON</button>
       </div>
       <audio id="ambient-track" src="/sci-fi-drone.wav" loop preload="auto" aria-hidden="true"></audio>
-      <div class="scene-top"><span id="scene-selection">EARTH-SYSTEM FIELD</span></div>
+      <div class="scene-top"><span id="scene-selection"></span></div>
       <div class="legend">
         <div class="legend-row"><i class="legend-dot" aria-hidden="true"></i><b class="origin-key" aria-hidden="true"></b><span>BASELINE</span></div>
         <label class="legend-row"><input id="pb-toggle" type="checkbox" checked><b class="pb-key" aria-hidden="true"></b><span>BOUNDARY</span></label>
         <label class="legend-row"><input id="hr-toggle" type="checkbox" checked><b class="hr-key" aria-hidden="true"></b><span>HIGH RISK</span></label>
       </div>
       <div class="scene-bottom">
-      <div id="risk-ruler" class="risk-ruler" hidden><strong id="risk-value"></strong><div class="risk-scale" role="meter" aria-label="Selected observation unified risk distance" aria-valuemin="0"><div id="risk-stem"></div><i data-risk-tick="0">0</i><i data-risk-tick="1">1 / BOUNDARY</i><i data-risk-tick="2">2 / HIGH RISK</i></div></div>
+      <div id="risk-ruler" class="risk-ruler" hidden><strong id="risk-value"></strong><small class="risk-source">PLANETARY REFERENCE</small><div class="risk-scale" role="meter" aria-label="Selected planetary boundary normalized ratio" aria-valuemin="0"><div id="risk-stem"></div><i data-risk-tick="0">0</i><i data-risk-tick="1">1 / BOUNDARY</i><i data-risk-tick="2">2 / HIGH RISK</i></div></div>
       <div class="observation-distance"><span>VIEW DISTANCE</span><output id="camera-distance" aria-label="Camera distance to observation target in scene units">-</output></div>
       </div>
       <div id="local-field" class="local-field" hidden role="region" aria-label="Analysis controls">
-        <div class="analysis-head"><div><span class="eyebrow">ANALYSIS CONTROL</span><strong id="local-title">CLIMATE</strong></div><button id="analysis-toggle" class="panel-toggle" type="button" aria-label="Collapse analysis controls" aria-expanded="true" aria-controls="analysis-body" title="Collapse analysis controls">−</button></div>
-        <div id="analysis-body" class="analysis-body">
+        <div class="analysis-head"><div><span class="eyebrow">ANALYSIS CONTROL</span><strong id="local-title">CLIMATE</strong></div><button id="analysis-toggle" class="panel-toggle" type="button" aria-label="Expand analysis controls" aria-expanded="false" aria-controls="analysis-body" title="Expand analysis controls">+</button></div>
+        <div id="analysis-body" class="analysis-body" hidden>
         <div class="analysis-controls">
         <label class="dataset-picker">DATA <select id="dataset-select" aria-label="Boundary dataset"></select></label>
         <div class="record-tools"><label>ENTITY <select id="entity-filter" aria-label="Filter source entity"><option value="">ALL ENTITIES</option></select></label><label>CSV ROW <input id="source-record" type="number" min="2" step="1" value="2" aria-label="Inspect original CSV row"></label></div>

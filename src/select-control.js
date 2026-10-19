@@ -37,8 +37,8 @@ export function enhanceSelect(select) {
     const below = innerHeight - rect.bottom - 12;
     const above = rect.top - 12;
     const upwards = below < 240 && above > below;
-    const room = Math.max(48, Math.min(340, upwards ? above : below));
-    const width = Math.min(innerWidth - 24, Math.max(rect.width, select.id === 'dataset-select' ? 480 : 220));
+    const room = Math.max(48, Math.min(260, upwards ? above : below));
+    const width = Math.min(innerWidth - 24, rect.width);
     menu.style.width = `${width}px`;
     menu.style.maxHeight = `${room}px`;
     menu.style.left = `${Math.max(12, Math.min(rect.left, innerWidth - width - 12))}px`;
@@ -89,6 +89,7 @@ export function enhanceSelect(select) {
   }
   function open() {
     if (select.disabled) return;
+    if (document.getElementById('index-trigger').getAttribute('aria-expanded') === 'true') document.getElementById('index-trigger').click();
     opened?.close();
     opened = { trigger, menu, close };
     render(); menu.hidden = false; position();
