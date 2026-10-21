@@ -15,6 +15,7 @@ import { deepFreeze, observe, wheelDistance, MIN_OBSERVATION_DISTANCE, MAX_OBSER
 import { datasetPresentation, axisLabel } from './dataset-presentation.js';
 import { enhanceSelect, closeSelects } from './select-control.js';
 import { createSoundSystem } from './sound-system.js';
+import { createPresenceDetector } from './presence-detector.js';
 import './style.css';
 import { createDataProcess } from './data-process.js';
 const dataProcess = createDataProcess();
@@ -58,6 +59,8 @@ reducedMotion.addEventListener('change', () => {
 const $ = (id) => document.getElementById(id);
 const viewDistanceOutput = $('camera-distance');
 const sound = createSoundSystem($('ambient-track'));
+const presence = createPresenceDetector({ button: $('presence-start'), status: $('presence-status'), sound });
+if (import.meta.hot) import.meta.hot.dispose(() => presence.dispose());
 window.__PB_AUDIO__ = sound;
 if (import.meta.hot) import.meta.hot.dispose(() => sound.dispose());
 const fmt = (n) => n === null || n === undefined ? 'NOT QUANTIFIED' : String(Number(Number(n).toPrecision(10)));

@@ -24,6 +24,11 @@
         <button id="sound-toggle" class="ui-toggle sound-toggle" type="button" aria-label="Turn sound off" title="Turn sound off" aria-pressed="true">SOUND ON</button>
       </div>
       <audio id="ambient-track" src="/sci-fi-drone.wav" loop preload="auto" aria-hidden="true"></audio>
+      <div class="presence-controls" hidden>
+        <button id="presence-start" type="button" aria-pressed="false" disabled>카메라 연결 중</button>
+        <span id="presence-status" role="status">접근 감지를 준비하고 있습니다</span>
+        <small>영상은 기기 안에서만 분석하며 저장하지 않습니다.</small>
+      </div>
       <div class="scene-top"><span id="scene-selection"></span></div>
       <div class="legend">
         <div class="legend-row"><i class="legend-dot" aria-hidden="true"></i><b class="origin-key" aria-hidden="true"></b><span>BASELINE</span></div>

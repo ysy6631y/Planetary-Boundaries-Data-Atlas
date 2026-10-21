@@ -10,6 +10,7 @@ export function createSoundSystem(ambient, overrides = {}) {
   const previousSamples = new Map();
   let context, master, flowBus, detailBus, limiter, loading;
   let enabled = true, disposed = false, unlocked = false, suspended = document.hidden, wasRunning = false;
+  let present = true, presenceGain = 1;
   let nextFlow = Infinity, nextDetail = Infinity, nextMicro = Infinity, quietUntil = 0;
   let nearCount = 0, lastGlitch = -Infinity;
   let lastOnset = -Infinity, lastFlowEnd = -Infinity;
@@ -79,7 +80,7 @@ export function createSoundSystem(ambient, overrides = {}) {
     if (!Constructor) { report('Web Audio unavailable; ambient remains available.'); return; }
     try { context = new Constructor({ latencyHint: 'interactive' }); }
     catch (error) { report('Audio context: ' + error.message); return; }
-    master = context.createGain(); master.gain.value = enabled ? 1 : 0;
+    master = context.createGain(); master.gain.value = enabled ? presenceGain : 0;
     limiter = context.createDynamicsCompressor();
     limiter.threshold.value = -12; limiter.knee.value = 6; limiter.ratio.value = 10;
     limiter.attack.value = .006; limiter.release.value = .16;
@@ -91,7 +92,7 @@ export function createSoundSystem(ambient, overrides = {}) {
   }
 
   function playAmbient() {
-    if (!enabled || disposed) return;
+    if (!enabled || disposed || !present || document.hidden) return;
     ambient.play()?.catch(error => {
       if (!['NotAllowedError', 'AbortError'].includes(error.name)) report('Ambient: ' + error.message);
     });
@@ -171,6 +172,14 @@ export function createSoundSystem(ambient, overrides = {}) {
   function update(nowMs, dt, inputSpeed = 0) {
     const now = nowMs / 1000;
     if (disposed || !enabled || suspended) return;
+    const target = present ? 1 : 0;
+    presenceGain += Math.sign(target - presenceGain) * Math.min(Math.abs(target - presenceGain), Math.max(0, dt) / (present ? .8 : 1.5));
+    ambient.volume = settings.volumes.ambient * presenceGain;
+    if (master) master.gain.setTargetAtTime(presenceGain, context.currentTime, .03);
+    if (!present) {
+      if (presenceGain === 0) { stopVoices(); ambient.pause(); }
+      return;
+    }
     updateActivity(now, dt, inputSpeed);
     if (context?.state !== 'running' || !samples.size) return;
     if (!wasRunning) { resetSchedule(now); wasRunning = true; }
@@ -211,7 +220,7 @@ export function createSoundSystem(ambient, overrides = {}) {
   function setEnabled(value) {
     if (disposed) return;
     enabled = Boolean(value); ambient.muted = !enabled;
-    if (master) master.gain.value = enabled ? 1 : 0;
+    if (master) master.gain.value = enabled ? presenceGain : 0;
     if (!enabled) { stopVoices(); clearActivity(); ambient.pause(); context?.suspend().catch(() => {}); wasRunning = false; }
     else {
       resetSchedule(seconds()); playAmbient();
@@ -221,12 +230,27 @@ export function createSoundSystem(ambient, overrides = {}) {
 
   function setVolumes(volumes) {
     for (const key of ['ambient', 'flow', 'detail']) if (Number.isFinite(volumes[key])) settings.volumes[key] = Math.min(1, Math.max(0, volumes[key]));
-    ambient.volume = settings.volumes.ambient; lastDetailGain = -1;
+    ambient.volume = settings.volumes.ambient * presenceGain; lastDetailGain = -1;
     if (context && !disposed) flowBus.gain.setTargetAtTime(settings.volumes.flow, context.currentTime, .1);
+  }
+
+  function setPresence(value, immediate = false) {
+    const changed = present !== Boolean(value);
+    present = Boolean(value);
+    if (immediate) {
+      presenceGain = present ? 1 : 0;
+      ambient.volume = settings.volumes.ambient * presenceGain;
+      if (master) master.gain.value = enabled ? presenceGain : 0;
+      if (!present) { stopVoices(); ambient.pause(); }
+    }
+    if (changed) { clearActivity(); wasRunning = false; }
+    if (present && unlocked) playAmbient();
   }
 
   function visibilityChanged() {
     suspended = document.hidden; stopVoices(); clearActivity(); wasRunning = false;
+    if (suspended) ambient.pause();
+    else if (enabled && unlocked) playAmbient();
     if (suspended) context?.suspend().catch(() => {});
     else if (enabled && unlocked) context?.resume().catch(error => report(error.message));
   }
@@ -250,11 +274,11 @@ export function createSoundSystem(ambient, overrides = {}) {
   document.addEventListener('visibilitychange', visibilityChanged); ambient.addEventListener('error', ambientError);
   playAmbient();
   return {
-    update, setEnabled, setVolumes, dispose,
+    update, setEnabled, setVolumes, setPresence, unlock, dispose,
     ready: () => loading || Promise.resolve(),
     audition: id => playSample(samples.get(id)),
     snapshot: () => ({
-      enabled, disposed, contextState: context?.state || 'not-created', loaded: samples.size, expected: manifest.samples.length,
+      enabled, disposed, present, presenceGain, contextState: context?.state || 'not-created', loaded: samples.size, expected: manifest.samples.length,
       voices: voices.size, peakVoices, activity, windowActivity, inputFrames: inputWindow.length, nextFlow, nextDetail, nextMicro, quietUntil,
       activeVoices: [...voices].map(voice => ({ family: voice.family, cutoff: voice.filter.frequency.value, targetCutoff: voice.targetCutoff })),
       volumes: { ...settings.volumes }, history: [...history], errors: [...errors],

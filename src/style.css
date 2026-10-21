@@ -568,6 +568,12 @@ aside { background: rgba(0,0,0,.94); }
 @media (prefers-reduced-motion: reduce) { #risk-stem { transition: none !important; } }
 
 /* Toolbar controls stay plain text: no boxes, separators or selection underline. */
+.presence-controls { position: fixed; left: 24px; bottom: 24px; z-index: 30; display: grid; gap: 7px; max-width: calc(100vw - 48px); padding: 12px 14px; background: #000; border: 1px solid rgba(255,255,255,.18); font: 10px/1.5 var(--mono); color: #ccc; }
+.presence-controls[hidden] { display: none; }
+.presence-controls button { justify-self: start; padding: 5px 0; border: 0; background: transparent; color: #fff; font: inherit; cursor: pointer; }
+.presence-controls button:disabled { opacity: .5; cursor: wait; }
+.presence-controls small { font-size: 9px; color: #888; }
+.presence-video { position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .observation-toolbar { border: 0; }
 .observation-toolbar button, .observation-toolbar .ui-toggle,
 .observation-toolbar button[aria-current="true"],
