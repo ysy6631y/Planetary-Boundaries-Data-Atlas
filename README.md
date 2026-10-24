@@ -1,4 +1,14 @@
-# Planetary Boundaries: Phase 1 spatial prototype
+# Planetary Data Atlas — V1
+
+Version: `v1.0.0`. Source: https://github.com/ysy6631y/Planetary-Boundaries-Data-Atlas
+
+Public site: https://ysy6631y.github.io/Planetary-Boundaries-Data-Atlas/
+
+The existing `gh-pages` branch serves the production build. Build with `npm ci`
+and `npm run build`; publish the contents of `dist/` including `.nojekyll` to
+that branch with a normal fast-forward commit. Vite uses relative asset paths;
+source datasets, sound samples and presence-detector assets resolve beneath the
+site base. V2 interface work belongs in the separate local V2 folder only.
 
 9 boundary groups, 11 quantitative control points, 2 non-quantitative states. No boundary aggregation, fabricated missing values, data radius clipping or UI-pixel normalization.
 
@@ -12,10 +22,8 @@ npm run dev -- --port 5173 --strictPort
 Open http://127.0.0.1:5173/ . If occupied by another project, use another port. WebGL2-capable browser required. Node 22.12+ or the validated Node 24 environment is suitable for the installed Vite version.
 
 ```sh
-npm test
-npm run validate
-node scripts/browser-check.mjs
-node scripts/observer-browser-check.mjs
+node --test tests/auto-exploration.test.js
+node scripts/check-focus-alignment.mjs
 npm run build
 ```
 

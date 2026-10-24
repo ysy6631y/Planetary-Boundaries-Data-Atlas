@@ -63,7 +63,7 @@ export function createSoundSystem(ambient, overrides = {}) {
     if (loading) return loading;
     loading = Promise.all(manifest.samples.map(async sample => {
       try {
-        const response = await fetch(sample.file, { signal: controller.signal });
+        const response = await fetch(`${import.meta.env.BASE_URL}${sample.file.replace(/^\//, '')}`, { signal: controller.signal });
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const buffer = await context.decodeAudioData(await response.arrayBuffer());
         if (!disposed) { samples.set(sample.id, sample); buffers.set(sample.id, buffer); }
