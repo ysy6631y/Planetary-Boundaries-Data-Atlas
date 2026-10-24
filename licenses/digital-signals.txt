@@ -1,0 +1,25 @@
+Current digital signal assets — 511418 primary, 860912 micro glitches.
+665957 is retained for comparison but disabled in the current mix.
+
+860912 — Digital Glitching/Noise
+Creator: AirwaveXV
+https://freesound.org/people/AirwaveXV/sounds/860912/
+CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+Edits: four 200–230 ms excerpts, DC correction, gain matching, fades and filtering.
+
+511418 — Data Reveal Sound
+Creator: Sky_Motion
+https://freesound.org/people/Sky_Motion/sounds/511418/
+CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+665957 — COMTelm Data transmission or read-out signal 3 Artificial EM
+Creator: newlocknew
+https://freesound.org/people/newlocknew/sounds/665957/
+User-supplied recording. The original page was inaccessible during this revision;
+its exact license could not be independently verified. Credit retained here.
+
+Edits: short excerpts, DC correction, gain matching, cosine fades, 48kHz PCM16 conversion.
+Playback: source-specific filtering and envelopes. No synthesized replacements.
+Old pryanic, jasonLON and Felfa layers are no longer included.
