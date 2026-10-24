@@ -18,6 +18,7 @@ import { createSoundSystem } from './sound-system.js';
 import { createPresenceDetector } from './presence-detector.js';
 import './style.css';
 import { createDataProcess } from './data-process.js';
+import { createAutoExploration } from './auto-exploration.js';
 const dataProcess = createDataProcess();
 const afterSceneFrame = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
@@ -132,6 +133,7 @@ for (const control of quantitative) {
 }
 
 let selected = quantitative[0];
+let selectionScope = 'boundary';
 let motionPaused = false;
 let overview = false;
 let overviewReady = false;
@@ -199,6 +201,7 @@ let climateField = climateSeed;
 let datasetFull = null;
 let inspectedRecord = null;
 let datasetRequest = 0;
+let datasetReadyRequest = -1;
 let datasetError = null;
 const datasetMemory = new Map();
 const metadataById = new Map(atlasManifest.datasets.map((item) => [item.id, item]));
@@ -224,9 +227,9 @@ function rasterSignalTexture({ core, middle, outer }) {
   const image = context.createImageData(size, size);
   for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
     const radius = Math.hypot(x - 8, y - 8);
-    const band = radius < 2.15 ? 0 : radius < 4.2 ? 1 : 2;
+    const band = radius < 2.55 ? 0 : radius < 4.2 ? 1 : 2;
     const uneven = ((x * 3 + y * 5) % 4) === 0 ? 0.72 : 1;
-    const alpha = radius < 2.15 ? 255 : radius < 4.2 ? 214 : radius < 6.7 ? Math.round(112 * uneven) : 0;
+    const alpha = radius < 2.55 ? 255 : radius < 4.2 ? 214 : radius < 6.7 ? Math.round(112 * uneven) : 0;
     const offset = (y * size + x) * 4;
     image.data[offset] = colors[band][0];
     image.data[offset + 1] = colors[band][1];
@@ -240,8 +243,8 @@ function rasterSignalTexture({ core, middle, outer }) {
   texture.generateMipmaps = false;
   return texture;
 }
-const whiteSignal = rasterSignalTexture({ core: '#ffffff', middle: '#c9c4bc', outer: '#5b504a' });
-const redSignal = rasterSignalTexture({ core: '#fff3ec', middle: '#ed4138', outer: '#681815' });
+const whiteSignal = rasterSignalTexture({ core: '#ffffff', middle: '#d4cec5', outer: '#5b504a' });
+const redSignal = rasterSignalTexture({ core: '#fffaf5', middle: '#f35445', outer: '#7b2019' });
 const glowCanvas = document.createElement('canvas');
 glowCanvas.width = glowCanvas.height = 64;
 const glowContext = glowCanvas.getContext('2d');
@@ -397,9 +400,9 @@ scene.add(starField);
 const origin = new THREE.Object3D();
 scene.add(origin);
 const referenceGeometry = [];
-function shell(radius, color) {
+function shell(radius, color, opacity = 0.66) {
   const root = new THREE.Group();
-  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.66 });
+  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity });
   function addCircle(points) {
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     root.add(new THREE.LineLoop(geometry, material));
@@ -421,7 +424,7 @@ function shell(radius, color) {
   scene.add(root);
   return root;
 }
-const pbShell = shell(1, 0xb0a79b);
+const pbShell = shell(1, 0xc9c3b9, 0.74);
 const hrShell = shell(2, 0xe34a3d);
 const selectionRing = new THREE.Mesh(new THREE.RingGeometry(0.078, 0.087, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, depthTest: false }));
 selectionRing.renderOrder = 10;
@@ -602,24 +605,16 @@ function inspect() {
 
 function hasLocalData(group) { return Boolean(atlasManifest.boundaries[group.id]?.datasets.length); }
 
-function groupWorldDirection(group) {
-  scene.updateMatrixWorld(true);
-  const positions = group.controls.filter((control) => control.position)
-    .map((control) => meshes.get(control.id).getWorldPosition(new THREE.Vector3()));
-  if (!positions.length) return new THREE.Vector3(...group.direction).normalize();
-  const direction = positions.reduce((sum, position) => sum.add(position), new THREE.Vector3());
-  return direction.lengthSq() > 1e-12 ? direction.normalize() : new THREE.Vector3(...group.direction).normalize();
-}
-
-function groupWorldTarget(group, radius = 3.5) {
-  return groupWorldDirection(group).multiplyScalar(radius);
+function groupWorldTarget(group, radius = 3.25) {
+  // Original balanced boundary layout: a navigation region, independent of
+  // the risk nodes' changing orbital angles. Never derive it from node means.
+  return new THREE.Vector3(...group.direction).multiplyScalar(radius);
 }
 
 function refreshField(data) {
   climateField = data;
   climate.setData(data, selectedGroup.direction, shortNames[selectedGroup.order - 1]);
-  if (selected?.position) anchorLocalField();
-  else climate.root.position.copy(groupWorldTarget(selectedGroup));
+  anchorLocalField();
   climate.root.visible = data.observations.length > 0;
   climate.activate(data.observations.length > 0);
   $('climate-scale').value = data.defaultMode;
@@ -638,12 +633,6 @@ function refreshField(data) {
   $('local-field').setAttribute('aria-busy', 'false');
   syncSelects();
   const members = selectedGroup.controls.filter((control) => control.position);
-  if (members.length && data.observations.length) {
-    const start = members.reduce((sum, control) => sum.add(new THREE.Vector3(...control.position)), new THREE.Vector3()).divideScalar(members.length);
-    climateChapterLink.geometry.dispose();
-    climateChapterLink.geometry = new THREE.BufferGeometry().setFromPoints([start, climate.root.position]);
-    climateChapterLink.computeLineDistances();
-  }
   climateChapterLink.visible = Boolean(members.length && data.observations.length);
 }
 
@@ -691,6 +680,7 @@ async function openDataset(id) {
     await afterSceneFrame();
     if (request !== datasetRequest || selectedGroup.id !== groupId) return;
     process('READY', data.records.length);
+    datasetReadyRequest = request;
     if (data.kind === 'records' && data.records.length) {
       clearTimeout(readTimer);
       inspectedRecord = data.records[0]; $('inspector').hidden = false; inspectCountry(inspectedRecord);
@@ -706,7 +696,7 @@ async function openDataset(id) {
   }
 }
 
-function openBoundary(group) {
+function openBoundary(group, { autoLoad = true } = {}) {
   dataProcess.reset();
   setAnalysisExpanded(false);
   ++datasetRequest;
@@ -731,7 +721,7 @@ function openBoundary(group) {
   for (const id of ['entity-filter', 'source-record', 'climate-scale', 'climate-surface']) $(id).disabled = true;
   const roles = ['analysis', 'processed', 'history', 'statistics', 'red-points', 'relations', 'summary'];
   for (const role of roles) {
-    const entries = boundary.datasets.map((id) => metadataById.get(id)).filter((item) => item.role === role);
+    const entries = boundary.datasets.map((id) => metadataById.get(id)).filter((item) => item?.role === role);
     if (!entries.length) continue;
     const optgroup = document.createElement('optgroup'); optgroup.label = datasetPresentation(entries[0]).role;
     for (const item of entries) {
@@ -742,7 +732,7 @@ function openBoundary(group) {
     }
     $('dataset-select').append(optgroup);
   }
-  if (boundary.datasets.length) {
+  if (autoLoad && boundary.datasets.length) {
     const id = datasetMemory.get(group.id) ?? boundary.default;
     $('dataset-select').value = id;
     void openDataset(id);
@@ -756,21 +746,23 @@ function selectBoundary(group) {
   // synthetic risk value is assigned to a navigation label.
   const control = selected?.groupId === group.id ? selected
     : group.controls.find(control => control.r !== null) ?? group.controls[0];
-  select(control, group);
-  if (control.r !== null) focusSelected();
-  else focusGroup(group);
+  select(control, group, { scope: 'boundary' });
+  focusSelected();
   closeIndex();
 }
 
-function select(control, group, { openPanel = true } = {}) {
+function select(control, group, { openPanel = true, autoLoad = true, scope = 'control' } = {}) {
+  selectionScope = scope;
   setHoveredControl(null);
   setActiveTool(null);
   overview = false;
-  motionPaused = Boolean(control);
+  // Hold the source steady during entry/reading; overview resumes its angles.
+  // The starfield continues independently of this pause.
+  motionPaused = true;
   orbit.autoRotate = false;
   for (const layer of overviewLayers.values()) layer.root.visible = false;
   selected = control; selectedGroup = group;
-  if (openPanel) openBoundary(group);
+  if (openPanel) openBoundary(group, { autoLoad });
   climate.select(-1);
   $('fit').hidden = false;
   updateDataR(control);
@@ -911,9 +903,11 @@ async function enterOverview() {
     const exceeded = quantitative.find(control => control.id === id).r > 1;
     point.material.color.setHex(point.userData.baseColor);
     point.userData.signal.material.map = exceeded ? redSignal : whiteSignal;
-    point.userData.signal.material.opacity = exceeded ? .86 : .52;
+    point.userData.signal.material.opacity = exceeded ? .96 : .64;
     point.userData.signal.material.needsUpdate = true;
-    point.userData.glow.material.opacity = 0;
+    // A restrained use of the existing glow gives exceeded signals a light core
+    // in overview without lifting the background or brightening orbit guides.
+    point.userData.glow.material.opacity = exceeded ? .12 : 0;
   }
   fit();
   try {
@@ -943,19 +937,19 @@ async function enterOverview() {
 }
 $('fit').addEventListener('click', () => void enterOverview());
 function focusSelected() {
-  anchorLocalField();
-  if (hasLocalData(selectedGroup)) { focusAt(climate.root.position.clone(), 6.8); return; }
-  if (!selected || selected.r === null) return;
-  if (climate.active) { focusAt(climate.root.position.clone(), 6.8); return; }
-  focusAt(meshes.get(selected.id).getWorldPosition(new THREE.Vector3()));
+  if (!selected || selected.r === null) { focusGroup(selectedGroup); return; }
+  focusAt(meshes.get(selected.id).getWorldPosition(new THREE.Vector3()), hasLocalData(selectedGroup) ? 6.8 : 2.5);
 }
 function anchorLocalField() {
-  if (!selected?.position) return;
   scene.updateMatrixWorld(true);
-  const anchor = meshes.get(selected.id).getWorldPosition(new THREE.Vector3());
+  // Restore the original node-centered framing for the local analysis.
+  const anchor = selected?.position ? meshes.get(selected.id).getWorldPosition(new THREE.Vector3()) : groupWorldTarget(selectedGroup);
   climate.root.position.copy(anchor);
+  const positions = selectedGroup.controls.filter(control => control.position)
+    .map(control => meshes.get(control.id).getWorldPosition(new THREE.Vector3()));
+  const source = positions.length ? positions.reduce((sum, point) => sum.add(point), new THREE.Vector3()).divideScalar(positions.length) : anchor;
   const attribute = climateChapterLink.geometry.getAttribute('position');
-  attribute.setXYZ(0, anchor.x, anchor.y, anchor.z);
+  attribute.setXYZ(0, source.x, source.y, source.z);
   attribute.setXYZ(1, anchor.x, anchor.y, anchor.z);
   attribute.needsUpdate = true;
   climateChapterLink.computeLineDistances();
@@ -1231,7 +1225,7 @@ function observationReport() {
       axis: observedAxis, width, height }) };
 }
 
-// HTML labels use a fixed layout anchor only. No corresponding 3D object exists.
+// Boundary navigation labels retain their original distributed group anchors.
 function positionLabels() {
   const occupied = [];
   for (const element of [document.querySelector('.scene-bottom'), document.querySelector('.legend'), $('risk-ruler'), $('local-field'), $('inspector')]) {
@@ -1253,12 +1247,13 @@ function positionLabels() {
       occupied.push({ x, y: y + 18, w: pointLabel.offsetWidth, h: pointLabel.offsetHeight + 12 });
     }
   }
-  for (const group of [selectedGroup, ...groups.filter((g) => g.id !== selectedGroup.id)]) {
+  // Keep collision-placement priority in INDEX order in the overview, including
+  // after returning from the ninth boundary. Selection history must not reshuffle it.
+  for (const group of overview ? groups : [selectedGroup, ...groups.filter((g) => g.id !== selectedGroup.id)]) {
     const label = groupLabels.get(group.id);
     label.hidden = climate.active;
     if (label.hidden) continue;
-    const groupDirection = groupWorldDirection(group);
-    const v = groupDirection.multiplyScalar(3.25).project(camera);
+    const v = groupWorldTarget(group).project(camera);
     if (v.z < -1 || v.z > 1) { label.hidden = true; continue; }
     const labelWidth = label.offsetWidth, labelHeight = label.offsetHeight;
     let x = THREE.MathUtils.clamp((v.x * 0.5 + 0.5) * width, labelWidth / 2 + 10, width - labelWidth / 2 - 10);
@@ -1293,7 +1288,7 @@ function positionSignalLights(now = performance.now()) {
       const scanIndex = Math.floor(now / 7000) % quantitative.length;
       const scanned = !reducedMotion.matches && index === scanIndex ? Math.sin(Math.min(1, cycle / 1.1) * Math.PI) : 0;
       const exceeded = controlsData.find(control => control.id === id).r > 1;
-      signal.material.opacity = Math.min(1, (exceeded ? .86 : .52) + scanned * .08 + (id === hoveredControl ? .14 : 0));
+      signal.material.opacity = Math.min(1, (exceeded ? .96 : .64) + scanned * .08 + (id === hoveredControl ? .14 : 0));
     }
     const targetPixels = (active ? 16 : overview ? 16 : baseOpacity >= 0.6 ? 14 : baseOpacity >= 0.2 ? 11 : 9) + (id === hoveredControl ? 2 : 0);
     const worldSize = distance * targetPixels / pixelsPerUnitAtDepth;
@@ -1309,6 +1304,8 @@ function updateProjectionReadout() {
 }
 
 window.__PB_DEBUG__ = {
+  navigation: () => ({ scope: selectionScope, boundaryAnchor: groupWorldTarget(selectedGroup).toArray(), fieldAnchor: climate.root.position.toArray() }),
+  backgroundMotion: () => ({ starfieldAngle, systemRotationAngle }),
   motion: () => ({ overview, motionPaused, manualObservation, autoRotate: orbit.autoRotate, boundaryAngles: [...boundaryOrbitMotion].map(([id, motion]) => ({ id, angle: motion.angle })), orbitAngles: [...riskOrbits.values()].map((line) => line.userData.angle), reduced: reducedMotion.matches, focusing: !!focusTransition, projection: climate.projectionProgress, points: climate.positions.length }),
   overview: () => ({ active: overview, ready: overviewReady, error: overviewError, fields: [...overviewLayers].map(([boundary, layer]) => ({ boundary, dataset: layer.data.id, observations: layer.data.observations.length, visible: layer.root.visible, sources: layer.data.sources })) }),
   atlas: () => ({ dataset: datasetFull?.id ?? null, error: datasetError, sourceRows: datasetFull?.records.length ?? 0, displayed: datasetFull ? climateField.observations.length : 0, boundary: selectedGroup.id, available: atlasManifest.boundaries[selectedGroup.id].datasets, canSurface: climate.canSurface, kind: datasetFull?.kind ?? null }),
@@ -1330,6 +1327,79 @@ window.__PB_DEBUG__ = {
     return { x: rect.left + (p.x * .5 + .5) * width, y: rect.top + (-p.y * .5 + .5) * height };
   },
 };
+
+const exploration = createAutoExploration({
+  boundaries: groups, // Same order used to build INDEX, including reference-only groups.
+  overviewReady: () => (overviewReady || Boolean(overviewError)) && !focusTransition,
+  cameraReady: () => !focusTransition,
+  selectBoundary(group) {
+    const control = group.controls.find(item => item.r !== null) ?? group.controls[0];
+    if (!control || !atlasManifest.boundaries[group.id]) return false;
+    select(control, group, { autoLoad: false, scope: 'boundary' });
+    closeIndex();
+    return true;
+  },
+  datasets: () => [...$('dataset-select').options].map(option => option.value).filter(id => metadataById.has(id)),
+  indicators: () => selectedGroup.controls.filter(control => control.position && meshes.has(control.id)).map(control => control.id),
+  selectIndicator(id) {
+    const control = selectedGroup.controls.find(item => item.id === id);
+    if (control && meshes.has(id)) select(control, selectedGroup, { openPanel: false, scope: 'boundary' });
+  },
+  enterBoundary(duration) {
+    focusSelected();
+    if (focusTransition) focusTransition.duration = duration;
+  },
+  selectDataset(id) {
+    $('dataset-select').value = id;
+    syncSelects();
+  },
+  openDataset: id => void openDataset(id),
+  datasetStatus: id => ({
+    error: datasetError,
+    ready: datasetFull?.id === id && datasetReadyRequest === datasetRequest
+      && (!climate.active || climate.projectionProgress >= 1),
+  }),
+  cancelDataset() { ++datasetRequest; },
+  returnToPlanet(duration) {
+    closeSelects();
+    void enterOverview();
+    if (focusTransition) focusTransition.duration = duration;
+  },
+  cancelCamera() {
+    cancelFocus();
+    manualObservation = true;
+    orbit.autoRotate = false;
+  },
+});
+// Minimal subscription point for the future log component; no new UI.
+window.__PB_EXPLORATION__ = {
+  getState: exploration.getState,
+  subscribe: exploration.subscribe,
+  config: exploration.config,
+};
+const heldPointers = new Set();
+const heldKeys = new Set();
+function onExhibitionInput(event) {
+  if (!event.isTrusted) return;
+  if (event.type === 'pointerdown') heldPointers.add(event.pointerId);
+  if (event.type === 'pointerup' || event.type === 'pointercancel') heldPointers.delete(event.pointerId);
+  if (event.type === 'keydown') heldKeys.add(event.code);
+  if (event.type === 'keyup') heldKeys.delete(event.code);
+  exploration.userActivity();
+}
+const exhibitionInputEvents = ['pointerdown', 'pointerup', 'pointercancel', 'wheel', 'keydown', 'keyup', 'input', 'change', 'click'];
+for (const type of exhibitionInputEvents) window.addEventListener(type, onExhibitionInput, { capture: true, passive: true });
+function releaseExhibitionInput() { heldPointers.clear(); heldKeys.clear(); }
+window.addEventListener('blur', releaseExhibitionInput);
+function resetExhibitionClock() { lastMotionTime = null; releaseExhibitionInput(); }
+document.addEventListener('visibilitychange', resetExhibitionClock);
+if (import.meta.hot) import.meta.hot.dispose(() => {
+  exploration.dispose();
+  for (const type of exhibitionInputEvents) window.removeEventListener(type, onExhibitionInput, true);
+  window.removeEventListener('blur', releaseExhibitionInput);
+  document.removeEventListener('visibilitychange', resetExhibitionClock);
+  renderer.setAnimationLoop(null);
+});
 
 let lastValidation = -Infinity;
 const SYSTEM_ROTATION_PERIOD = 9600;
@@ -1384,14 +1454,20 @@ function updateFocusTransition(now) {
   }
 }
 renderer.setAnimationLoop((now) => {
+  const frameElapsedMs = Math.max(0, now - (lastMotionTime ?? now));
   const dt = Math.min(.05, Math.max(0, (now - (lastMotionTime ?? now)) / 1000));
   lastMotionTime = now;
   orbit.autoRotate = !motionPaused && overview && !manualObservation && !focusTransition && !reducedMotion.matches && !document.hidden;
   orbit.autoRotateSpeed = .01 * EXHIBITION_MOTION_SPEED;
   if (!reducedMotion.matches && !document.hidden) updatePlanetaryOrbits(dt);
-  for (const layer of overviewLayers.values()) if (layer.root.visible) layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
+  // Analysis opens once after the indicator visits, at the final visited node.
+  if (!overview && climate.active) anchorLocalField();
+  for (const layer of overviewLayers.values()) if (layer.root.visible) {
+    layer.update(now, camera, width, height, renderer.getPixelRatio(), width);
+  }
   climate.update(now, camera, width, height, renderer.getPixelRatio(), $('inspector').hidden ? width - 30 : width - 380);
   updateFocusTransition(now); orbit.update(dt); positionSignalLights(now); renderer.render(scene, camera); positionLabels(); updateProjectionReadout();
+  exploration.tick(frameElapsedMs, { visible: !document.hidden, interacting: heldPointers.size > 0 || heldKeys.size > 0 });
   const soundDistance = Math.max(.001, orbit.getDistance());
   // Restore the original camera-to-observation-target distance independently
   // of the selected source risk score, reusing the frame's existing reading.
